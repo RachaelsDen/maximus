@@ -37,7 +37,7 @@ This fork focuses on **cleaning up, modernizing, and restoring full functionalit
 - [ ] Validate and modernize `slib/`, `unix/include/`, etc.
 - [ ] Rewrite or replace the QUICKSTART doc
 - [ ] Build first working binary on Linux
-- [ ] Optional: Reintroduce Windows support via MinGW
+- [ ] Optional: Reintroduce native Windows support using MSVC and Visual Studio
 - [ ] Optional: Add Docker container for easy local builds
 
 ---
