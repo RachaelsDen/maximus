@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.16)
-project(maximus VERSION 3.2.0 LANGUAGES C)
+project(maximus VERSION 3.2.0 LANGUAGES C CXX)
 
-# Use C++17 (or C++14/C11 if needed)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Detect endianess
+# Output directory for binaries
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# Detect endianness
 include(TestBigEndian)
 test_big_endian(IS_BIG_ENDIAN)
 
+# Platform-specific defines
 if(UNIX)
     add_definitions(-DUNIX)
 endif()
@@ -17,48 +20,52 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_definitions(-DLINUX)
 endif()
 
-# Set define flags for the template
+# Set template flags for configure_file()
 if(IS_BIG_ENDIAN)
     set(BIG_ENDIAN 1)
 else()
     set(LITTLE_ENDIAN 1)
 endif()
 
-# Configure the header
+# Generate current timestamp for version header
 string(TIMESTAMP CURRENT_TIMESTAMP "%a %b %d %I:%M:%S %p %Z %Y")
 
-# Output directory for binaries
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-# Include paths
-include_directories(
-    ${PROJECT_SOURCE_DIR}/src/slib
-    ${PROJECT_SOURCE_DIR}/src/unix/include
-)
+# Configure generated headers
 configure_file(
     ${CMAKE_SOURCE_DIR}/cmake/version.h.in
     ${CMAKE_BINARY_DIR}/generated/version.h
+    @ONLY
+)
+
+configure_file(
     ${CMAKE_SOURCE_DIR}/cmake/compiler_details.h.in
     ${CMAKE_BINARY_DIR}/generated/compiler_details.h
     @ONLY
 )
-include_directories(${CMAKE_BINARY_DIR}/generated)
 
-# Collect all source files (can refine later)
-file(GLOB_RECURSE SRC_FILES
-    src/*.cpp src/*.c
+# Include directories
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${PROJECT_SOURCE_DIR}/src/slib
+    ${PROJECT_SOURCE_DIR}/src/unix/include
+    ${CMAKE_BINARY_DIR}/generated
 )
 
-# Main executable (adjust as needed)
-add_executable(maximus ${SRC_FILES})
+# Collect source files
+file(GLOB_RECURSE SRC_FILES
+    src/*.c
+    src/*.cpp
+)
 
-# Link libraries (if/when needed)
-target_link_libraries(maximus m)
+# Build executable
+add_executable(${PROJECT_NAME} ${SRC_FILES})
 
-# Platform-specific adjustments (e.g., Linux)
+# Link libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE m)
+
+# Platform-specific definitions
 if(UNIX AND NOT APPLE)
-    target_compile_definitions(maximus PRIVATE PLATFORM_LINUX)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE PLATFORM_LINUX)
 endif()
 
-# Installation setup (optional for now)
-install(TARGETS maximus DESTINATION bin)
+# Installation
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
