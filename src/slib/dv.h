@@ -1,24 +1,6 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*# name=Direct-video #include file
- */
+
 
 #ifndef __DV_H_DEFINED
 #define __DV_H_DEFINED
@@ -45,10 +27,6 @@ extern char near Vid_Open;
 extern char near DesqView;
 extern char near Vid_Bios;
 
-#define SCROLL_up 0x06 /* Modes for VioScroll() */
-#define SCROLL_down 0x07
-
-#ifndef UNIX /* Danger, Will Robinson, Danger! */
 #define MONOMEM MK_FP(0xb000, 0x0000)
 #define CGAMEM MK_FP(0xb800, 0x0000)
 
@@ -121,13 +99,3 @@ void pascal _VidGetXYB(int *Col, int *Row);
 void pascal VidScroll(char Direction, char NumOfLines, char Attribute, char LeftCol, char TopRow,
                       char RightCol, char BotRow);
 
-/* These two MUST remain CDECL, or else we'll have to change our function ptrs */
-void cdecl VidPuts(char *Text);
-void cdecl VidPutc(char ch);
-
-void far pascal RegScrollUp(int *col, int *row);
-void _fast RegScroll(int lines);
-
-cpp_end()
-
-#endif /* __DV_H_DEFINED */

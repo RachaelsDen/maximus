@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include "cvt202.h"
 #include "ffind.h"
@@ -37,35 +21,10 @@
 #include "pos2.h"
 #endif
 
-/* Options from the main dialog box */
 
-VWIN *wWorking;
-
-static char szNewPrm[PATHLEN];
-static char szEventName[PATHLEN];
-static char szUserName[PATHLEN];
-static char szTagName[PATHLEN];
-static char szConfigName[PATHLEN];
-
-/* Stuff for performing the conversion itself */
-
-static char szCtlDelim[] = " \t\n"; /* Delimiters for all .ctl files */
-CVTSTATE csState;                   /* Current converter state */
-FILESTK afsStack[MAX_FILE_STACK];   /* Stack of files being processed */
-FILESTK *pfsCur;                    /* Pointer to current file */
-AREADATA ad;                        /* Info about this file/msg area */
-SESSIONDATA sd;                     /* Info about the session section */
-MENUDATA md;                        /* Info about the current menu */
-
-/* Master table linking all of the translate and xlat tables to
- * their associated states.
- */
 
 static TRANSLATESTATE ptsTables[MAX_TRANSLATE_TABLES];
 
-/*****************************************************************************
-                                  Event
- *****************************************************************************/
 
 CVTSTATE HandleEventEvent(CVTPARM *pcp)
 {
@@ -126,22 +85,9 @@ static TRANSLATOR ttEvent[] = {{"event", HandleEventEvent}, {NULL, 0}};
 
 static XLATTABLE xtEvent[] = {{NULL, NULL, 0}};
 
-/*****************************************************************************
-                                  System
- *****************************************************************************/
 
 CVTSTATE HandleSystemEnd(CVTPARM *pcp)
 {
-    /* Add some new keywords */
-    fprintf(pfsCur->fpOut, "\tSwap\n"
-                           "\tFile Access\tAccess\n"
-                           "\tFile Callers\tCallers\n"
-                           "\tMCP Pipe\t\\pipe\\maximus\\mcp\n"
-                           "\tMCP Sessions\t16\n");
-
-    fprintf(pfsCur->fpOut, "End System Section\n\n");
-
-    /* Now add a line outside of the section */
 
     strcpy(pcp->szLine, "Include Access.Ctl");
 
@@ -151,29 +97,6 @@ CVTSTATE HandleSystemEnd(CVTPARM *pcp)
 
 CVTSTATE HandleSystemFile(CVTPARM *pcp)
 {
-    /* Change "file password user.bbs" to just "file password user" */
-
-    if (eqstri(pcp->szWords[1], "password"))
-    {
-        char *psz = stristr(pcp->szLine, ".bbs");
-
-        if (psz)
-        {
-            *psz = '\n';
-            psz[1] = 0;
-        }
-    }
-
-    return csState;
-}
-
-static TRANSLATOR ttSystem[] = {{"file", HandleSystemFile}, {"end", HandleSystemEnd}, {NULL, 0}};
-
-static XLATTABLE xtSystem[] = {{NULL, NULL, 0}};
-
-/*****************************************************************************
-                                  Matrix
- *****************************************************************************/
 
 CVTSTATE HandleMatrixEnd(CVTPARM *pcp)
 {
@@ -187,9 +110,6 @@ static TRANSLATOR ttMatrix[] = {{"end", HandleMatrixEnd}, {NULL, 0}};
 
 static XLATTABLE xtMatrix[] = {{NULL, NULL, 0}};
 
-/*****************************************************************************
-                                    Menu
- *****************************************************************************/
 
 CVTSTATE HandleMenuHeader(CVTPARM *pcp)
 {
@@ -213,8 +133,6 @@ CVTSTATE HandleHeaderFile(CVTPARM *pcp)
 {
     if (!eqstri(md.szName, "reader"))
     {
-        /* Comment out all existing HeaderFile lines, so that we can use our
-         * custom menu MEX HeaderFiles. */
 
         strocpy(pcp->szLine + 1, pcp->szLine);
         *pcp->szLine = '%';
@@ -252,39 +170,6 @@ CVTSTATE HandleMenuDefault(CVTPARM *pcp)
         }
     }
 
-    /* Now write the converted option to the output file */
-
-    if (szName)
-    {
-        int i;
-
-        if (iWord == 1)
-            fprintf(pfsCur->fpOut, "\t");
-
-        for (i = 0; i < iWord - 1; i++)
-            fprintf(pfsCur->fpOut, "%s ", pcp->szWords[i]);
-
-        if (iWord != 1)
-            fprintf(pfsCur->fpOut, "\t");
-
-        fprintf(pfsCur->fpOut, "%s ", szName);
-
-        for (i += 2; pcp->szWords[i]; i++)
-            fprintf(pfsCur->fpOut, "%s ", pcp->szWords[i]);
-
-        fprintf(pfsCur->fpOut, "\n");
-
-        *pcp->szLine = 0;
-    }
-
-    return csState;
-}
-
-CVTSTATE HandleMenuEnd(CVTPARM *pcp)
-{
-    (void)pcp;
-
-    /* Append this set of options to the message menu */
 
     if (eqstri(md.szName, "message"))
     {
@@ -334,51 +219,12 @@ static XLATTABLE xtMenu[] = {{"contents", "File_Contents", 0},
                              {"statistics", "MEX\t\tM\\Stats", 0},
                              {NULL, NULL, 0}};
 
-/*****************************************************************************
-                                  Colour
- *****************************************************************************/
 
 CVTSTATE HandleColourStrip(CVTPARM *pcp)
 {
-    /* Removed the indicated colour specification */
-
-    *pcp->szLine = 0;
-    return csState;
-}
-
-CVTSTATE HandleColourEnd(CVTPARM *pcp)
-{
-    (void)pcp;
-    return CS_TOP;
-}
-
-static TRANSLATOR ttColour[] = {{"menu", HandleColourStrip},
-                                {"hotflash", HandleColourStrip},
-                                {"file", HandleColourStrip},
-                                {"message", HandleColourStrip},
-                                {"fsr", HandleColourStrip},
-                                {"end", HandleColourEnd},
-                                {NULL, 0}};
-
-static XLATTABLE xtColour[] = {{NULL, NULL, 0}};
-
-/*****************************************************************************
-                                  Language
- *****************************************************************************/
 
 CVTSTATE HandleLanguageStrip(CVTPARM *pcp)
 {
-    /* Comment out all languages */
-
-    *pcp->szLine = '%';
-    return csState;
-}
-
-CVTSTATE HandleLanguageEnd(CVTPARM *pcp)
-{
-    (void)pcp;
-
-    /* Set the default language to english */
 
     fprintf(pfsCur->fpOut, "        Language English\n");
     return CS_TOP;
@@ -389,39 +235,9 @@ static TRANSLATOR ttLanguage[] = {
 
 static XLATTABLE xtLanguage[] = {{NULL, NULL, 0}};
 
-/*****************************************************************************
-                                  Session
- *****************************************************************************/
 
 CVTSTATE HandleSessionUpload(CVTPARM *pcp)
 {
-    /* Strip out "upload reward" or "upload .bbs" */
-
-    if (eqstri(pcp->szWords[1], "reward") || eqstri(pcp->szWords[1], ".bbs"))
-    {
-        *pcp->szLine = 0;
-    }
-
-    return csState;
-}
-
-CVTSTATE HandleSessionNo(CVTPARM *pcp)
-{
-    if (eqstri(pcp->szWords[1], "filesbbs"))
-        *pcp->szLine = 0;
-
-    return csState;
-}
-
-CVTSTATE HandleSessionStrip(CVTPARM *pcp)
-{
-    *pcp->szLine = 0;
-    return csState;
-}
-
-CVTSTATE HandleSessionFormat(CVTPARM *pcp)
-{
-    /* Change "Format Msg/FileFormat ...%-9.9" to "...%-20" */
 
     if (eqstri(pcp->szWords[1], "MsgFormat") || eqstri(pcp->szWords[1], "FileFormat"))
     {
@@ -462,37 +278,6 @@ CVTSTATE HandleSessionBegin(CVTPARM *pcp)
 
     fputs(pcp->szLine, pfsCur->fpOut);
 
-    /* Insert new keywords into session section */
-
-    fprintf(pfsCur->fpOut, "\tStage Path\tStage\n"
-                           "\tCheck\tRIP\n"
-                           "%%\tCheck\tANSI\n"
-                           "\tMaxMsgSize\t8192\n"
-                           "\tMin RIP Baud\t65535\n"
-                           "\tRIP Path\tRIP\n"
-                           "\tTrack Base\tTrk\n"
-                           "\tTrack View\tSysop\n"
-                           "\tTrack Modify\tSysop\n"
-                           "%%\tTrack Exclude\tTrkexcl.Bbs\n"
-                           "\tUses EntryHelp\tMisc\\MsgEntry\n"
-                           "\tUses HeaderHelp\tMisc\\HdrEntry\n"
-                           "%%\tUses Configure\tMisc\\Configure\n"
-                           "\tAttach Base\tAtt\n"
-                           "\tAttach Path\tAttaches\n"
-                           "\tAttach Archiver\tZIP\n"
-                           "\tKill Attach\tAsk Normal\n");
-    *pcp->szLine = 0;
-
-    return CS_SESSION;
-}
-
-CVTSTATE HandleSessionEnd(CVTPARM *pcp)
-{
-    (void)pcp;
-
-    /* Ensure that the msg/file data statements get written, even if prior
-     * version was relying on defaults.
-     */
 
     if (!sd.fWroteMarea)
         fprintf(pfsCur->fpOut, "\tMessageData\tMarea\n");
@@ -516,9 +301,6 @@ static TRANSLATOR ttSession[] = {{"no", HandleSessionNo},
 
 static XLATTABLE xtSession[] = {{NULL, NULL, 0}};
 
-/*****************************************************************************
-                                  Area
- *****************************************************************************/
 
 CVTSTATE HandleAreaEnd(CVTPARM *pcp)
 {
@@ -565,354 +347,6 @@ CVTSTATE HandleAreaEnd(CVTPARM *pcp)
         if (ad.iRenumMax)
             fprintf(pfsCur->fpOut, "\tRenum Max\t%d\n", ad.iRenumMax);
 
-        /* Ensure that the area defaults to *.MSG format */
-
-        if (!stristr(ad.szMsgStyle, "squish") && !stristr(ad.szMsgStyle, "*.msg"))
-            strcat(ad.szMsgStyle, "*.MSG ");
-
-        if (!stristr(ad.szMsgStyle, "pub") && !stristr(ad.szMsgStyle, "pvt"))
-            strcat(ad.szMsgStyle, "Pub ");
-
-        fprintf(pfsCur->fpOut, "\tStyle\t\t%s\n", ad.szMsgStyle);
-        fprintf(pfsCur->fpOut, "End MsgArea\n\n");
-    }
-
-    if (ad.fFile)
-    {
-        fprintf(pfsCur->fpOut, "FileArea %s\n", ad.szName);
-        fprintf(pfsCur->fpOut, "\tACS\t\t%s\n", ad.szFileAccess ? ad.szFileAccess : "Hidden");
-
-        if (ad.szFileInfo)
-            fprintf(pfsCur->fpOut, "\tDesc\t\t%s\n", ad.szFileInfo);
-
-        if (ad.szDownload)
-            fprintf(pfsCur->fpOut, "\tDownload\t%s\n", ad.szDownload);
-
-        if (ad.szUpload)
-            fprintf(pfsCur->fpOut, "\tUpload\t\t%s\n", ad.szUpload);
-
-        if (ad.szFileList)
-            fprintf(pfsCur->fpOut, "\tFileList\t%s\n", ad.szFileList);
-
-        if (ad.szFileMenuName)
-            fprintf(pfsCur->fpOut, "\tMenuName\tFILE %s\n", ad.szFileMenuName);
-
-        if (ad.szFileOverride)
-        {
-            fprintf(pfsCur->fpOut, "\t%%Override\t\t<menu_name> <option_type> <acs> [<key>]\n");
-            fprintf(pfsCur->fpOut,
-                    "\t%% CONVERT WARNING!  The above line must be converted manually,\n");
-            fprintf(pfsCur->fpOut, "\t%% Original: 'FileOverride %s'\n\n", ad.szFileOverride);
-        }
-
-        if (ad.szFileBarricade)
-            fprintf(pfsCur->fpOut, "\tBarricade\tFILE %s\n", ad.szFileBarricade);
-
-        fprintf(pfsCur->fpOut, "End FileArea\n\n");
-    }
-
-    if (ad.szName)
-        free(ad.szName);
-    if (ad.szMsgAccess)
-        free(ad.szMsgAccess);
-    if (ad.szMsgMenuName)
-        free(ad.szMsgMenuName);
-    if (ad.szMsgName)
-        free(ad.szMsgName);
-    if (ad.szPath)
-        free(ad.szPath);
-    if (ad.szOrigin)
-        free(ad.szOrigin);
-    if (ad.szMsgOverride)
-        free(ad.szMsgOverride);
-    if (ad.szMsgBarricade)
-        free(ad.szMsgBarricade);
-
-    if (ad.szFileInfo)
-        free(ad.szFileInfo);
-    if (ad.szDownload)
-        free(ad.szDownload);
-    if (ad.szUpload)
-        free(ad.szUpload);
-    if (ad.szFileList)
-        free(ad.szFileList);
-    if (ad.szFileAccess)
-        free(ad.szFileAccess);
-    if (ad.szFileMenuName)
-        free(ad.szFileMenuName);
-    if (ad.szFileOverride)
-        free(ad.szFileOverride);
-    if (ad.szFileBarricade)
-        free(ad.szFileBarricade);
-
-    *pcp->szLine = 0;
-    return CS_TOP;
-}
-
-CVTSTATE HandleAreaMsgInfo(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-    ad.szMsgInfo = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaMsgAccess(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-    ad.szMsgAccess = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaType(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-
-    if (eqstri(pcp->szWords[1], "*.msg"))
-        strcat(ad.szMsgStyle, "*.MSG ");
-    else if (eqstri(pcp->szWords[1], "squish"))
-        strcat(ad.szMsgStyle, "Squish ");
-    else
-        Unknown("area type", pcp->szWords[1]);
-
-    return csState;
-}
-
-CVTSTATE HandleAreaRenum(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-
-    if (eqstri(pcp->szWords[1], "days"))
-        ad.iRenumDays = atoi(pcp->szWords[2] ? pcp->szWords[2] : "");
-    else if (eqstri(pcp->szWords[1], "max"))
-        ad.iRenumMax = atoi(pcp->szWords[2] ? pcp->szWords[2] : "");
-    else
-        Unknown("renum type", pcp->szWords[1]);
-
-    return csState;
-}
-
-CVTSTATE HandleAreaMsgMenuName(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-    ad.szMsgMenuName = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaMsgName(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-    ad.szMsgName = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaMatrix(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-    strcat(ad.szMsgStyle, "Net ");
-    ad.szPath = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaEcho(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-    strcat(ad.szMsgStyle, "Echo ");
-    ad.szPath = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaConf(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-    strcat(ad.szMsgStyle, "Conf ");
-    ad.szPath = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaLocal(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-    strcat(ad.szMsgStyle, "Local ");
-    ad.szPath = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaPublic(CVTPARM *pcp)
-{
-    ad.fMsg = TRUE;
-
-    if (eqstri(pcp->szWords[1], "and"))
-        strcat(ad.szMsgStyle, "Pub Pvt ");
-    else
-        strcat(ad.szMsgStyle, "Pub ");
-
-    return csState;
-}
-
-CVTSTATE HandleAreaPrivate(CVTPARM *pcp)
-{
-    (void)pcp;
-
-    ad.fMsg = TRUE;
-
-    if (eqstri(pcp->szWords[1], "and"))
-        strcat(ad.szMsgStyle, "Pub Pvt ");
-    else
-        strcat(ad.szMsgStyle, "Pvt ");
-
-    return csState;
-}
-
-CVTSTATE HandleAreaAlias(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fMsg = TRUE;
-    strcat(ad.szMsgStyle, "Alias ");
-    return csState;
-}
-
-CVTSTATE HandleAreaReadOnly(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fMsg = TRUE;
-    strcat(ad.szMsgStyle, "ReadOnly ");
-    return csState;
-}
-
-CVTSTATE HandleAreaAnonymous(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fMsg = TRUE;
-    strcat(ad.szMsgStyle, "Anon ");
-    return csState;
-}
-
-CVTSTATE HandleAreaHigh(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fMsg = TRUE;
-    strcat(ad.szMsgStyle, "HiBit ");
-    return csState;
-}
-
-CVTSTATE HandleAreaNoNameKludge(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fMsg = TRUE;
-    strcat(ad.szMsgStyle, "NoNameKludge ");
-    return csState;
-}
-
-CVTSTATE HandleAreaUseRealname(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fMsg = TRUE;
-    strcat(ad.szMsgStyle, "RealName ");
-    return csState;
-}
-
-CVTSTATE HandleAreaOrigin(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fMsg = TRUE;
-    ad.szOrigin = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 3));
-    return csState;
-}
-
-CVTSTATE HandleAreaMsgOverride(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fMsg = TRUE;
-    ad.szMsgOverride = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaMsgBarricade(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fMsg = TRUE;
-    ad.szMsgBarricade = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaDownload(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fFile = TRUE;
-    ad.szDownload = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaUpload(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fFile = TRUE;
-    ad.szUpload = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaFileInfo(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fFile = TRUE;
-    ad.szFileInfo = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaFileAccess(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fFile = TRUE;
-    ad.szFileAccess = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaFileMenuName(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fFile = TRUE;
-    ad.szFileMenuName = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaFileList(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fFile = TRUE;
-    ad.szFileList = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaFileOverride(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fFile = TRUE;
-    ad.szFileOverride = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaFileBarricade(CVTPARM *pcp)
-{
-    (void)pcp;
-    ad.fFile = TRUE;
-    ad.szFileBarricade = sstrdup(fchar(pcp->szStrippedLine, szCtlDelim, 2));
-    return csState;
-}
-
-CVTSTATE HandleAreaObsolete(CVTPARM *pcp)
-{
-    *pcp->szLine = '%';
-    fputs(pcp->szLine, pfsCur->fpOut);
-
-    fprintf(pfsCur->fpOut, "%% Warning!  The above line contains a obsolete statement\n"
-                           "%% from Maximus version 1.x.  It must be converted manually.\n\n");
-
-    return csState;
-}
-
-CVTSTATE HandleAreaApp(CVTPARM *pcp)
-{
-    /* Copy 'app' lines from input to output */
 
     fprintf(pfsCur->fpOut, pcp->szLine);
     return csState;
@@ -991,9 +425,6 @@ static TRANSLATOR ttArea[] = {{"msginfo", HandleAreaMsgInfo},
 
 static XLATTABLE xtArea[] = {{NULL, NULL, 0}};
 
-/*****************************************************************************
-                                  Top
- *****************************************************************************/
 
 CVTSTATE HandleTopSystem(CVTPARM *pcp)
 {
@@ -1025,10 +456,6 @@ CVTSTATE HandleTopSession(CVTPARM *pcp)
     return HandleSessionBegin(pcp);
 }
 
-/* HandleTopMenu
- *
- * Process a "Menu <name>" statement.
- */
 
 CVTSTATE HandleTopMenu(CVTPARM *pcp)
 {
@@ -1037,10 +464,6 @@ CVTSTATE HandleTopMenu(CVTPARM *pcp)
     return CS_MENU;
 }
 
-/* HandleTopArea
- *
- * Process an "Area <name>" statement.
- */
 
 CVTSTATE HandleTopArea(CVTPARM *pcp)
 {
@@ -1050,11 +473,6 @@ CVTSTATE HandleTopArea(CVTPARM *pcp)
     return CS_AREA;
 }
 
-/* HandleTopInclude
- *
- * This function handles one file being included from inside
- * another.
- */
 
 CVTSTATE HandleTopInclude(CVTPARM *pcp)
 {
@@ -1068,41 +486,9 @@ CVTSTATE HandleTopInclude(CVTPARM *pcp)
         return csState;
     }
 
-    /* Increment the state, parse the file, and then return */
-
-    pfsCur++;
-
-    szFile = pcp->szWords[1];
-
-    if (!fexist(szFile))
-    {
-        char szBase[PATHLEN];
-
-        strcpy(szBase, szDirBase);
-        strcat(szBase, szFile);
-
-        if (fexist(szBase))
-            szFile = szBase;
-    }
-
-    CvtFile(szFile);
-    pfsCur--;
-
-    return csState;
-}
-
-static TRANSLATOR ttTop[] = {
-    {"include", HandleTopInclude}, {"system", HandleTopSystem},     {"matrix", HandleTopMatrix},
-    {"menu", HandleTopMenu},       {"area", HandleTopArea},         {"colours", HandleTopColour},
-    {"session", HandleTopSession}, {"language", HandleTopLanguage}, {NULL, 0}};
-
-/* Global translate table for all states */
 
 static XLATTABLE xtTop[] = {{"Enter_Msg", "Msg_Enter", 0}, {NULL, NULL, 0}};
 
-/*****************************************************************************
-                               Main Program
- *****************************************************************************/
 
 dword SqHash(byte *f)
 {
@@ -1120,16 +506,6 @@ dword SqHash(byte *f)
         }
     }
 
-    /* Strip off high bit */
-
-    return (hash & 0x7fffffffLu);
-}
-
-/* set_status
- *
- * Display a message in the status window indicating what file we are
- * processing.
- */
 
 static void set_status(char *pszName)
 {
@@ -1162,21 +538,9 @@ char *fchar(char *str, char *delim, int wordno)
     return s;
 }
 
-/* CvtInit
- *
- * Initializes the conversion program and sets up variables.
- */
 
 static void CvtInit(void)
 {
-    /* Zero out the file stack and the translatestate stack */
-
-    memset(afsStack, 0, sizeof afsStack);
-    pfsCur = afsStack;
-
-    csState = CS_TOP;
-
-    /* Now set up the global table of translate tables */
 
     memset(ptsTables, 0, sizeof ptsTables);
     ptsTables[CS_TOP].ptt = ttTop;
@@ -1208,10 +572,6 @@ static void CvtInit(void)
     ptsTables[CS_LANGUAGE].fHaltOutput = FALSE;
 }
 
-/* set_extension
- *
- * Add extension szNewExt to szName.
- */
 
 static void near set_extension(char *szName, char *szNewExt)
 {
@@ -1230,27 +590,6 @@ static void near set_extension(char *szName, char *szNewExt)
     strcat(szName, szNewExt);
 }
 
-/* Ensure that the user wants to overwrite a given file */
-
-static int query_overwrite(char *szName)
-{
-    int rc;
-
-    rc = WinGetYN(" WARNING!  The following file:\r\n\r\n"
-                  "   %s\r\n\r\n"
-                  " already exists.  Do you wish to\r\n"
-                  " overwrite it?  (Answering 'no' will\r\n"
-                  " abort the conversion.)",
-                  szName);
-
-    return rc;
-}
-
-/* fatal_file_err
- *
- * Display a fatal error message because we could not access
- * a certain file.
- */
 
 static void fatal_file_err(char *szErrFmt, char *szName)
 {
@@ -1263,12 +602,6 @@ static void fatal_file_err(char *szErrFmt, char *szName)
     WinExit(1);
 }
 
-/* StripComment
- *
- * This function strips the comment from a .ctl file line.  A comment
- * is anything that starts with a punctuation character before any
- * other alpha characters.
- */
 
 void StripComment(char *szLine)
 {
@@ -1293,41 +626,15 @@ void StripComment(char *szLine)
     }
 }
 
-/* do_xlat
- *
- * Perform exact keyword substitutions based on the data in the given
- * translate table.
- */
 
 static void do_xlat(CVTPARM *pcp, XLATTABLE *pxt)
 {
-    /* For each entry in the translate table... */
-
-    while (pxt->szFrom)
-    {
-        char *psz = pcp->szLine - 1;
-
-        while ((psz = stristr(psz + 1, pxt->szFrom)) != NULL)
-        {
-            int iLen = strlen(pxt->szFrom);
-
-            /* Ensure that it is bounded by word delimiters */
 
             if ((psz == pcp->szLine || strchr(szCtlDelim, psz[-1]) || !psz[-1]) &&
                 (strchr(szCtlDelim, psz[iLen]) || !psz[iLen]))
             {
                 int iDiff = strlen(pxt->szTo) - strlen(pxt->szFrom);
 
-                /* Copy it in-place with the replacement */
-
-                if (iDiff > 0)
-                    strocpy(psz + iDiff, psz);
-                else
-                    strocpy(psz + strlen(pxt->szTo), psz + strlen(pxt->szTo) + (-iDiff));
-
-                memcpy(psz, pxt->szTo, strlen(pxt->szTo));
-
-                /*        printf("Xlat '%s' to '%s'\n", pxt->szFrom, pxt->szTo);*/
             }
         }
 
@@ -1335,12 +642,6 @@ static void do_xlat(CVTPARM *pcp, XLATTABLE *pxt)
     }
 }
 
-/* handle_keyword
- *
- * This function compares a keyword from the file against keywords in
- * the current translation table.  When it finds a match, it calls
- * the handler function for that keyword.
- */
 
 static void handle_keyword(CVTPARM *pcp, TRANSLATOR *pttTable)
 {
@@ -1350,18 +651,6 @@ static void handle_keyword(CVTPARM *pcp, TRANSLATOR *pttTable)
     {
         if (eqstri(pcp->szKeyword, ptt->szKeyword) || *ptt->szKeyword == '*')
         {
-            /*      printf("Calling handler for '%s'\n", pcp->szKeyword);*/
-            csState = (*ptt->kwh)(pcp);
-            break;
-        }
-    }
-}
-
-/* CvtParse
- *
- * This function is responsible for parsing an entire include file and
- * processing each line correctly depending on the parser's state.
- */
 
 static void CvtParse(void)
 {
@@ -1380,62 +669,21 @@ static void CvtParse(void)
         strcpy(szStrippedLine, szLine);
         StripComment(szStrippedLine);
 
-        /*    printf("%02d L%3d: '%-0.63s'\n", csState, pfsCur->iLine, szStrippedLine);*/
-
-        getword(szStrippedLine, szKeyword, szCtlDelim, 1);
-
-        memset(cp.szWords, 0, sizeof cp.szWords);
-        iWord = 0;
-
-        do
-        {
-            getword(szStrippedLine, szTemp, szCtlDelim, iWord + 1);
-
-            if (*szTemp)
-                cp.szWords[iWord++] = sstrdup(szTemp);
-            else
-                cp.szWords[iWord++] = NULL;
-        } while (*szTemp);
-
-        /* Copy pointers to local vars into the cvtparm structure because other
-         * called functions need to access/modify these arguments.
-         */
 
         cp.szLine = szLine;
         cp.szStrippedLine = szStrippedLine;
         cp.szKeyword = szKeyword;
 
-        /* Perform any straight keyword substitutions, first from the global
-         * table, and then from the local table if necessary.
-         */
 
         do_xlat(&cp, xtTop);
 
         if (ptsTables[csState].pxt)
             do_xlat(&cp, ptsTables[csState].pxt);
 
-        /* Perform any custom keyword handling */
-
-        csOld = csState;
-        handle_keyword(&cp, ptsTables[csState].ptt);
-
-        /* Free memory allocated to word array */
 
         for (iWord = 0; cp.szWords[iWord]; iWord++)
             free(cp.szWords[iWord]);
 
-        /* Write to output file, including any translations made from above */
-
-        if (!ptsTables[csOld].fHaltOutput || csState != csOld)
-            fprintf(pfsCur->fpOut, "%s", szLine);
-    }
-}
-
-/* CvtFile
- *
- * This function is responsible for converting one file.  It may be
- * called recursively due to 'Include' statements.
- */
 
 static void CvtFile(char *pszName)
 {
@@ -1467,9 +715,6 @@ static void CvtFile(char *pszName)
     fclose(pfsCur->fpOut);
     fclose(pfsCur->fpIn);
 
-    /* Now rename the original to .v2 and make the new one have the same
-     * name as the original.
-     */
 
     strcpy(szOldName, pfsCur->szInName);
     set_extension(szOldName, "v2");
@@ -1488,30 +733,6 @@ void CvtConfig(char *szCfg, char *szPrm)
         fatal_file_err("opening %s for append", szCfg);
 
     fprintf(fp, "\nSET MAXIMUS=%s\n", szPrm);
-#if 0 /* Maximus does this automatically */
-  {
-    char szBase[PATHLEN];
-    char *p;
-
-    strcpy(szBase, szDirBase);
-    strcat(szBase, "MCP.EXE");
-
-    fprintf(fp, "RUN=%s . \\PIPE\\MAXIMUS\\MCP 16 SERVER\n", szBase);
-  }
-#endif
-    fclose(fp);
-
-    if (wWorking)
-    {
-        WinClose(wWorking);
-        wWorking = 0;
-    }
-}
-
-/* CvtTag
- *
- * Convert a Maximus 2.x-format tag file to Maximus 3.0
- */
 
 static void CvtTag(char *szTag)
 {
@@ -1529,28 +750,6 @@ static void CvtTag(char *szTag)
     set_extension(szOutIdx, "idx");
     set_extension(szOutDat, "dat");
 
-    /* Just skip tag conversion if the file doesn't exist */
-
-    if ((fdBbs = shopen(szTag, O_RDONLY | O_BINARY)) == -1)
-        return;
-
-    if ((fdIdx = sopen(szOutIdx, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYNONE,
-                       S_IREAD | S_IWRITE)) == -1)
-    {
-        fatal_file_err("opening %s for write", szOutIdx);
-    }
-
-    if ((fdDat = sopen(szOutDat, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYNONE,
-                       S_IREAD | S_IWRITE)) == -1)
-    {
-        fatal_file_err("opening %s for write", szOutIdx);
-    }
-
-    while (read(fdBbs, (char *)&td, sizeof td) == sizeof td)
-    {
-        static char buf[512];
-
-        /* Convert the old tag data into the new format */
 
         memset(buf, 0, sizeof buf);
         strcpy(buf, td.areas);
@@ -1573,24 +772,6 @@ static void CvtTag(char *szTag)
             mti.dwOffset = tell(fdDat);
             mti.dwUsed = strlen(buf);
 
-            /* Round up to the nearest 128-byte multiple */
-
-            mti.dwLen = (mti.dwUsed + MTAG_PAD_SIZE) / MTAG_PAD_SIZE * MTAG_PAD_SIZE;
-            write(fdDat, buf, mti.dwLen);
-        }
-
-        write(fdIdx, (char *)&mti, sizeof mti);
-    }
-
-    close(fdDat);
-    close(fdIdx);
-    close(fdBbs);
-}
-
-/* CvtEvents
- *
- * This program converts all of the event files in the current directory.
- */
 
 static void CvtEvents(char *szFilespec)
 {
@@ -1618,28 +799,6 @@ static void CvtEvents(char *szFilespec)
 
     pevList = NULL;
 
-    /* Create a linked list of all event files to be converted */
-
-    if (ff)
-    {
-        do
-        {
-            strcpy(szName, pszSlash ? szFilespec : "");
-            strcat(szName, ff->szName);
-
-            if ((pev = malloc(sizeof(struct _evtlist))) != NULL)
-            {
-                pev->szName = strdup(szName);
-                pev->next = pevList;
-                pevList = pev;
-            }
-
-        } while (FindNext(ff) == 0);
-
-        FindClose(ff);
-    }
-
-    /* Now convert all of the files and free the associated memory */
 
     for (pev = pevList; pev; pevNext = pev->next, free(pev), pev = pevNext)
     {
@@ -1651,10 +810,6 @@ static void CvtEvents(char *szFilespec)
     }
 }
 
-/* set_files_base
- *
- * Set up the default location for the config files
- */
 
 void set_files_base(char *szBase)
 {
@@ -1668,10 +823,6 @@ void set_files_base(char *szBase)
 #endif
 }
 
-/* ValFile
- *
- * Tidy up the name of a non-base file
- */
 
 MenuFunction(ValFile)
 {
@@ -1683,24 +834,6 @@ MenuFunction(ValFile)
     return 0;
 }
 
-/*
-  123456789012345678901234567890123456789012345678901234567890
- 1ÚÄ| Maximus 2.0 to Maximus 3.0 Conversion |ÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
- 2³                                                        ³
- 3³ Please select the operations that you wish to perform: ³
- 4³                                                        ³
- 5³ [X] Convert control files  [d:\max\max.ctl           ] ³
- 6³ [X] Convert event files    [d:\max\event*.bbs        ] ³
- 7³ [X] Convert user file      [d:\max\user.bbs          ] ³
- 8³ [X] Convert tag file       [d:\max\mtag.bbs          ] ³
- 9³ [X] Add to CONFIG.SYS      [c:\config.sys            ] ³
-10³                                                        ³
- 1³           ÚÄÄÄÄÄÄÄÄ¿ ÚÄÄÄÄÄÄÄÄ¿                        ³
- 2³           ³   OK   ³ ³ Cancel ³                        ³
- 3³           ÀÄÄÄÄÄÄÄÄÙ ÀÄÄÄÄÄÄÄÄÙ                        ³
- 4³                                                        ³
- 5ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-*/
 
 TIT_DIALOG(dlgCvt, -1, -1, BORDER_SINGLE, 0, 58, 17, "´ Maximus 2.0 to Maximus 3.0 Conversion Ã")
 DLG_INF("Please select the operations that you wish to perform:", 0, 1)
@@ -1725,11 +858,6 @@ DLG_OK(";  ~OK  ", 13, 11)
 DLG_CAN(";~Cancel", 26, 11)
 END_MENU
 
-/* PerformConversion
- *
- * This function starts the conversion of all of the requested
- * files.
- */
 
 void PerformConversion(void)
 {

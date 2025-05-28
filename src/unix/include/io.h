@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifndef _WES_IO_H
 #define _WES_IO_H
 #include <stdio.h>

@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include "prog.h"
 #include <stdio.h>
@@ -36,9 +20,6 @@ void _fast ASCII_Date_To_Binary(char *msgdate, union stamp_combo *d_written)
     timeval = time(NULL);
     tim = localtime(&timeval);
 
-    if (*msgdate == '\0') /* If no date... */
-    {
-        /* Insert today's date */
         strftime(msgdate, 19, "%d %b %y %H:%M:%S", tim);
 
         StandardDate(d_written);
@@ -65,38 +46,9 @@ void _fast ASCII_Date_To_Binary(char *msgdate, union stamp_combo *d_written)
         return;
     }
 
-    if (x == 1 || x == 2) /* Formats one and two have ASCII date, so compare to list */
-    {
-        for (x = 0; x < 12; x++)
-        {
-            if (eqstri(temp, months_ab[x]))
-            {
-                d_written->msg_st.date.mo = x + 1;
-                break;
-            }
-        }
-
-        if (x == 12) /* Invalid month, use January instead. */
             d_written->msg_st.date.mo = 1;
     }
     else
-        d_written->msg_st.date.mo = mo; /* Format 3 don't need no ASCII month */
-
-    if (yy >= 1900)
-        d_written->msg_st.date.yr = yy - 1980;
-    else if (yy >= 80)
-        d_written->msg_st.date.yr = yy - 80;
-    else
-        d_written->msg_st.date.yr = yy + 20;
-
-    d_written->msg_st.date.da = dd;
-
-    d_written->msg_st.time.hh = hh;
-    d_written->msg_st.time.mm = mm;
-    d_written->msg_st.time.ss = ss >> 1;
-}
-
-/* Date couldn't be determined, so set it to Jan 1st, 1980 */
 
 static void near StandardDate(union stamp_combo *d_written)
 {

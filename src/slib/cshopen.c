@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #if defined(UNIX)
 #include <sys/stat.h>
@@ -24,32 +8,8 @@
 #include "prog.h"
 #include <dos.h>
 
-/* Open a file - CREATE only, and fail if file already exists */
-
-#if defined(__MSDOS__)
-
-int _fast cshopen(const char *path, int access)
-{
-    union REGS r;
-    int ret;
-
-    NW(access);
-
-    r.h.ah = 0x5b; /* Create new file */
-    r.h.al = 0xc2; /* 1 100 0 010 */
-                   /*         ^^^ read/write access                *
-                    *       ^     reserved, set to zero            *
-                    *   ^^^       SH_DENYNONE                      *
-                    * ^           Not inherited by child processes */
 
 #ifdef __386__
-    r.w.cx = 0x00; /* Normal access mode */
-    r.x.edx = (unsigned)path;
-    ret = int386(0x21, &r, &r);
-#else
-    {
-        struct SREGS s;
-        r.x.cx = 0x00; /* Normal access mode */
 
         s.ds = FP_SEG(path);
         r.x.dx = FP_OFF(path);
@@ -65,12 +25,6 @@ int _fast cshopen(const char *path, int access)
 
 #include <os2.h>
 
-/*
-#ifndef OS2DEF_INCLUDED
-#include <bsedos.h>
-#include <os2def.h>
-#endif
-*/
 
 int _fast cshopen(const char *path, int access)
 {

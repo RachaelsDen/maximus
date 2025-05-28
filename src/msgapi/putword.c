@@ -1,13 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifndef __LITTLE_ENDIAN__
 
 #include "putword.h"
 
-/*
- *  put_dword
- *
- *  Writes a 4 byte word in little endian notation, independent of the local
- *  system architecture.
- */
 
 void put_dword(byte *ptr, dword value)
 {
@@ -17,12 +13,6 @@ void put_dword(byte *ptr, dword value)
     ptr[3] = (byte)((value >> 24) & 0xff);
 }
 
-/*
- *  put_word
- *
- *  Writes a 4 byte word in little endian notation, independent of the local
- *  system architecture.
- */
 
 void put_word(byte *ptr, word value)
 {

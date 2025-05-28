@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: async.c,v 1.1.1.1 2002/10/01 17:50:45 sdudley Exp $";
@@ -38,13 +22,6 @@ static char rcs_id[] = "$Id: async.c,v 1.1.1.1 2002/10/01 17:50:45 sdudley Exp $
 #include "comm.h"
 #include "mm.h"
 
-HCOMM hcModem = 0; /* comm.dll handle */
-
-/* 0 - not a virtual modem port, or vmodem not running
- * 1 - no virtual modem connection
- * 2 - active virtual modem connection
- * 3 - active telnet connection
- */
 
 int GetConnectionType(void)
 {
@@ -89,21 +66,6 @@ void com_DTR_on(void)
 
     if (!(rc = ComGetDCB(hcModem, &sDCB)))
     {
-        sDCB.fbCtlHndShake |= MODE_DTR_CONTROL; /* raise DTR */
-        ComSetDCB(hcModem, &sDCB);
-    }
-    else
-        logit("!SYS%04u: ComGetDCB()", rc);
-}
-
-void com_DTR_off(void)
-{
-    DCBINFO sDCB;
-    USHORT rc;
-
-    if (!(rc = ComGetDCB(hcModem, &sDCB)))
-    {
-        sDCB.fbCtlHndShake &= ~MODE_DTR_CONTROL; /* lower DTR */
         ComSetDCB(hcModem, &sDCB);
     }
     else
@@ -117,30 +79,6 @@ void com_XON_disable(void)
 
     if (!(rc = ComGetDCB(hcModem, &sDCB)))
     {
-        /* disable auto Xmit and recv flow control */
-        sDCB.fbFlowReplace &= ~(MODE_AUTO_TRANSMIT | MODE_AUTO_RECEIVE);
-        ComSetDCB(hcModem, &sDCB);
-    }
-    else
-        logit("!SYS%04u: ComGetDCB()", rc);
-}
-
-void com_XON_enable(void)
-{
-    DCBINFO sDCB;
-    USHORT rc;
-
-    if (!(rc = ComGetDCB(hcModem, &sDCB)))
-    {
-        /* enable auto Xmit and recv flow control */
-        sDCB.fbFlowReplace |= MODE_AUTO_TRANSMIT; /*PLF Wed  04-04-1990  02:35:41 */
-        ComSetDCB(hcModem, &sDCB);
-    }
-    else
-        logit("!SYS%04u: ComGetDCB()", rc);
-}
-
-/* com_break() : start break if on==TRUE, stop break if on==FALSE */
 void com_break(int on)
 {
     OS2UINT cmd;
@@ -202,62 +140,6 @@ static void near ShowMdmSettings(void)
             break;
         case MODE_DTR_HANDSHAKE:
             dtr = "IHS";
-            break; /* input handshaking */
-        default:
-            dtr = "??";
-            break;
-        }
-        switch (dcb.fbFlowReplace & (MODE_RTS_CONTROL | MODE_RTS_HANDSHAKE | MODE_TRANSMIT_TOGGLE))
-        {
-        case 0:
-            rts = Off;
-            break;
-        case MODE_RTS_CONTROL:
-            rts = On;
-            break;
-        case MODE_RTS_HANDSHAKE:
-            rts = "IHS";
-            break;
-        case MODE_TRANSMIT_TOGGLE:
-            rts = "TOG";
-            break;
-        default:
-            rts = "??";
-            break;
-        }
-        switch (dcb.fbTimeout & 0x18)
-        {
-        case 0x08:
-            buffer = Off;
-            break;
-        case 0x10:
-            buffer = On;
-            break;
-        case 0x18:
-            buffer = "Auto";
-            break;
-        default:
-            buffer = "??";
-            break;
-        }
-        switch (dcb.fbTimeout & 0x60)
-        {
-        case 0:
-            Rx = 1;
-            break;
-        case 0x20:
-            Rx = 4;
-            break;
-        case 0x40:
-            Rx = 8;
-            break;
-        case 0x60:
-            Rx = 14;
-            break;
-        }
-        Tx = (dcb.fbTimeout & 0x80) ? 16 : 1;
-        logit(" Modem: DTR=%s,RTS=%s,BUFFER=%s (Rx=%d, Tx=%d)", dtr, rts, buffer, Rx, Tx);
-        /*logit(" Modem: dcb.FbTimeout  =%04X", dcb.fbTimeout);*/
     }
 #endif
 }
@@ -298,4 +180,3 @@ int Cominit(int port)
     return 0x1954;
 }
 
-#endif /* OS_2 */

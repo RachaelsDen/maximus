@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: piper.c,v 1.2 2003/06/05 03:18:58 wesgarland Exp $";
@@ -23,8 +7,6 @@ static char rcs_id[] = "$Id: piper.c,v 1.2 2003/06/05 03:18:58 wesgarland Exp $"
 
 #error Obsolete.  This program is no longer in the distribution
 
-/*# name=Conversion program for Opus-style SYSTEM*.BBS/DAT files
- */
 
 #define MAX_INCL_VER
 
@@ -38,80 +20,13 @@ static char rcs_id[] = "$Id: piper.c,v 1.2 2003/06/05 03:18:58 wesgarland Exp $"
 #include <stdlib.h>
 #include <string.h>
 
-#define _TWIT 0x10      /* Twit .......... Minimum access. Eg, Problems */
-#define _DISGRACE 0x30  /* Disgraced ..... Eg, 1st time callers         */
-#define _LIMITED 0x40   /* Limited ....... Eg, 1st time callers         */
-#define _NORMAL 0x50    /* Normal ........ Eg, Regular callers          */
-#define _WORTHY 0x60    /* Worthy ........ Eg, Approved callers         */
-#define _PRIVEL 0x70    /* Privileged .... Eg, Full access callers      */
-#define _FAVORED 0x80   /* Favored ....... Eg, Friends or Helpers       */
-#define _EXTRA 0x90     /* Extra ......... Eg, Friends or Helpers       */
-#define _CLERK 0xA0     /* Clerk ......... Eg, Occasioanal helper       */
-#define _ASSTSYSOP 0xB0 /* Assistant Sysop High access. Eg, Co-Sysops   */
-#define _SYSOP 0xD0     /* Sysop ......... HIGHEST ACCESS. #1 Sysop     */
-
-#define _HIDDEN 0xE0 /* Hidden ........ HIDES THINGS / NOT FOR USERS */
 
 struct _sys110
 {
-    /*........ (mostly) Common System Data ..............................*/
 
-    word version;      /* System Record version = 110 = v1.10       */
-    word menu;         /* Alternate Menu file extension, 0=MNU      */
-    word attrib;       /* Area attributes (see below)               */
-    byte fillc1[10];   /* Reserved filler                           */
-    byte barrpath[40]; /* Barricade File path.                      */
-    byte fillc2[24];   /* Reserved filler                           */
 
-    /*........ File System Information ..................................*/
 
-    byte filtitle[50]; /* File Area Title                           */
-    byte filepath[40]; /* Path to the file download directory       */
-    byte uppath[40];   /* Path to the file upload directory         */
-    byte listpath[40]; /* Path to FILES.BBS equivalent              */
-    byte fillf1[22];   /* Reserved filler                           */
 
-    byte FilePriv;    /* Min priv for file area                    */
-    byte DownPriv;    /* If not 0, min priv to download            */
-    byte UpPriv;      /* If not 0, min priv to upload              */
-    byte FileExtPriv; /* If not 0, min priv to go Outside          */
-    byte fillf2[12];  /* Reserved filler                           */
-
-    long FileLock;    /* Locks for File Area                       */
-    long DownLock;    /* If not 0, keys needed to download         */
-    long UpLock;      /* If not 0, keys needed to upload           */
-    long FileExtLock; /* If not 0, keys needed to go Outside       */
-    byte fillf3[32];  /* Reserved filler                           */
-
-    /*........ Message System Information ...............................*/
-
-    byte msgtitle[50]; /* Msg  Area Title                           */
-    byte msgpath[40];  /* Path to messages                          */
-    byte fillm1[22];   /* Reserved filler                           */
-
-    byte MsgPriv;    /* Min priv for msg area                     */
-    byte EditPriv;   /* If not 0, min priv to Enter or Reply      */
-    byte MsgExtPriv; /* If not 0, min priv to go Outside          */
-    byte fillm2[13]; /* Reserved filler                           */
-
-    long MsgLock;      /* Locks for Msg Area                        */
-    long EditLock;     /* If not 0, keys needed to Enter or Reply   */
-    long MsgExtLock;   /* If not 0, keys needed to go Outside       */
-    byte fillm3[4];    /* Reserved filler                           */
-    byte EchoName[32]; /* Echo Area 'Tag' Name                      */
-
-    /*=================================== Total Record Size   = 512 =====*/
-};
-
-struct _ab
-{
-    char path[60];
-    char tag[40];
-};
-
-#define NUM_ABBS 512
-
-/* for qsort */
 static int _stdc stcomp(const void *arg1, const void *arg2)
 {
     static char a1[10], a2[10];
@@ -205,62 +120,6 @@ int _stdc main(int argc, char *argv[])
             {
                 p = temp;
 
-                /* Passthrough areas... */
-                while (*p == '#' || isdigit(*p) || isspace(*p))
-                    p++;
-
-                getword(strupr(p), abbs[abbs_num].path, " \t\n", 1);
-
-                if (abbs[abbs_num].path[strlen(abbs[abbs_num].path) - 1] != PATH_DELIM)
-                    strcat(abbs[abbs_num].path, PATH_DELIMS);
-                ;
-
-                getword(p, abbs[abbs_num++].tag, " \t\n", 2);
-            }
-        }
-
-        fclose(areasbbs);
-    }
-
-    if (!fexist("SYSTEM*.BBS") && !fexist("SYSTEM*.DAT"))
-    {
-        printf("No SYSTEMxx.BBS/DAT files exist.  Continue anyway [y,N]? ");
-        fgets(temp, 80, stdin);
-
-        printf("\n");
-
-        if (toupper(*temp) != 'Y')
-        {
-            printf("Aborted!\n");
-            return -1;
-        }
-    }
-
-    if ((areasfile = fopen("AREAS.CTL", "w")) == NULL)
-    {
-        printf("Fatal error opening `AREAS.CTL' for write!\n");
-        exit(1);
-    }
-
-    printf("Scanning system files...\n");
-
-    ff = FindOpen("SYSTEM*.BBS", 0);
-
-    if (ff)
-        dat = FALSE;
-    else
-    {
-        ff = FindOpen("SYSTEM*.DAT", 0);
-        dat = TRUE;
-    }
-
-    maxsys = 0;
-
-    if (ff)
-    {
-        for (ret = 0; ret == 0; maxsys++)
-        {
-            if (ff->szName[6] == '.') /* SYSTEM.BBS */
             {
                 sysname[maxsys][0] = '0';
                 sysname[maxsys][1] = '\0';
@@ -500,8 +359,6 @@ int _stdc main(int argc, char *argv[])
                             fprintf(areasfile, "        MsgName         ?\n");
                     }
 
-                    /* If the area is currently barricaded, or the BBSPATH points to   *
-                     * a file, instead of a path.                                      */
 
                     if (fexist(sys.bbspath))
                         fprintf(areasfile, "        Barricade       %s\n", sys.bbspath);

@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include "ffind.h"
 #include "mexall.h"
@@ -60,21 +44,6 @@ int MexDelFHandle(struct _mex_instance_stack *pmis, int fd)
     return FALSE;
 }
 
-/* Open a file for read/write */
-
-word EXPENTRY intrin_open(void)
-{
-    MA ma;
-    char *s;
-    word wMode;
-    int mode;
-
-    MexArgBegin(&ma);
-
-    s = MexArgGetString(&ma, FALSE);
-    wMode = MexArgGetWord(&ma);
-
-    /*    Printf("@MAX: open file '%s' mode %d\n", s ? s : "(null)", wMode);*/
 
     if (!s)
         mode = -1;
@@ -115,19 +84,6 @@ word EXPENTRY intrin_open(void)
     return MexArgEnd(&ma);
 }
 
-/* Read from a file */
-
-word EXPENTRY intrin_read(void)
-{
-    MA ma;
-    IADDR where;
-    word wLen;
-    char *s;
-    int fd, len;
-
-    MexArgBegin(&ma);
-
-    /* Get the file descriptor, the string, and the length */
 
     fd = MexArgGetWord(&ma);
     MexArgGetRefString(&ma, &where, &wLen);
@@ -140,13 +96,6 @@ word EXPENTRY intrin_read(void)
 
         MexStoreByteStringAt(MexIaddrToVM(&where), s, (int)regs_2[0] > 0 ? regs_2[0] : 0);
         free(s);
-        /*      Printf("@MAX: Read string '%-*.*s'\n", len, len, s);*/
-    }
-
-    return MexArgEnd(&ma);
-}
-
-/* Read one line from a file */
 
 word EXPENTRY intrin_readln(void)
 {
@@ -163,60 +112,17 @@ word EXPENTRY intrin_readln(void)
 
 #define MEX_MAX_LINE 512
 
-    /* Allocate memory for reading in one line */
-
-    if ((s = malloc(MEX_MAX_LINE + 1)) == NULL)
-        regs_2[0] = -1;
-    else
-    {
-        char *p;
-        long lPosn = tell(fd);
-        int got = read(fd, s, MEX_MAX_LINE);
-        int len;
-
-        /* Make sure that line is NUL-terminated */
 
         s[MEX_MAX_LINE] = 0;
 
         if (got > 0)
             s[got] = 0;
 
-        /* Cap it off at the \n, if necessary */
-
-        p = strchr(s, '\n');
-
-        if (p != 0)
-        {
-            if (p > s && p[-1] == '\r')
-            {
-                p[-1] = 0;
-                lPosn += 2;
-            }
-            else
-            {
-                p[0] = 0;
-                ++lPosn;
-            }
-        }
-
-        len = strlen(s);
-
-        /* Now seek to the beginning of the next line */
 
         lseek(fd, lPosn + (long)len, SEEK_SET);
 
         MexKillString(&where);
         MexStoreByteStringAt(MexIaddrToVM(&where), s, len);
-        /*      Printf("@MAX: Read line '%s'\n", s);*/
-        free(s);
-
-        regs_2[0] = (got <= 0) ? -1 : len;
-    }
-
-    return MexArgEnd(&ma);
-}
-
-/* Write to a file */
 
 word EXPENTRY intrin_write(void)
 {
@@ -235,55 +141,14 @@ word EXPENTRY intrin_write(void)
 
     regs_2[0] = write(fd, s, len);
 
-    /*    Printf("@MAX: Write text '%-*.*s' to file, len=%d\n", wLen, wLen,
-               s ? s : "(null)", wLen);*/
 
     return MexArgEnd(&ma);
 }
 
-/* Write to a file */
-
-word EXPENTRY intrin_writeln(void)
-{
-    MA ma;
-    IADDR where;
-    word wLen;
-    char *s;
-    int fd;
-
-    MexArgBegin(&ma);
-    fd = MexArgGetWord(&ma);
-    s = MexArgGetNonRefString(&ma, &where, &wLen);
-
-    regs_2[0] = write(fd, s, wLen);
-    write(fd, "\r\n", 2);
-
-    MexKillString(&where);
-
-    /*    Printf("@MAX: Wrote line '%s' to file\n", s);*/
 
     return MexArgEnd(&ma);
 }
 
-/* Seek to a specific byte in a file */
-
-word EXPENTRY intrin_seek(void)
-{
-    MA ma;
-    int fd, iWhere;
-    long lPos;
-
-    MexArgBegin(&ma);
-    fd = MexArgGetWord(&ma);
-    lPos = MexArgGetDword(&ma);
-    iWhere = MexArgGetWord(&ma);
-
-    regs_4[0] = lseek(fd, lPos, iWhere);
-
-    return MexArgEnd(&ma);
-}
-
-/* Return current file pointer */
 
 word EXPENTRY intrin_tell(void)
 {
@@ -298,18 +163,6 @@ word EXPENTRY intrin_tell(void)
     return MexArgEnd(&ma);
 }
 
-/* Close a file */
-
-word EXPENTRY intrin_close(void)
-{
-    MA ma;
-    int fd;
-
-    MexArgBegin(&ma);
-    fd = MexArgGetWord(&ma);
-
-    regs_2[0] = MexDelFHandle(pmisThis, fd);
-    /*    Printf("@MAX: close file %d\n", fd);*/
 
     return MexArgEnd(&ma);
 }
@@ -430,4 +283,3 @@ word EXPENTRY intrin_filedate(void)
     return MexArgEnd(&ma);
 }
 
-#endif /* MEX */

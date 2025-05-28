@@ -1,29 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: max_chat.c,v 1.1.1.1 2002/10/01 17:51:29 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=Chat module.  IPCxx.BBS writing and checking routines, and
-    name=resident portion of inbound message handler.
-*/
 
 #define MAX_LANG_max_chat
 
@@ -64,17 +45,6 @@ long scan_time = NORM_SCAN_TIME;
 
 HPIPE hpMCP;
 
-/* Send a ping to the server every two minutes to show that we're awake */
-
-void mcp_sleep(void)
-{
-    static long time_ping = 0L;
-
-    if (hpMCP && timeup(time_ping))
-    {
-        McpSendMsg(hpMCP, PMSG_PING, NULL, 0);
-
-        /* Five minute timeout */
 
         time_ping = timerset(2 * 60 * 100);
     }
@@ -108,15 +78,6 @@ void SendVideoDump(void)
         bufp += win->s_width * 2;
     }
 
-    /* Send the screen dump to the client */
-
-    McpSendMsg(hpMCP, PMSG_VIO_DUMP, buf, size);
-
-    free(buf);
-}
-
-/* Set our current activity status.  This sends a message to MCP and      *
- * sets our status in one of its internal fields.                         */
 
 void ChatSetStatus(int avail, char *status)
 {
@@ -130,10 +91,6 @@ void ChatSetStatus(int avail, char *status)
     McpSendMsg(hpMCP, PMSG_SET_STATUS, (BYTE *)&cstat, sizeof cstat);
 }
 
-/* Send an interprocess message directly to another Maximus node.  This   *
- * does not use the PipeSendMsg function for speed reasons; by directly   *
- * filling in the message type, we only need to shift the buffer          *
- * around in memory once, not twice.                                      */
 
 int ChatSendMsg(byte dest_tid, int type, int len, char *msg)
 {
@@ -171,25 +128,10 @@ int ChatSendMsg(byte dest_tid, int type, int len, char *msg)
     return 0;
 }
 
-/* Begin an IPC session with MCP */
-
-int ChatOpenMCP(void)
-{
-    char szPipe[PATHLEN];
-    OS2UINT rc, usAction;
-    int fFirst;
-    int fOpened;
-    byte tid = task_num;
-    long lTryTime;
-
-    /* IPC already open */
 
     if (hpMCP)
         return -1;
 
-    /* The place for us to connect is the "\maximus" side off the root
-     * MCP "path".
-     */
 
     if (!*szMcpPipe)
         strcpy(szMcpPipe, "\\pipe\\maximus\\mcp");
@@ -199,74 +141,13 @@ int ChatOpenMCP(void)
 
     fFirst = TRUE;
 
-    /* Try to start MCP for up to five seconds */
-
-    lTryTime = timerset(500);
-
-    do
-    {
-        fOpened = FALSE;
-
-#ifdef __FLAT__
-        rc = DosOpen(szPipe, &hpMCP, &usAction, 0L, FILE_NORMAL,
-                     OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
-                     OPEN_SHARE_DENYREADWRITE | OPEN_ACCESS_READWRITE | OPEN_FLAGS_NOINHERIT, NULL);
-#else
-        rc = DosOpen(szPipe, &hpMCP, &usAction, 0, FILE_NORMAL, FILE_OPEN,
-                     OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYREADWRITE | OPEN_FLAGS_NOINHERIT, 0);
-#endif
-
-        if (rc == 0)
-            fOpened = TRUE;
-        else
-        {
-            if (!fFirst)
-                DosSleep(100L);
-            else
-            {
-                extern HCOMM hcModem;
-                RESULTCODES rcd;
-                ULONG ulState;
-                HFILE hf;
-                char szFailObj[PATHLEN];
-                char szMcpString[PATHLEN];
-                char *psz;
-
-                logit(log_starting_mcp);
-
-                fFirst = FALSE;
-
-                strcpy(szMcpString, "mcp.exe");
-                psz = szMcpString + strlen(szMcpString) + 1;
-
-                sprintf(psz, ". %s %d server\0", szMcpPipe, prm.mcp_sessions);
-
-                /* Add an extra nul at the end as per convention */
 
                 psz[strlen(psz)] = 0;
 
-                /* Now ensure that MCP doesn't inherit our modem handle */
-
-                if (!local)
-                {
-                    hf = ComGetFH(hcModem);
-
-                    DosQueryFHState(hf, &ulState);
-                    ulState &= 0x7f88;
-                    DosSetFHState(hf, ulState | OPEN_FLAGS_NOINHERIT);
-                }
-
-                /* Try to start MCP as a detached process */
 
                 rc = DosExecPgm(szFailObj, PATHLEN, EXEC_BACKGROUND, szMcpString, NULL, &rcd,
                                 szMcpString);
 
-                /* Restore the modem handle back to its original settings */
-
-                if (!local)
-                    DosSetFHandState(hf, ulState);
-
-                /* If we can't start MCP server, put a msg in the log */
 
                 if (rc)
                 {
@@ -288,20 +169,6 @@ int ChatOpenMCP(void)
     return 0;
 }
 
-/* Terminate the IPC session */
-
-void ChatCloseMCP(void)
-{
-    if (hpMCP)
-    {
-        McpSendMsg(hpMCP, PMSG_EOT, NULL, 0);
-        DosClose(hpMCP);
-        hpMCP = 0;
-    }
-}
-
-/* This function is called to dispatch messages of types other            *
- * than PMSG_MAX_SEND_MSG.                                                */
 
 int usStrokes;
 byte cbStrokeBuf[MAX_BUF_STROKE];
@@ -325,21 +192,11 @@ static void near ChatDispatchMsg(byte *pbMsg, USHORT cbMsg)
     case RPMSG_MONITOR:
         mcp_video = !!pbMsg[2];
 
-        /* If we just enabled video monitoring, send a dump of our          *
-         * video buffer.                                                    */
 
         if (mcp_video)
             SendVideoDump();
         break;
 
-        /* If the user hit ^c... */
-
-    case RPMSG_CTRLC:
-    case RPMSG_BREAK:
-        brk_trapped++;
-        break;
-
-        /* Add characters to our local keyboard buffer */
 
     case RPMSG_KEY:
         cbMsg -= 2;
@@ -352,22 +209,6 @@ static void near ChatDispatchMsg(byte *pbMsg, USHORT cbMsg)
     }
 }
 
-/* Retrieve a message from the MCP server */
-
-static int near ChatGetMsg(byte *tid, int *type, int *len, char *msg, int maxlen)
-{
-    AVAILDATA ad;
-    OS2UINT fsState;
-    OS2UINT rc, usGot;
-    BYTE buf;
-
-    if (!hpMCP)
-        return -1;
-
-    if ((rc = DosPeekNmPipe(hpMCP, &buf, 1, &usGot, &ad, &fsState)) != 0)
-        return -1;
-
-    /* No messages available */
 
     if (!usGot)
         return 1;
@@ -388,14 +229,6 @@ static int near ChatGetMsg(byte *tid, int *type, int *len, char *msg, int maxlen
 
         if (*(USHORT *)msg == RPMSG_GOT_MSG)
         {
-            /* Extract the header data */
-
-            pcd = (struct _cdat *)(msg + sizeof(USHORT));
-            *tid = pcd->tid;
-            *type = pcd->type;
-            *len = pcd->len;
-
-            /* Now shift the message back to hide the header data */
 
             memmove(msg, msg + sizeof(USHORT) + sizeof *pcd, min(ad.cbmessage, *len));
 
@@ -473,123 +306,12 @@ int ChatSendMsg(byte tid, int type, int len, char *msg)
     cdat.type = type;
     cdat.len = len;
 
-    /* Only update the stats in the _cstat structure if this is the 1st msg */
-
-    if (cs.msgs_waiting != 1)
-        lseek(fd, cs.new_msgofs, SEEK_SET); /* Seek to the next message */
     else
     {
-        /* Otherwise write over the new stuff */
-        cs.next_msgofs = sizeof(struct _cstat);
-        lseek(fd, sizeof(struct _cstat), SEEK_SET);
-    }
-
-    write(fd, (char *)&cdat, sizeof(struct _cdat));
-    write(fd, msg, len);
-
-    cs.new_msgofs = tell(fd);
-
-    lseek(fd, 0L, SEEK_SET);
-    write(fd, (char *)&cs, sizeof(struct _cstat));
-
-    ChatCloseIPC(fd);
-
-    return 0;
-}
-
-static int near ChatGetMsg(byte *tid, int *type, int *len, char *msg, int maxlen)
-{
-    struct _cstat *cs;
-    struct _cdat cdat;
-
-    word err = 1;
-    int fd;
-
-    if ((fd = ChatOpenIPC(task_num)) == -1)
-        return -1;
-
-    if ((cs = malloc(sizeof(struct _cstat))) != NULL &&
-        read(fd, (char *)cs, sizeof(struct _cstat)) == sizeof(struct _cstat) && cs->msgs_waiting)
-    {
-        err = 0;
-
-        cs->msgs_waiting--;
-
-        if (lseek(fd, cs->next_msgofs, SEEK_SET) == (long)cs->next_msgofs &&
-            read(fd, (char *)&cdat, sizeof(struct _cdat)) == sizeof(struct _cdat))
-        {
-            *tid = (byte)cdat.tid;
-            *type = cdat.type;
-            *len = cdat.len;
-
-            read(fd, msg, min((word)maxlen, cdat.len));
-        }
-        else
-        {
-            *tid = (byte)-1;
-            *type = -1;
-            *len = 0;
-        }
-
-        /* To ensure that the cstat file hasn't been corrupted */
 
         if (cs->msgs_waiting > 5000)
             cs->msgs_waiting = 0;
 
-        /* Now update the offset */
-
-        if (cs->msgs_waiting)
-            cs->next_msgofs = tell(fd);
-        else
-        {
-            cs->next_msgofs = (long)sizeof(struct _cstat);
-            cs->new_msgofs = (long)sizeof(struct _cstat);
-        }
-
-        lseek(fd, 0L, SEEK_SET);
-        write(fd, (char *)cs, sizeof(struct _cstat));
-    }
-
-    if (cs)
-        free(cs);
-
-    ChatCloseIPC(fd);
-
-    return err;
-}
-
-int ChatOpenIPC(byte tid)
-{
-    char *fname;
-
-    int tries, fd;
-
-    if (!*PRM(ipc_path))
-    {
-#ifdef DEBUG
-        Printf("IPC:nopath ");
-#endif
-
-        return -1;
-    }
-
-    if ((fname = malloc(PATHLEN)) == NULL)
-        return -1;
-
-    sprintf(fname, ipcxx_bbs, PRM(ipc_path), tid);
-
-    if ((fd = shopen(fname, O_RDWR | O_BINARY | O_NOINHERIT)) == -1)
-    {
-#ifdef DEBUG
-        Printf("IPC:openerr ");
-#endif
-    }
-    else if ((prm.flags2 & FLAG2_noshare) == 0)
-    {
-        for (tries = MAX_TRIES; tries-- && lock(fd, 0L, 1L) == -1;)
-            Giveaway_Slice();
-
-        if (tries <= 0) /* Blocked out */
         {
 #ifdef DEBUG
             Printf("IPC:max ");
@@ -620,8 +342,6 @@ void ChatCloseIPC(int fd)
 }
 #endif
 
-/* These two functions save and restore the current CHAT availability and   *
- * status.                                                                  */
 
 void ChatSaveStatus(struct _css *css)
 {

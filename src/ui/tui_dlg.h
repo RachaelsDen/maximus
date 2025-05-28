@@ -1,44 +1,8 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 extern word dlg_ok;
 
-#define BUTTON_STD (CWHITE | _BLUE)   /* Colour for dialog buttons    */
-#define BUTTON_SEL (CYELLOW | _BLUE)  /* Colour for quick select chr  */
-#define BUTTON_HIGH (CWHITE | _BLACK) /* Colour for selected button   */
-
-#define STR_NORMAL (CYELLOW | _BLUE)
-#define STR_SEL (CWHITE | _BLACK)
-#define STR_LEFTRIGHT (CWHITE | _BLUE)
-
-#define RAD_STD (CBLACK | _GRAY)
-#define RAD_SEL (CRED | _GRAY)
-#define RAD_HIGH (CWHITE | _BLACK)
-
-#define CHK_STD (CBLACK | _GRAY)
-#define CHK_SEL (CRED | _GRAY)
-#define CHK_HIGH (CWHITE | _BLACK)
-
-#define DLG_NEW 0x1234  /* For the opt->appdata stuff   */
-#define DLG_EDIT 0x4321 /* When editing this field      */
-
-#define MAX_NUM 120 /* Max length of a number field */
 
 word DlgBefore(HVMENU menu);
 word DlgAfter(HVMENU menu);

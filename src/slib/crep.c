@@ -1,24 +1,6 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*# name=Regular expression compiler.  See also STRSTRX.C
- */
+
 
 #include "alc.h"
 #include "prog.h"
@@ -79,10 +61,6 @@ int _fast Compile_REP(char *exp, struct _rep *rep)
             ch--;
             break;
 
-        case '[': /* Start bracket search! */
-            rep->type[ch] |= CHAR_TABLE;
-
-            /* Allocate and set table to FALSE */
             if ((rep->table[ch] = (char *)malloc(TABLE_LEN)) == NULL)
                 return CERR_NOMEM;
 
@@ -120,9 +98,6 @@ int _fast Compile_REP(char *exp, struct _rep *rep)
                     break;
 
                 case QUOTE:
-                    if (!*++exp) /* If the next char is the end of string! */
-                        break;
-                    /* else fall-through */
 
                 default:
                     if (*(exp + 1) == '-')
@@ -158,9 +133,6 @@ int _fast Compile_REP(char *exp, struct _rep *rep)
             break;
 
         case QUOTE:
-            if (!*++exp) /* If the next char is the end of string! */
-                return CERR_NOQUOTE;
-            /* else fall-through */
 
         default:
             rep->type[ch] |= CHAR_NORM;

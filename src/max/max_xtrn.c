@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: max_xtrn.c,v 1.2 2003/06/04 23:53:08 wesgarland Exp $";
@@ -42,69 +26,9 @@ static char rcs_id[] = "$Id: max_xtrn.c,v 1.2 2003/06/04 23:53:08 wesgarland Exp
 #include <time.h>
 
 #ifdef __WATCOMC__
-#include <malloc.h> /* for _heapshrink() and _heapgrow() */
-#endif
-
-#ifdef SWAP
-#include "../swap2/exec.h"
-#endif
-
-static void near Close_Files(void);
-static void near Reopen_Files(void);
-static void near Out_Save_Directories(int stay);
-static void near Out_Disable_Ctrlc(void);
-static void near Out_Video_Down(void);
-static void near Out_Video_Up(void);
-static void near Out_Reinstall_Fossil(void);
-static void near Outside_Reread(int tr, int tonline);
-static char *near Add_Task_Number(char *fname, char *new);
-static void near Write_External_Ctlfile(int ctltype, char *parm, int method);
-static int near Form_Outside_Filename(char *in, char *out, int method);
-
-#ifndef ORACLE
-
-#ifdef SWAP
-
-char *max_swap_filename;
-
-int _fast fexist_maybehidden(char *filename)
-{
-    FFIND *ff;
-
-    ff = FindOpen(filename, ATTR_HIDDEN | ATTR_SYSTEM);
-
-    if (ff)
-    {
-        FindClose(ff);
-        return TRUE;
-    }
-    else
-        return FALSE;
-}
-
-static char *near MakeFullPath(char *cmd)
-{
-    char this[PATHLEN];
-    char progname[PATHLEN];
-    char *path = getenv("PATH");
-    char *try;
-    char *newpath;
-    char *rc;
-    char *s;
-    word last = TRUE;
-
-    /* The name of the program to run is the first word of the command */
 
     getword(cmd, progname, " ;", 1);
 
-    /* If no path set, use the current directory */
-
-    newpath = strdup(path ? path : ".");
-
-    if (!newpath)
-        return NULL;
-
-    /* Now scan all directories on the path */
 
     for (s = strtok(newpath, " ;"); s || last; s = strtok(NULL, " ;"))
     {
@@ -141,15 +65,6 @@ static char *near MakeFullPath(char *cmd)
 
                 if (!fexist_maybehidden(this))
                 {
-                    /* doesn't exist, so search next dir on path */
-                    free(try);
-                    *this = '\0';
-                    continue;
-                }
-            }
-        }
-
-        /* Now tack on the rest of the command */
 
         s = firstchar(cmd, " ;", 2);
 
@@ -167,37 +82,12 @@ static char *near MakeFullPath(char *cmd)
     return rc;
 }
 
-/* Call the swapper with a space-delimited ASCIIZ argument list */
-
-static int near swapsz(char *szCmd)
-{
-    int rc;
-    static char szSwapName[15]; /* must be static for swap to work properly */
     char *szRun;
     char *s;
 
-    /* Put the full path to the .exe at the beginning of the string */
-
-    szRun = MakeFullPath(szCmd);
-
-    if (!szRun)
-    {
-        errno = ENOMEM;
-        return -1;
-    }
-
-    /* Ensure there is an extra nul at the end */
 
     szRun[strlen(szRun) + 1] = 0;
 
-    /* Chop off the first argument and leave the rest as an argument string */
-
-    s = strtok(szRun, " ");
-
-    if (!s)
-        s = szRun;
-
-    /* Create a unique swap file for this task */
 
     sprintf(szSwapName, "~~~max%02x.~~~", task_num);
     max_swap_filename = szSwapName;
@@ -212,37 +102,6 @@ static int near swapsz(char *szCmd)
             errno = ENOENT;
         else if (rc >= 0x300 && rc <= 0x3ff)
         {
-            /* Translation of DOS error codes */
-
-            switch (rc)
-            {
-            case 0x302:
-            case 0x303:
-            case 0x305:
-                errno = ENOENT;
-                break;
-
-            case 0x308:
-                errno = ENOMEM;
-                break;
-
-            default:
-                errno = rc;
-            }
-        }
-        else if (rc == 0x502)
-            errno = ENOSPC;
-        else
-            errno = 9999;
-
-        rc = -1;
-    }
-
-    free(szRun);
-    return rc;
-}
-
-/* Call the swapper with an array of ASCIIZ arguments */
 
 static int near swapvp(char *szName, char **szArgs)
 {
@@ -274,9 +133,6 @@ static int near swapvp(char *szName, char **szArgs)
     return rc;
 }
 
-#endif /* SWAP */
-
-/* Return the name of the current command processor */
 
 static char *near GetComspec(void)
 {
@@ -323,38 +179,6 @@ int Outside(char *leaving, char *returning, int method, char *parm, int slogan, 
 
     NW(slogan);
 
-    /* Allocate some memory to work with. */
-
-    if ((temp = malloc(PATHLEN * 2)) == NULL || (temp2 = malloc(PATHLEN * 2)) == NULL ||
-        (args = malloc(MAX_EXECARGS * sizeof(char *))) == NULL ||
-        (css = malloc(sizeof(struct _css))) == NULL)
-    {
-        if (temp)
-        {
-            free(temp);
-
-            if (temp2)
-            {
-                free(temp2);
-
-                if (args)
-                    free(args);
-            }
-        }
-
-        return -1;
-    }
-
-    erl = -10;
-    save_inchat = inchat;
-    inchat = FALSE;
-    stay = reread = nofix = FALSE;
-
-    starttime = time(NULL);
-    timeremain = timeleft();
-
-#ifndef __MSDOS__
-    /* Errorlevel exits not supported under OS/2 */
 
     if (method == OUTSIDE_ERRORLEVEL)
         method = OUTSIDE_RUN;
@@ -365,51 +189,17 @@ int Outside(char *leaving, char *returning, int method, char *parm, int slogan, 
     if (!in_wfc)
         ChatSetStatus(FALSE, cs_outside);
 
-    /* Copy bits into scalar, and then screen them off */
-
-    if (method & OUTSIDE_STAY)
-        stay = TRUE;
-
-    if (method & OUTSIDE_REREAD)
-        reread = TRUE;
-
-    if (method & OUTSIDE_NOFIX)
-        nofix = TRUE;
-
-    method &= ~(OUTSIDE_STAY | OUTSIDE_REREAD | OUTSIDE_NOFIX);
-
-    tonline = timeonline();
-
-    if (!in_wfc)
-    {
-        /* Display LEAVING.BBS */
 
         display_line = display_col = 1;
 
         if (leaving)
             Display_File(0, NULL, leaving);
 
-        /* Fix up lastread pointers */
-
-        if (method != OUTSIDE_ERRORLEVEL && !nofix)
-            FixLastread(sq, mah.ma.type, last_msg, MAS(mah, path));
-
-        /* Write LASTUSER.BBS */
 
         tonline = timeonline();
 
         Write_LastUser();
 
-        /* Write RESTARxx.BBS */
-
-#ifdef __MSDOS__
-        if (method == OUTSIDE_ERRORLEVEL)
-            Write_Restart(restart_type, restart_name, rst_offset, usr.time, ctltype, parm,
-                          starttime, css, returning);
-#endif
-    }
-
-    /* Disable the FOSSIL */
 
     if (!in_wfc)
         Mdm_flush_ck_tic(4000, FALSE, TRUE);
@@ -418,31 +208,10 @@ int Outside(char *leaving, char *returning, int method, char *parm, int slogan, 
 
     Out_Save_Directories(stay);
 
-    /* Convert "%" command characters */
-
-    if (strchr(parm, '%'))
-        Parse_Outside_Cmd(parm, temp2);
-    else
-        strcpy(temp2, parm);
-
-    parm = temp2;
-
-    /* Write .CTL file for Opus-compatible junk */
 
     if (ctltype == CTL_NORMAL && !in_wfc)
         Write_External_Ctlfile(ctltype, parm, method);
 
-    /* OUTSIDE_chain will disable the ^c handler elsewhere */
-
-    if (method != OUTSIDE_CHAIN)
-        Out_Disable_Ctrlc();
-
-    Out_Video_Down();
-
-#if defined(OS_2)
-    {
-        /* Hide our file handles so that children do not inherit them - saves *
-         * all kinds of problems with archivers and other things.             */
 
         extern HCOMM hcModem;
         HFILE hf;
@@ -455,68 +224,10 @@ int Outside(char *leaving, char *returning, int method, char *parm, int slogan, 
                 DosSetFHandState(i, OPEN_FLAGS_NOINHERIT);
     }
 #elif defined(__MSDOS__)
-    /* Save the current stdin/stdout handles */
-
-    save_stdout = dup(fileno(stdout));
-    save_stdin = dup(fileno(stdin));
-#endif /* nothing required for NT or others */
 
 #ifdef __MSDOS__
     if (method == OUTSIDE_ERRORLEVEL)
     {
-        /***********************************************************************/
-        /*                            ERRORLEVEL EXIT                          */
-        /***********************************************************************/
-
-        erl = atoi(parm);
-
-        if (erl == 255 || erl <= 5)
-            logit(log_bad_erl);
-        else
-        {
-            sprintf(temp, erl_xx, parm);
-
-            if (!in_wfc)
-                logit(external_prog, temp);
-
-            if ((p = firstchar(parm, ctl_delim, 2)) != NULL && *p)
-            {
-#ifndef UNIX
-                if (task_num)
-                    sprintf(temp, "%sERRORL%02x.BAT", original_path, task_num);
-                else
-                    sprintf(temp, "%sERRORLVL.BAT", original_path);
-#else
-                if (task_num)
-                    sprintf(temp, "%serrorl%02x.sh", original_path, task_num);
-                else
-                    sprintf(temp, "%serrorl.sh", original_path);
-#endif
-
-                if ((bat = shfopen(temp, fopen_write, O_WRONLY | O_CREAT | O_TRUNC)) == NULL)
-                    cant_open(temp);
-                else
-                {
-                    fprintf(bat, "%s\n", p);
-                    fclose(bat);
-                }
-            }
-
-            if ((prm.flags & FLAG_watchdog) && !local && !in_wfc)
-                mdm_watchdog(1);
-
-            nowrite_lastuser = TRUE;
-            quit(erl);
-        }
-    }
-    else
-#endif
-        if (method == OUTSIDE_RUN || method == OUTSIDE_CHAIN || method == OUTSIDE_CONCUR)
-    {
-
-        /***********************************************************************/
-        /*                          RUN/CHAIN EXIT                             */
-        /***********************************************************************/
 
         strcpy(temp, parm);
 
@@ -534,14 +245,6 @@ int Outside(char *leaving, char *returning, int method, char *parm, int slogan, 
             }
             else if (*p == '>')
             {
-                if (*(p + 1) == '>') /* Is it for append? */
-                    freopen(p + 2, fopen_append, stdout);
-                else
-                    freopen(p + 1, fopen_write, stdout);
-
-                x--;
-            }
-            else /* Just a normal argument */
 #endif
             {
                 if ((args[x] = (char *)malloc(strlen(p) + 1)) == NULL)
@@ -575,72 +278,6 @@ int Outside(char *leaving, char *returning, int method, char *parm, int slogan, 
 
         if (method == OUTSIDE_CHAIN)
         {
-            /* Close files, terminate keyboard handler, etc. */
-
-            nowrite_lastuser = TRUE;
-            FinishUp2(FALSE);
-            nowrite_lastuser = FALSE;
-
-            Out_Disable_Ctrlc();
-        }
-
-        if ((prm.flags & FLAG_watchdog) && !local && !in_wfc)
-            mdm_watchdog(1);
-
-        IoPause();
-
-#if defined(__WATCOMC__) && !defined(__386__)
-        _heapshrink();
-#endif
-
-#ifdef SWAP
-        if (prm.flags2 & FLAG2_SWAPOUT)
-            erl = swapvp(args[0], args);
-        else
-#endif
-            erl = spawnvp(P_WAIT, args[0], args);
-
-        IoResume();
-
-        if ((prm.flags & FLAG_watchdog) && !local && !in_wfc)
-            mdm_watchdog(0);
-
-        Reopen_Files();
-
-        if (erl == -1)
-        {
-            switch (errno)
-            {
-            case ENOENT:
-                logit(log_badnf);
-                break;
-
-            case ENOMEM:
-                logit(log_badnm);
-                break;
-
-            default:
-                logit(log_badee, errno);
-                break;
-            }
-        }
-
-    Skip:
-
-        for (x = 0; args[x]; x++)
-            if (args[x])
-                free(args[x]);
-
-        strcpy(temp, parm);
-
-        if (!in_wfc)
-            logit(return_prog, parm, erl);
-    }
-    else if (method == OUTSIDE_DOS)
-    {
-        /***********************************************************************/
-        /*                                DOS EXIT                             */
-        /***********************************************************************/
 
         strcpy(temp, parm);
 
@@ -688,21 +325,6 @@ int Outside(char *leaving, char *returning, int method, char *parm, int slogan, 
 
 RetProc:
 
-    /* Restore the saved stdin/stdout files */
-
-#ifdef __MSDOS__
-    dup2(save_stdin, fileno(stdin));
-    dup2(save_stdout, fileno(stdout));
-
-    close(save_stdin);
-    close(save_stdout);
-#endif
-
-#if defined(__WATCOMC__) && !defined(__386__)
-    _heapgrow();
-#endif
-
-    /* Grab the 'timeremaining' value from LASTUSxx.BBS */
 
     if (reread && !in_wfc)
     {
@@ -711,9 +333,6 @@ RetProc:
 
         Outside_Reread(timeremain, tonline);
 
-        /* If the max2 priv level was changed in the user record, convert it
-         * so that the new priv level reflects this change.
-         */
 
         if (old_max2priv != usr.max2priv && old_priv == usr.priv)
             usr.priv = max3priv(usr.max2priv);
@@ -722,12 +341,6 @@ RetProc:
         SetUserName(&usr, usrname);
     }
 
-    /* Reinstall the critical error handler */
-
-    if ((prm.flags2 & FLAG2_NOCRIT) == 0)
-        install_24();
-
-        /* Restart ^c handler */
 
 #if !(defined(OS_2) && defined(__FLAT__))
     brktrap();
@@ -768,39 +381,20 @@ static void near Out_Save_Directories(int stay)
 #ifndef __MSDOS__
     NW(stay);
 
-    /* Real operating systems don't let the child change the parent's         *
-     * current directory.                                                     */
 
 #else
     char *temp;
     int disk, max_d, x;
 
-    /* Save the current active drive */
-    disk = getdisk();
-
-    /* Find out how many drives we have available by calling setdisk().    *
-     * This call doesn't actually CHANGE anything, but we need the return  *
-     * value to figure out which drives to save.                           */
 
     max_d = setdisk(disk);
     max_d = min(max_d, MAX_DRIVES);
 
-    /* Scan the "Save Directories" statement to see if we were supposed to *
-     * save any drives...                                                  */
 
     for (x = 0; x < max_d; x++)
         if (IsBit(prm.drives_to_save, x))
             break;
 
-    /* If we are saving some drives, go into this next loop... */
-
-    if (x != max_d)
-    {
-        /* If the current disk is less than 2 (ie. A: or B:), then we should   *
-         * assume that we're running a floppy-based system, and should save    *
-         * all of the drives we can get.  Otherwise, we're probably running    *
-         * on a HARD DISK, and should only save the drives above A: and B:.    *
-         * We also save as many drives as we can get our hands on...           */
 
         if ((temp = malloc(PATHLEN)) != NULL)
         {
@@ -819,25 +413,7 @@ static void near Out_Save_Directories(int stay)
             free(temp);
         }
 
-        /* Change us back to the right disk drive */
 
-        setdisk(disk);
-    }
-#endif
-}
-
-static void near Out_Disable_Ctrlc(void)
-{
-    /* Temporarily get rid of our ^C handler, in case that we get SWAPPED to *
-     * disk by some other program.  If we DIDN'T do this, then the computer  *
-     * would branch to V'ger if the Sysop hit ^C or ^break while we were     *
-     * away...  Chain will uninstall the ^C handler in a different place,    *
-     * which is why we don't try to do it here.                              */
-
-    /* Print something to stdio before removing the keyboard handler --    *
-     * DOS doesn't like to execute the 0x23 interrupt until something      *
-     * is printed, and we want to make sure that if it is going to         *
-     * happen, that it does so while we have our handlers in place.        */
 
     fprintf(stdout, "\x08");
 
@@ -848,18 +424,6 @@ static void near Out_Disable_Ctrlc(void)
     if ((prm.flags2 & FLAG2_NOCRIT) == 0)
         uninstall_24();
 
-    /* Put cursor back to real position, and flush output */
-    vbuf_flush();
-}
-
-static void near Out_Video_Down(void)
-{
-#ifdef TTYVIDEO
-    if (displaymode == VIDEO_IBM)
-#endif
-    {
-#ifdef SHUTVIDEO
-        ShutDownVideo(); /* shut down completely */
 #else
         if (dspwin)
         {
@@ -888,36 +452,6 @@ static void near Out_Video_Up(void)
     {
 #endif
 #ifdef SHUTVIDEO
-        StartUpVideo(); /* start-up from scratch */
-#else
-
-#ifdef __MSDOS__
-    if (multitasker == MULTITASKER_desqview)
-        Start_Shadow();
-#endif
-
-    if (!no_video)
-    {
-        WinDirtyAll(win);
-        VidGotoXY(current_col, current_line, TRUE);
-        WinSync(win, TRUE);
-
-        if (in_wfc)
-            WinSyncAll();
-    }
-#endif
-
-        vbuf_flush();
-
-        if (!in_wfc)
-            Draw_StatusLine(STATUS_FORCE);
-#ifdef TTYVIDEO
-    }
-    else
-    {
-        /* We just ran an external program, so we have no idea what the        *
-         * other program was doing with the user's screen location, so our     *
-         * best guess is where the local cursor is on our screen...            */
 
         Lputs(CLS);
         fossil_getxy(&current_line, &current_col);
@@ -927,9 +461,6 @@ static void near Out_Video_Up(void)
 
 static void near Out_Reinstall_Fossil(void)
 {
-    /* The next reinit is just so we can make sure the FOSSIL is still *
-     * there, and that an external program didn't borrow our interrupt *
-     * vector, and forget to give it back.  (How rude!)                */
 
     mdm_deinit();
     Fossil_Install(FALSE);
@@ -944,8 +475,6 @@ static void near Close_Files(void)
         return;
     }
 
-    /* we can't do this if there are any messages open!!! */
-    /*  Switch_Msg_Area(NULL, 0);*/ /* close the current message area */
 
     LogClose();
 }
@@ -978,69 +507,16 @@ static void near Outside_Reread(int tr, int tonline)
     read(ffile, (char *)&usr, sizeof(struct _usr));
     close(ffile);
 
-    /* The 'timeremain' field is calculated as a relative value...  In      *
-     * other words, the door program can only add or subtract minutes       *
-     * from the time-remaining value, and Maximus will figure out the       *
-     * relative inc/decrement by comparing the amount of time, as it was    *
-     * written into the file by Max itself, to the time limit that was      *
-     * read back in this function.  This works well, since the time limit   *
-     * will continue normally if the program doesn't touch the              *
-     * time-remaining field.  If the program wants to guarantee that a      *
-     * specific number of minutes are left when the program exits, then     *
-     * it must calculate the current time when the external program is      *
-     * started, and add the value in usr.timeremain to it.  It should       *
-     * then calculate the desired value for usr.timeremain, to get          *
-     * the time-off to equal the required value.  (The usr.timeremain       *
-     * field can be either decremented or incremented, and Max will         *
-     * adjust appropriately.)                                               */
 
     timeoff += (usr.timeremaining - tr) * 60L;
 
-    /* We did a usr.time += timeonline() earlier, so we now have to undo    *
-     * it if we need the user record for our own use.                       */
 
     usr.time -= tonline;
 
-    /* Set the user's delflag back to normal */
-
-    usr.delflag = usr.df_save;
-}
-
-void Shell_To_Dos(void)
-{
-    int sheap;
-
-    if (no_shell)
-        return;
-
-    sheap = Language_Save_Heap();
-
-    display_line = display_col = 1;
-
-    if (*PRM(shelltodos) && !in_wfc)
-        Display_File(0, NULL, PRM(shelltodos));
-
-    if (!in_wfc)
-        Puts(WHITE);
-
-    Outside(NULL, NULL, OUTSIDE_RUN, GetComspec(), FALSE, CTL_NONE, RESTART_MENU, NULL);
-
-    /*if (!in_wfc)
-        Lputs(CLS);*/
 
     if (*PRM(backfromdos) && !in_wfc)
         Display_File(0, NULL, PRM(backfromdos));
 
-    Printf(attr_string, mdm_attr); /* Set us back to the right colour */
-
-    if (inmagnet)
-        Fix_MagnEt();
-
-    Language_Restore_Heap(sheap);
-    vbuf_flush();
-}
-
-#endif /* !ORACLE */
 
 int Exec_Xtern(int type, struct _opt *thisopt, char *arg, char **result, char *menuname)
 {
@@ -1096,11 +572,6 @@ static int near Form_Outside_Filename(char *in, char *out, int method)
 
     getword(in, out, " .", 2);
 
-    /* Return TRUE if out is empty */
-    return (*out == '\0');
-}
-
-/* write a .ctl file for opus-compatible junk */
 
 static void near Write_External_Ctlfile(int ctltype, char *parm, int method)
 {
@@ -1130,50 +601,6 @@ static void near Write_External_Ctlfile(int ctltype, char *parm, int method)
         fprintf(ctl, xctl_port_baud, port + 1, baud);
 
     if (!local)
-        fprintf(ctl, xctl_modem, port + 1, bd, prm.handshake_mask /* 3 */, prm.carrier_mask, baud);
-
-    fprintf(ctl, xctl_time, timeleft());
-
-    if (log_name && *log_name)
-        fprintf(ctl, xctl_log, log_name);
-
-    fprintf(ctl, xctl_msgs, MAS(mah, path));
-    fprintf(ctl, xctl_uploads, FAS(fah, uppath));
-    fprintf(ctl, xctl_downloads, FAS(fah, downpath));
-    fprintf(ctl, xctl_help, original_path);
-
-    if (*FAS(fah, filesbbs))
-        fprintf(ctl, xctl_filesbbs, FAS(fah, filesbbs));
-
-#ifdef NEVER
-    if (FileEntries())
-    {
-        FENTRY fent;
-
-        char *m = (ctltype & CTL_DOWNLOAD) ? "Send %s\n"
-                  : (ctltype & CTL_UPLOAD) ? "Got %s\n"
-                                           : blank_str;
-        for (x = 0; GetFileEntry(x, &fent); x++)
-            fprintf(ctl, m, fent.szName);
-    }
-#endif
-
-    fclose(ctl);
-}
-
-static char *near Add_Task_Number(char *fname, char *new)
-{
-    char *p, *s;
-    char tn[10];
-
-    if (new != fname)
-        strocpy(new, fname);
-
-    if (task_num)
-    {
-        /*         s       p    */
-        /*         v       v    */
-        /* D:\Path\Filename.Ext */
 
         sprintf(tn, "%02x", task_num);
 
@@ -1205,4 +632,3 @@ static char *near Add_Task_Number(char *fname, char *new)
     return new;
 }
 
-#endif /* !ORACLE */

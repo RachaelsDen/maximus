@@ -1,73 +1,8 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/***********************************************************
-    encode.c -- sliding dictionary with percolating update
-***********************************************************/
+
 #include "ar.h"
 #include <stdlib.h>
-#include <string.h> /* memmove() */
-
-#define PERCOLATE 1
-#define NIL 0
-#define MAX_HASH_VAL (3 * DICSIZ + (DICSIZ / 512 + 1) * UCHAR_MAX)
-
-typedef short node;
-
-static uchar *text, *childcount;
-static node pos, matchpos, avail, *position, *parent, *prev, *next = NULL;
-static int remainder, matchlen;
-
-#if MAXMATCH <= (UCHAR_MAX + 1)
-static uchar *level;
-#else
-static ushort *level;
-#endif
-
-static void allocate_memory(void)
-{
-    if (next != NULL)
-        return;
-    text = malloc(DICSIZ * 2 + MAXMATCH);
-    level = malloc((DICSIZ + UCHAR_MAX + 1) * sizeof(*level));
-    childcount = malloc((DICSIZ + UCHAR_MAX + 1) * sizeof(*childcount));
-#if PERCOLATE
-    position = malloc((DICSIZ + UCHAR_MAX + 1) * sizeof(*position));
-#else
-    position = malloc(DICSIZ * sizeof(*position));
-#endif
-    parent = malloc(DICSIZ * 2 * sizeof(*parent));
-    prev = malloc(DICSIZ * 2 * sizeof(*prev));
-    next = malloc((MAX_HASH_VAL + 1) * sizeof(*next));
-    if (next == NULL)
-        error("Out of memory.");
-}
-
-static void init_slide(void)
-{
-    node i;
-
-    for (i = DICSIZ; i <= DICSIZ + UCHAR_MAX; i++)
-    {
-        level[i] = 1;
-#if PERCOLATE
-        position[i] = NIL; /* sentinel */
 #endif
     }
     for (i = DICSIZ; i < DICSIZ * 2; i++)
@@ -83,149 +18,12 @@ static void init_slide(void)
 #define HASH(p, c) ((p) + ((c) << (DICBIT - 9)) + DICSIZ * 2)
 
 static node child(node q, uchar c)
-/* q's child for character c (NIL if not found) */
-{
-    node r;
-
-    r = next[HASH(q, c)];
-    parent[NIL] = q; /* sentinel */
     while (parent[r] != q)
         r = next[r];
     return r;
 }
 
 static void makechild(node q, uchar c, node r)
-/* Let r be q's child for character c. */
-{
-    node h, t;
-
-    h = HASH(q, c);
-    t = next[h];
-    next[h] = r;
-    next[r] = t;
-    prev[t] = r;
-    prev[r] = h;
-    parent[r] = q;
-    childcount[q]++;
-}
-
-void split(node old)
-{
-    node new, t;
-
-    new = avail;
-    avail = next[new];
-    childcount[new] = 0;
-    t = prev[old];
-    prev[new] = t;
-    next[t] = new;
-    t = next[old];
-    next[new] = t;
-    prev[t] = new;
-    parent[new] = parent[old];
-#if MAXMATCH <= (UCHAR_MAX + 1)
-    level[new] = (uchar)matchlen;
-#else
-    level[new] = (ushort)matchlen;
-#endif
-    position[new] = pos;
-    makechild(new, text[matchpos + matchlen], old);
-    makechild(new, text[pos + matchlen], pos);
-}
-
-static void insert_node(void)
-{
-    node q, r, j, t;
-    uchar c, *t1, *t2;
-
-    if (matchlen >= 4)
-    {
-        matchlen--;
-        r = (matchpos + 1) | DICSIZ;
-        while ((q = parent[r]) == NIL)
-            r = next[r];
-        while ((word)level[q] >= (word)matchlen)
-        {
-            r = q;
-            q = parent[q];
-        }
-#if PERCOLATE
-        t = q;
-        while (position[t] < 0)
-        {
-            position[t] = pos;
-            t = parent[t];
-        }
-        if (t < DICSIZ)
-            position[t] = pos | PERC_FLAG;
-#else
-        t = q;
-        while (t < DICSIZ)
-        {
-            position[t] = pos;
-            t = parent[t];
-        }
-#endif
-    }
-    else
-    {
-        q = text[pos] + DICSIZ;
-        c = text[pos + 1];
-        if ((r = child(q, c)) == NIL)
-        {
-            makechild(q, c, pos);
-            matchlen = 1;
-            return;
-        }
-        matchlen = 2;
-    }
-    for (;;)
-    {
-        if (r >= DICSIZ)
-        {
-            j = MAXMATCH;
-            matchpos = r;
-        }
-        else
-        {
-            j = level[r];
-            matchpos = position[r] & ~PERC_FLAG;
-        }
-        if (matchpos >= pos)
-            matchpos -= DICSIZ;
-        t1 = &text[pos + matchlen];
-        t2 = &text[matchpos + matchlen];
-        while (matchlen < j)
-        {
-            if (*t1 != *t2)
-            {
-                split(r);
-                return;
-            }
-            matchlen++;
-            t1++;
-            t2++;
-        }
-        if (matchlen >= MAXMATCH)
-            break;
-        position[r] = pos;
-        q = r;
-        if ((r = child(q, *t1)) == NIL)
-        {
-            makechild(q, *t1, pos);
-            return;
-        }
-        matchlen++;
-    }
-    t = prev[r];
-    prev[pos] = t;
-    next[t] = pos;
-    t = next[r];
-    next[pos] = t;
-    prev[t] = pos;
-    parent[pos] = q;
-    parent[r] = NIL;
-    next[r] = pos; /* special use of next[] */
 }
 
 static void delete_node(void)
@@ -303,35 +101,6 @@ static void get_next_match(void)
         n = fread_crc(&text[DICSIZ + MAXMATCH], DICSIZ, infile);
 
 #if 0
-          { /*SJD Sun  09-08-1991  20:01:19 */
-            char *p, *e;
-
-            for (p=text+DICSIZ+MAXMATCH, e=p+n; p < e; p++)
-              *p=~*p;
-          }
-#endif
-
-        remainder += n;
-        pos = DICSIZ;
-        printf(".");
-        fflush(stdout);
-    }
-    delete_node();
-    insert_node();
-}
-
-void encode(void)
-{
-    int lastmatchlen;
-    node lastmatchpos;
-
-    allocate_memory();
-    init_slide();
-    huf_encode_start();
-    remainder = fread_crc(&text[DICSIZ], DICSIZ + MAXMATCH, infile);
-
-#if 0
-          { /*SJD Sun  09-08-1991  20:01:15 */
             char *p, *e;
 
             for (p=text+DICSIZ, e=p+remainder; p < e; p++)

@@ -1,36 +1,8 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #ifndef _COMPILER_ALIGN_H
 #define _COMPILER_ALIGN_H
-/* Packing the structures with the compiler allows us a certain
- * measure of binary compatibility with files (lastuser.bbs,
- * fidonet packets, squish bases, user.bbs, ipc.bbs...) written
- * on other platforms. The structures in the Maximus3_02 release
- * literally describe the "disk version", and read/written
- * directory from/to disk. This is not portable, but fudging it
- * helps under x86 and Alpha(linux only). Unfortunately, other
- * CPUs (e.g. sparc) blow up when you try to do things like
- * access a misaligned pointer to a union of structs.. (SIGBUS)
- * ..so we don't support packing under any circumstances on those
- * CPUs.
- */
 
 #if defined(__GNUC__)
 #if !defined(__sparc)
@@ -66,29 +38,6 @@
 
 #if defined(__alpha__)
 #if defined(LINUX)
-#define SLOPPY_ALIGNMENT_OKAY 1 /* Let the kernel trap it */
-#else
-#define SLOPPY_ALIGNMENT_OKAY 0
-#endif
-#endif
-
-#if defined(__i386) || defined(i386) || defined(I386) || defined(__386__)
-#define SLOPPY_ALIGNMENT_OKAY 1
-#endif
-
-#if defined(__x86) || defined(x86) || defined(__x86__)
-#define SLOPPY_ALIGNMENT_OKAY 1
-#endif
-
-#if !defined(SLOPPY_ALIGNMENT_OKAY)
-#if defined(__WATCOMC__) || defined(MSC_VER) || defined(__TURBOC__) || defined(__IBMC__) ||        \
-    defined(__TOPAZ__)
-#define SLOPPY_ALIGNMENT_OKAY 1
-#endif
-#endif
-
-#if !defined(SLOPPY_ALIGNMENT_OKAY)
-#define SLOPPY_ALIGNMENT_OKAY 0 /* default: slow but safe */
 #endif
 
 #if defined(_GNUC_)
@@ -141,8 +90,3 @@ static union
 } alignmentTest;
 #define _MAX_ALIGNMENT alignof(alignmentTest)
 #else
-#define _MAX_ALIGNMENT sizeof(long) /* just a guess, but often right */
-#endif
-#endif
-
-#endif /* _COMPILER_ALIGN_H */

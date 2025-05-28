@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: api_brow.c,v 1.2 2003/06/04 23:09:26 wesgarland Exp $";
@@ -49,15 +33,9 @@ sword EXPENTRY MsgBrowseArea(BROWSE *b)
     int ret;
     int x;
 
-    /* If we're only scanning for OUR mail, then we only need the             *
-     * message subject and/or attributes, so we can use SCANFILE.DAT          *
-     * or the .SQuishIndex file.                                              */
 
     if ((b->bflag & BROWSE_NEW) && (b->bflag & BROWSE_EXACT) && b->first->where == WHERE_TO)
     {
-        /* Now, scan all of the elements in the chain.  Unless we're ONLY       *
-         * searching for entries in the 'To' field, and unless we're only       *
-         * doing an OR operation, then we can't use the ScanFile method.        */
 
         for (s = b->first; s; s = s->next)
             if (b->first->where != WHERE_TO || (b->first->flag & SF_OR) == 0)
@@ -69,27 +47,11 @@ sword EXPENTRY MsgBrowseArea(BROWSE *b)
 
             if (bcsf_ret <= 0)
                 return bcsf_ret;
-            /* else do normal scan of area */
-        }
-    }
-
-    /* Add one to bdata to compensate for the fact that if we're reading      *
-     * NEW messages, then we don't want to start reading until AFTER the      *
-     * lastread pointer.  We've subtracted one from the other bdata           *
-     * cases above, so it all works out evenly.                               */
 
     for (ret = 0, b->msgn = b->bdata + 1; b->msgn <= MsgHighMsg(b->sq); b->msgn++)
     {
         if ((x = Browse_Scan_Message(b)) == -1)
         {
-            /* User hit ^c or replied "N" to the next msg question. */
-
-            ret = -1;
-            break;
-        }
-        else if (x == 3)
-        {
-            /* User hit "*" to go to next area, so return a SUCCESS error code */
 
             ret = 0;
             break;
@@ -112,9 +74,6 @@ static int near BrowseCheckScanFile(BROWSE *b)
     int recsize, blsiz, got, in;
     int ret, sfd;
 
-    /* If we're searching for messages above the lastread, make sure that     *
-     * we don't waste time looking at those below.  Calculate the lowest      *
-     * UID that we should start looking at.                                   */
 
     if (b->bflag & BROWSE_NEW)
         low_uid = MsgMsgnToUid(b->sq, b->bdata);
@@ -141,24 +100,9 @@ static int near BrowseCheckScanFile(BROWSE *b)
     else
         return 1;
 
-    /* Allocate a big buffer for reading in the scanfile */
-
-    for (; blsiz > 0 && (block = (char *)malloc(blsiz * recsize)) == NULL; blsiz /= 2)
-        ;
-
-    /* If we couldn't allocate enough memory, then return */
     if (!block)
         return 1;
 
-    /* If we can't open it, proceed with a normal scan of the area */
-
-    if ((sfd = shopen(temp, O_RDONLY | O_BINARY | O_NOINHERIT)) == -1)
-    {
-        free(block);
-        return 1;
-    }
-
-    /* Seek over the preliminary header for the SCANFILE.DAT file */
 
     if (b->type == MSGTYPE_SDM)
         lseek(sfd, sizeof(SBHDR), SEEK_SET);
@@ -199,8 +143,6 @@ static int near BrowseCheckScanFile(BROWSE *b)
             *b->msg.from = '\0';
             *b->msg.subj = '\0';
 
-            /* Double-check with the actual message, to ensure that the message   *
-             * attributes haven't been changed.                                   */
 
             if (BrowseMatchMessage(b, NULL, FALSE))
             {
@@ -209,56 +151,11 @@ static int near BrowseCheckScanFile(BROWSE *b)
                 b->msgn = MsgUidToMsgn(
                     b->sq, (b->type == MSGTYPE_SQUISH) ? siptr->umsgid : psh->msgnum, UID_EXACT);
 
-                /* Now scan the message itself, if it was a true match */
-
-                switch (Browse_Scan_Message(b))
-                {
-                case -1:
-                    ret = -1;
-                    goto DoRet;
-                case 3:
-                    ret = 0;
-                    goto DoRet;
-                }
-            }
-
-            b->bflag &= ~BROWSE_HASH;
-        }
-    }
-
-DoRet:
-
-    close(sfd);
-    free(block);
-
-    return ret;
-}
-
-static int near Browse_Scan_Message(BROWSE *b)
-{
-    HMSG m;
-    char *msgtxt;
-    long curtl;
-    int ret = 0;
-    int x;
-    word bfsave = b->bflag;
-
-    if ((m = MsgOpenMsg(b->sq, MOPEN_RW, b->msgn)) == NULL)
-        return 0;
-
-    msgtxt = NULL;
-
-    /* If we're supposed to read the message text, first check to see         *
-     * that the message HAS text to be read, and also check that we           *
-     * have enough memory to read it.  If not, turn off the text-browsing     *
-     * feature for this message.                                              */
 
     curtl = MsgGetTextLen(m);
 
 #if defined(__MSDOS__) || defined(OS_2)
 
-    /* Make sure that message isn't over a segment in length, so that we      *
-     * don't overflow the browse buffer.                                      */
 
     curtl = (word)curtl;
 #endif
@@ -271,8 +168,6 @@ static int near Browse_Scan_Message(BROWSE *b)
         curtl = 0L;
 
 #ifdef OS_2
-    /* MSGAPI.DLL is in the large memory model, nd a (char near *)NULL    *
-     * doesn't get automtically expanded by the compiler                  */
 
     if (MsgReadMsg(m, &b->msg, 0L, curtl, msgtxt == NULL ? (byte far *)NULL : (byte far *)msgtxt,
                    0L, NULL) == -1)
@@ -355,8 +250,6 @@ static int near BrowseMatchMessage(BROWSE *b, char *msgtxt, word checkaddr)
     else
         equal = StringMatchInStr;
 
-    /* First check to make sure that the message matches our search           *
-     * criteria...                                                            */
 
     for (s = b->first; s; s = s->next)
     {
@@ -367,9 +260,6 @@ static int near BrowseMatchMessage(BROWSE *b, char *msgtxt, word checkaddr)
             if (s->where & WHERE_TO)
                 if ((*equal)((char *)b->msg.to, s->txt))
                 {
-                    /* If we're not doing an exact search, or if we ARE doing an      *
-                     * exact search and it's addressed to our net address, also       *
-                     * mark it.                                                       */
 
                     if ((mah.ma.attribs & MA_NET) == 0 || (b->bflag & BROWSE_EXACT) == 0 ||
                         !checkaddr || MsgToUs(&b->msg.dest))
@@ -394,21 +284,6 @@ static int near BrowseMatchMessage(BROWSE *b, char *msgtxt, word checkaddr)
         if ((s->where & WHERE_ALL) == 0)
             match = TRUE;
 
-        /* Now check to make sure that the attributes match */
-
-        if (match)
-        {
-            if (s->flag & SF_HAS_ATTR)
-                if (!(b->msg.attr & s->attr))
-                    match = FALSE;
-
-            if (s->flag & SF_NOT_ATTR)
-                if (b->msg.attr & s->attr)
-                    match = FALSE;
-        }
-
-        /* Finally, factor this into the grand scheme of things, by adding      *
-         * in the AND/OR logic for this record.                                 */
 
         if (s->flag & SF_OR)
         {

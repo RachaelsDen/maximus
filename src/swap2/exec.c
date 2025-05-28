@@ -1,45 +1,12 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
-   --- Version 3.4 93-06-22 13:40 ---
 
-   EXEC.C: EXEC function with memory swap - Prepare parameters.
-
-   Public domain software by
-
-        Thomas Wagner
-        Ferrari electronic GmbH
-        Beusselstrasse 27
-        D-1000 Berlin 21
-        Germany
-*/
 
 #include "exec.h"
 #include "checkpat.h"
 #include "compat.h"
 #include <bios.h>
 
-/*
-   Set REDIRECT to 1 to support redirection, else to 0.
-   CAUTION: The definition in 'spawn.asm' must match this definition!!
-*/
 
 typedef struct
 {
@@ -53,9 +20,6 @@ typedef struct
 
 #define SWAP_FILENAME max_swap_filename
 extern char *max_swap_filename;
-/*#define SWAP_FILENAME "$$AAAAAA.AAA"*/
-
-/* internal flags for prep_swap */
 
 #define CREAT_TEMP 0x0080
 #define DONT_SWAP_ENV 0x4000
@@ -70,14 +34,6 @@ extern "C" int
 #else
 extern int _cdecl
 #endif
-do_spawn(int swapping,    /* swap if non-0 */
-         char *xeqfn,     /* file to execute */
-         char *cmdtail,   /* command tail string */
-         unsigned envlen, /* environment length */
-         char *envp       /* environment pointer */
-#if (REDIRECT)
-         ,
-         char *rstdin, /* redirection file names */
          char *rstdout, char *rstderr
 #endif
 );
@@ -87,8 +43,6 @@ extern "C" int
 #else
 extern int _cdecl
 #endif
-prep_swap(int method,    /* swap method */
-          char *swapfn); /* swap file name and/or path */
 
 #ifdef __cplusplus
 extern "C" int
@@ -99,10 +53,6 @@ exists(char *fname);
 
 #define isslash(ch) (ch == '\\' || ch == '/')
 
-/* --------------------------------------------------------------------- */
-
-/* Try '.COM', '.EXE', and '.BAT' on current filename, modify
-   filename if found. */
 
 static int tryext(char *fn)
 {
@@ -122,8 +72,6 @@ static int tryext(char *fn)
     return 0;
 }
 
-/* Try to find the file 'fn' in the current path. Modifies the filename
-   accordingly. */
 
 static int findfile(char *fn, SWBLOCK *pswb)
 {
@@ -203,11 +151,6 @@ static int findfile(char *fn, SWBLOCK *pswb)
     return found;
 }
 
-/*
-   Get name and path of the command processor via the COMSPEC
-   environmnt variable. Any parameters after the program name
-   are copied and inserted into the command line.
-*/
 
 static void getcmdpath(SWBLOCK *pswb)
 {
@@ -244,13 +187,6 @@ static void getcmdpath(SWBLOCK *pswb)
     }
 }
 
-/*
-   tempdir: Set temporary file path.
-            Read "TMP/TEMP" environment. If empty or invalid, clear path.
-            If TEMP is drive or drive+backslash only, return TEMP.
-            Otherwise check if given path is a valid directory.
-            If so, add a backslash, else clear path.
-*/
 
 static int tempdir(char *outfn, SWBLOCK *pswb)
 {
@@ -354,80 +290,10 @@ static int redirect(char *par, char **rstdin, char **rstdout, char **rstderr, SW
 
 int cdecl do_exec(char *exfn, char *epars, int spwn, unsigned needed, char **envp)
 {
-    /* local variables */
-
-    SWBLOCK swb;
-
-    static char swapfn[MAXPATH];
-    static char execfn[MAXPATH];
-    unsigned avail;
-    union REGS regs;
-    unsigned envlen;
-    int rc, ffrc;
-    int idx;
-    char **env;
-    char *ep, *envptr, *envbuf;
-    char *progpars;
-    int swapping;
-#if (REDIRECT)
-    char *rstdin = NULL, *rstdout = NULL, *rstderr = NULL;
-#endif
-
-    envlen = 0;
-    envptr = NULL;
-    envbuf = NULL;
-
-    if (epars == NULL)
-        epars = "";
-    if (exfn == NULL)
-        execfn[0] = 0;
-    else
-        strcpy(execfn, exfn);
-
-    getcmdpath(&swb);
-
-    /* First, check if the file to execute exists. */
 
     if ((ffrc = findfile(execfn, &swb)) <= 0)
         return RC_NOFILE | -ffrc;
 
-    if (ffrc > 1) /* COMMAND.COM or Batch file */
-    {
-        if (!swb.cmdpath[0])
-            return RC_NOFILE | -ERR_COMSPEC;
-
-        idx = (ffrc == 2) ? strlen(execfn) + 5 : 1;
-        progpars = (char *)malloc(strlen(epars) + strlen(swb.cmdpars) + idx);
-        if (progpars == NULL)
-            return RC_NOFILE | -ERR_NOMEM;
-        strcpy(progpars, swb.cmdpars);
-        if (ffrc == 2)
-        {
-            strcat(progpars, "/c ");
-            strcat(progpars, execfn);
-            strcat(progpars, " ");
-        }
-        strcat(progpars, epars);
-        strcpy(execfn, swb.cmdpath);
-    }
-    else
-    {
-        progpars = (char *)malloc(strlen(epars) + 1);
-        if (progpars == NULL)
-            return RC_NOFILE | -ERR_NOMEM;
-        strcpy(progpars, epars);
-    }
-
-#if (REDIRECT)
-    if ((ep = strpbrk(progpars, "<>")) != NULL)
-        if (!redirect(ep, &rstdin, &rstdout, &rstderr, pswb))
-        {
-            rc = RC_REDIRERR;
-            goto exit;
-        }
-#endif
-
-    /* Now create a copy of the environment if the user wants it. */
 
     if (envp != NULL)
         for (env = envp; *env != NULL; env++)
@@ -435,16 +301,6 @@ int cdecl do_exec(char *exfn, char *epars, int spwn, unsigned needed, char **env
 
     if (envlen)
     {
-        /* round up to paragraph, and alloc another paragraph leeway */
-        envlen = (envlen + 32) & 0xfff0;
-        envbuf = (char *)malloc(envlen);
-        if (envbuf == NULL)
-        {
-            rc = RC_ENVERR;
-            goto exit;
-        }
-
-        /* align to paragraph */
         envptr = envbuf;
         if (FP_OFF(envptr) & 0x0f)
             envptr += 16 - (FP_OFF(envptr) & 0x0f);
@@ -461,21 +317,11 @@ int cdecl do_exec(char *exfn, char *epars, int spwn, unsigned needed, char **env
         swapping = -1;
     else
     {
-        /* Determine amount of free memory */
-
-        regs.x.ax = 0x4800;
-        regs.x.bx = 0xffff;
-        intdos(&regs, &regs);
-        avail = regs.x.bx;
-
-        /* No swapping if available memory > needed */
 
         if (needed < avail)
             swapping = 0;
         else
         {
-            /* Swapping necessary, use 'TMP' or 'TEMP' environment variable
-              to determine swap file path if defined. */
 
             swapping = spwn;
             if (spwn & USE_FILE)
@@ -504,35 +350,6 @@ int cdecl do_exec(char *exfn, char *epars, int spwn, unsigned needed, char **env
         }
     }
 
-    /* All set up, ready to go. */
-
-    if (swapping > 0)
-    {
-        if (!envlen)
-            swapping |= DONT_SWAP_ENV;
-
-        rc = prep_swap(swapping, swapfn);
-        if (rc < 0)
-            rc = RC_PREPERR | -rc;
-        else
-            rc = 0;
-    }
-    else
-        rc = 0;
-
-    if (!rc)
-    {
-        if (spawn_check != NULL)
-            rc = spawn_check(ffrc, swapping, execfn, progpars);
-        if (!rc)
-#if (REDIRECT)
-            rc = do_spawn(swapping, execfn, progpars, envlen, envptr, rstdin, rstdout, rstderr);
-#else
-            rc = do_spawn(swapping, execfn, progpars, envlen, envptr);
-#endif
-    }
-
-    /* Free the environment buffer if it was allocated. */
 
 exit:
     free(progpars);

@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: f_tag.c,v 1.1.1.1 2002/10/01 17:51:10 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=File area routines: T)ag functions
- */
 
 #define MAX_LANG_max_main
 
@@ -63,86 +45,6 @@ void File_Tag(int dl_cmd)
         if (ch == tag_keys[0] && !dl_cmd)
         {
             File_Get_Download_Names(TAG_VERBOSE, PROTOCOL_ZMODEM);
-            return; /* Automatically return after adding tag */
-        }
-        else if (ch == tag_keys[1])
-            File_Tag_List();
-        else if (ch == tag_keys[2])
-            File_Tag_Delete();
-        else if (ch == tag_keys[3])
-        {
-            Free_Filenames_Buffer(0);
-            Puts(all_untagged);
-        }
-        else if (ch == tag_keys[4])
-            Display_File(0, NULL, "%stag_file", PRM(misc_path));
-        else if (ch == '\0' || ch == '|' || ch == '\r' || ch == tag_keys[5])
-            return;
-        else
-            Printf(dontunderstand, ch);
-    }
-}
-
-static void near File_Tag_List(void)
-{
-    word n;
-    long total_size;
-    long this_time;
-
-    FENTRY fent;
-
-    Putc('\n');
-
-    if (!FileEntries())
-    {
-        Puts(no_tagged);
-        return;
-    }
-
-    for (n = 0, total_size = 0L; GetFileEntry(n, &fent); n++)
-    {
-        this_time = XferTime(PROTOCOL_ZMODEM, fent.ulSize);
-
-        Printf(file_stats, n + 1, No_Path(fent.szName), (int)(this_time / 60L),
-               (int)(this_time % 60L), (long)fent.ulSize);
-
-        Putc('\n');
-        total_size += fent.ulSize;
-
-        vbuf_flush();
-    }
-
-    Printf(file_tag_total, total_size, XferTime(PROTOCOL_ZMODEM, total_size) / 60L,
-           XferTime(PROTOCOL_ZMODEM, total_size) % 60L);
-}
-
-static void near File_Tag_Delete(void)
-{
-    byte temp[PATHLEN];
-    byte fname[PATHLEN];
-    word fn, ft;
-
-    WhiteN();
-
-    if (!FileEntries())
-    {
-        Puts(no_tagged);
-        return;
-    }
-
-    InputGets(temp, file_untag, FileEntries());
-
-    WhiteN();
-
-    if (toupper(*temp) == 'A')
-        Free_Filenames_Buffer(0);
-    else if ((fn = (word)atoi(temp)) != 0)
-    {
-        char *p = temp;
-
-        ft = fn;
-
-        /* See if the user entered a range from?to */
 
         while (*p && isdigit(*p))
             ++p;
@@ -160,42 +62,10 @@ static void near File_Tag_Delete(void)
         --fn;
         --ft;
 
-        /* If the number is within allowable bounds... */
-
-        while (fn <= ft)
-        {
-            FENTRY fent;
-
-            if (!GetFileEntry(fn, &fent))
-                ++fn;
-            else
-            {
-                /* Save the filename we deleted */
 
                 strcpy(fname, No_Path(fent.szName));
                 RemoveFileEntry(fn);
 
-                /* And inform the user */
-
-                Printf(file_untagged, fname);
-
-                if (ft)
-                    --ft;
-                else
-                    ++fn;
-            }
-        }
-    }
-
-    if (FileEntries() == 0)
-        Puts(all_untagged);
-}
-
-/*
- * Tag save/restore
- * Saves/restores the list of files currently tagged
- * to/from an external file
- */
 
 #ifndef ORACLE
 
@@ -279,4 +149,3 @@ int restore_tag_list(char *pszFname, int fNoDelete)
     return FALSE;
 }
 
-#endif /* !ORACLE */

@@ -1,11 +1,21 @@
+# CMake build artifacts
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+
+# Compiled object files
+*.o
+*.obj
+
+# Executables
+*.exe
+*.out
+*.app
+
 # Prerequisites
 *.d
-
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
 
 # Linker output
 *.ilk

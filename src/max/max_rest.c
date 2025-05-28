@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: max_rest.c,v 1.1.1.1 2002/10/01 17:52:00 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=System restart logic (for "-r" cmd-line param)
- */
 
 #define MAX_INCL_COMMS
 
@@ -49,32 +31,9 @@ int System_Restart(char *restart_name)
     int type;
     int userfile;
 
-    /* Read the LASTUSER info */
-
-    if (task_num)
-        sprintf(temp, lastusxx_bbs, original_path, task_num);
-    else
-        sprintf(temp, lastuser_bbs, original_path);
-
-    if ((userfile = shopen(temp, O_RDONLY | O_BINARY)) == -1)
-    {
-        cant_open(temp);
-        quit(ERROR_FILE);
-    }
-
-    read(userfile, (char *)&usr, sizeof(struct _usr));
-    close(userfile);
-
-    /* Restore the user's 'delflag' bits, since the usr.delflag was used      *
-     * to write the speed for external programs.                              */
 
     usr.delflag = usr.df_save;
 
-    /* Convert the user's name/alias into one general string */
-
-    SetUserName(&usr, usrname);
-
-    /* And now read the system restart info */
 
     sprintf(temp, restarxx_bbs, original_path, task_num);
 
@@ -93,111 +52,16 @@ int System_Restart(char *restart_name)
     read(userfile, (char *)rst, sizeof(struct _restart));
     close(userfile);
 
-    /* Delete it, now that we have it */
-    unlink(temp);
-
-    strcpy(restart_name, rst->restart_name);
-    strcpy(menupath, rst->menupath);
-    strcpy(main_menu, rst->menuname);
-    strcpy(firstname, rst->firstname);
-    next_ludate = rst->next_ludate;
-    strcpy(last_onexit, rst->last_onexit);
-
-    strcpy(fix_menupath, rst->fix_menupath);
-
-    mn_dirty = rst->mn_dirty;
-
-    lastmenu = rst->lastmenu;
-    local = rst->local;
-    port = rst->port;
-    snoop = rst->snoop;
-    keyboard = rst->keyboard;
-    protocol_letter = rst->protocol_letter;
-    chatreq = rst->chatreq;
-
-    timeon = rst->timeon;
-    timeoff = rst->timeoff;
-    timestart = rst->timestart;
-    rst_offset = rst->restart_offset;
-
-    usr.time = rst->usr_time;
-    ultoday = rst->ultoday;
-
-    no_zmodem = rst->no_zmodem;
-
-    locked = rst->locked;
-
-    lockpriv = rst->lockpriv;
-
-    written_echomail = rst->written_echomail;
-    written_matrix = rst->written_matrix;
-
-    current_baud = rst->current_baud;
-    steady_baud = rst->steady_baud;
-    steady_baud_l = rst->steady_baud_l;
-    date_newfile = rst->date_newfile;
-    baud = rst->baud;
-    event_num = rst->event_num;
-
-    max_time = rst->max_time;
-    getoff = rst->getoff;
-    origusr = rst->origusr;
-
-    barricade_ok = rst->barricade_ok;
-
-    restore_tag_list(NULL, FALSE);
-
-    ChatRestoreStatus(&rst->css);
-
-    /* Read our message-area tags */
 
     TagReadTagFile(&mtm);
 
-    /* Now open the old log file */
-
-    strcpy(log_name, rst->log_name);
-
-    if (!LogOpen())
-        quit(ERROR_CRITICAL);
-
-    /*  memcpy(echo_written_in, rst->echo_written_in, sizeof(echo_written_in));*/
 
     caller_online = TRUE;
 
-    /* Do this check for the status line here...  We couldn't do so          *
-     * previously, since we didn't figure out whether or not the user was    *
-     * local or not until now.                                               */
 
     if (local)
         prm.flags &= ~FLAG_statusline;
 
-    /* Find class number & validate runtime settings */
-
-    Validate_Runtime_Settings();
-
-    Switch_To_Language();
-    Fossil_Install(TRUE);
-
-    if (!local)
-        mdm_baud(current_baud);
-
-    if ((prm.flags & FLAG_watchdog) && !local)
-        mdm_watchdog(0);
-
-    logit(log_ret_from_app);
-    fLoggedOn = TRUE;
-
-    mdm_attr = curattr = -1;
-
-    Puts(GRAY);
-
-    if (*rst->returning)
-    {
-        Display_File(0, NULL, rst->returning);
-        vbuf_flush();
-    }
-
-    /* Handle an xtern_erlvl protocol doodad */
 
     if (rst->ctltype != CTL_NONE)
     {
@@ -250,22 +114,6 @@ int System_Restart(char *restart_name)
     return type;
 }
 
-/* Writes the RESTARxx.BBS file to the right directory. */
-
-void Write_Restart(char restart_type, char *restart_name, long restart_offset, int usrtime,
-                   int ctltype, char *parm, long starttime, struct _css *css, char *returning)
-{
-    struct _restart *rst;
-    char temp[PATHLEN];
-    int file;
-
-    if ((rst = malloc(sizeof(struct _restart))) == NULL)
-    {
-        logit(mem_none);
-        return;
-    }
-
-    /* Now fill in the "restart" part of the structure */
 
     memset(rst, '\0', sizeof(struct _restart));
 
@@ -314,23 +162,6 @@ void Write_Restart(char restart_type, char *restart_name, long restart_offset, i
     strcpy(rst->parm, parm);
     rst->starttime = starttime;
 
-    /*  memcpy(rst->echo_written_in, echo_written_in, sizeof(echo_written_in));*/
-
-    if (returning)
-        strcpy(rst->returning, returning);
-
-    rst->locked = locked;
-
-    rst->lockpriv = lockpriv;
-
-    rst->barricade_ok = barricade_ok;
-
-    rst->css = *css;
-    rst->last_protocol = last_protocol;
-
-    strcpy(rst->log_name, log_name);
-
-    /* Make sure that we don't delete the RESTARxx.BBS file when exiting... */
     if (rst_offset == -1L)
         rst_offset = 0L;
 
@@ -350,4 +181,3 @@ void Write_Restart(char restart_type, char *restart_name, long restart_offset, i
     save_tag_list(NULL);
 }
 
-#endif /* __MSDOS__ */

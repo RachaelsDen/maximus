@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: m_for.c,v 1.2 2003/06/11 14:03:06 wesgarland Exp $";
 #pragma on(unreferenced)
 
-/*# name=Message Section: F)orward command
- */
 
 #define MAX_LANG_max_main
 
@@ -124,88 +106,6 @@ static int near Read_Bomb_File(XMSG *msg)
             getword(temp, word, cmd_delim, ++wn);
         }
 
-        /* Got it! */
-
-        if (*msg->to)
-            return TRUE;
-    }
-
-    fclose(bombfile);
-    bombfile = NULL;
-    return FALSE;
-}
-
-static int _stdc near mprintf(HMSG sq, char *fmt, ...)
-{
-    char buf[256];
-    va_list var_args;
-
-    va_start(var_args, fmt);
-    vsprintf(buf, fmt, var_args);
-    va_end(var_args);
-
-    return (mputs(sq, buf, strlen(buf)));
-}
-
-static int near mputs(HMSG sq, char *txt, int len)
-{
-    return (MsgWriteMsg(sq, TRUE, NULL, txt, len, 0L, 0L, NULL));
-}
-
-static int near Fwd_MsgIsOkay(struct _fwdp *f)
-{
-    if ((f->fh = MsgOpenMsg(sq, MOPEN_READ, f->msgnum)) == NULL ||
-        MsgReadMsg(f->fh, &f->fmsg, 0L, 0L, NULL, 0L, NULL) == -1 || !CanSeeMsg(&f->fmsg))
-    {
-        if (f->fh)
-            MsgCloseMsg(f->fh);
-
-        return -1;
-    }
-
-    return 0;
-}
-
-static int near Fwd_Get_Parms(struct _fwdp *f)
-{
-    char temp[PATHLEN];
-    char *p;
-
-    f->bomb = f->kill = FALSE;
-    *temp = '\0';
-
-    RipClear();
-
-    do
-    {
-        WhiteN();
-
-        if (!*temp)
-            InputGets(temp, fwd_which);
-
-        if (*temp == '\0')
-            return -1;
-
-        p = temp;
-
-        while (isalpha(*p))
-        {
-            *p = (char)toupper(*p);
-
-            if (*p == 'B')
-                f->bomb = TRUE;
-            else if (*p == 'K')
-                f->kill = TRUE;
-
-            p++;
-        }
-
-        strocpy(temp, p);
-    } while (!*p);
-
-    /* Only local users, or remote users with a priv greater than            *
-     * msg_fromfile can do bombing runs, since it gives them access to       *
-     * our HD.                                                               */
 
     if (f->bomb && !(GEPriv(realpriv(), prm.msg_fromfile) && local))
     {
@@ -219,13 +119,6 @@ static int near Fwd_Get_Parms(struct _fwdp *f)
     {
         f->msgnum = atol(temp);
 
-        /* If we need to convert between UMSGIDs and message numbers */
-
-        if (prm.flags2 & FLAG2_UMSGID)
-            f->msgnum = MsgUidToMsgn(sq, f->msgnum, UID_EXACT);
-    }
-
-    /* Now store the umsgid of the original message */
 
     f->original = MsgMsgnToUid(sq, f->msgnum);
 
@@ -285,43 +178,12 @@ static int near Fwd_Get_Area(struct _fwdp *f)
 
 static void near Fwd_Header(struct _fwdp *f, HMSG th)
 {
-    /* Only insert ORIG:AREA line if forwarding to new area */
-
-    if (f->tosq != sq)
-        mprintf(th, org_area, *MAS(mah, echo_tag) ? MAS(mah, echo_tag) : MAS(mah, name));
-
-    /* Only insert ORIG:FROM line if we've changed the from line */
 
     if (!eqstri(f->fmsg.from, f->tmsg.from))
         mprintf(th, orig_from, f->fmsg.from, Address(&f->fmsg.orig));
 
     mprintf(th, orig_to, f->fmsg.to, Address(&f->fmsg.dest));
 
-    /* Only insert ORIG:SUBJ line if subject is different */
-
-    if (!eqstri(f->fmsg.subj, f->tmsg.subj))
-        mprintf(th, orig_subj, f->fmsg.subj);
-
-    mprintf(th, "\r");
-}
-
-static void near Forward_Body(struct _fwdp *f, HMSG th, char *buf)
-{
-    char *found;
-    char *p;
-    long ofs;
-    word got;
-    int breakout = FALSE;
-
-    for (ofs = 0;
-         (got = (word)MsgReadMsg(f->fh, NULL, ofs, FWDBUFSIZE, buf, 0L, NULL)) > 0 && !breakout;)
-    {
-        if (got == FWDBUFSIZE)
-            got -= FWD_OVERLAP;
-
-        ofs += got;
-
-        /* Make sure that we don't copy past the traling NUL */
 
         if (got > strlen(buf))
         {
@@ -329,12 +191,6 @@ static void near Forward_Body(struct _fwdp *f, HMSG th, char *buf)
             breakout = TRUE;
         }
 
-        /* Strip trailing NULs from buffer */
-
-        while (got && buf[got - 1] == '\0')
-            got--;
-
-        /* Make sure it has at LEAST one nul. */
 
         buf[FWDBUFSIZE] = '\0';
 
@@ -349,12 +205,6 @@ static void near Forward_Body(struct _fwdp *f, HMSG th, char *buf)
             {
                 found = p;
 
-                /* Make sure that the tear line is at the beginning of a line */
-
-                if (p != buf && p[-1] != '\r' && p[-1] != '\n')
-                    continue;
-
-                /* Now find the beginning of the next line */
 
                 if ((p = strchr(p, '\r')) == NULL)
                     continue;
@@ -369,11 +219,6 @@ static void near Forward_Body(struct _fwdp *f, HMSG th, char *buf)
                     return;
                 }
 
-            } /* for */
-
-            mputs(th, buf, got);
-
-        } /* echomail */
     }
 }
 
@@ -400,32 +245,6 @@ static void near Forward_One(struct _fwdp *f, struct _fwdp *fp)
 
     Get_Dos_Date(&now);
 
-    /* Make sure that we don't spit out msgs with identical dates */
-
-    while (now.ldate == last_fwd.ldate || now.ldate == ((SCOMBO *)&f->tmsg.date_written)->ldate)
-    {
-        Get_Dos_Date(&now);
-        Delay(25);
-    }
-
-    last_fwd = now;
-    f->tmsg.date_written = *(union _stampu *)&now;
-
-    if (CheckCredit(&f->tmsg.dest, &f->toar) == -1)
-        return;
-
-    if ((th = MsgOpenMsg(f->tosq, MOPEN_CREATE, 0L)) == NULL)
-        return;
-
-    if ((buf = malloc(FWDBUFSIZE + 20)) == NULL)
-    {
-        MsgCloseMsg(th);
-        return;
-    }
-
-    buf[FWDBUFSIZE] = '\0';
-
-    /* Now grab the kludges to put in the message */
 
     kludge = GenerateMessageKludges(&f->tmsg, &mah, NULL);
 
@@ -436,24 +255,6 @@ static void near Forward_One(struct _fwdp *f, struct _fwdp *fp)
     Forward_Body(f, th, buf);
     Forward_Add_Trailer(f, th);
 
-    /* Set tosslog flags et al.  Used instead of below. */
-
-    WroteMessage(&f->toar, &f->tmsg, kludge, f->tosq, FALSE);
-
-    if (kludge)
-        free(kludge);
-
-#ifdef NEVER
-    if ((f->toar.attrib[cls] & SYSMAIL) && !MsgToUs(&f->tmsg.dest))
-    {
-        if (!f->bomb && !fp)
-            Putc('\n');
-
-        Handle_Matrix_Charges(&f->tmsg.dest, f->bomb == FALSE);
-    }
-#endif
-
-    /* Add the terminating NUL */
 
     zero = 0;
     MsgWriteMsg(th, TRUE, NULL, (char *)&zero, 1L, 0L, 0L, NULL);
@@ -477,48 +278,6 @@ static void near Fwd_Message(struct _fwdp *f, struct _fwdp *fp)
     if (!fp)
     {
         Blank_Msg(&f->tmsg);
-        /* Make sure we use the orig addr from the dest area, not this one! */
-        f->tmsg.orig = f->toar.ma.primary;
-        strcpy(f->tmsg.subj, f->fmsg.subj);
-        *netnode = '\0';
-    }
-
-    f->tmsg.attr &= ~(MSGSCANNED | MSGREAD | MSGSENT);
-    f->tmsg.attr |= MSGLOCAL;
-
-    if (f->bomb)
-    {
-        while (Read_Bomb_File(&f->tmsg))
-        {
-            if (f->fmsg.attr & MSGPRIVATE)
-                f->tmsg.attr |= MSGPRIVATE;
-
-            Forward_One(f, fp);
-        }
-    }
-    else
-    {
-        if (f->fmsg.attr & MSGPRIVATE)
-            f->tmsg.attr |= MSGPRIVATE;
-
-        if (!fp)
-            FixPrivateStatus(&f->tmsg, &f->toar);
-
-        if (fp || GetMsgAttr(&f->tmsg, &f->toar, f->toname, MsgGetHighMsg(f->tosq) + 1,
-                             MsgGetHighMsg(f->tosq)) != -1)
-        {
-            Forward_One(f, fp);
-        }
-        else
-            Puts(CLS);
-    }
-}
-
-static void near FwdCleanup(struct _fwdp *f)
-{
-    MsgCloseMsg(f->fh);
-
-    /* If we're supposed to delete the original message, do so now. */
 
     if (f->kill)
         MsgKillMsg(sq, MsgUidToMsgn(sq, f->original, UID_EXACT));
@@ -530,8 +289,6 @@ void Msg_Forward(struct _fwdp *fp)
     UMSGID uid;
     dword mn;
 
-    /* If caller provided a fwdp structure, then use that.  Otherwise,        *
-     * allocate a blank one of our own.                                       */
 
     if (fp)
         fwdp = fp;
@@ -543,26 +300,12 @@ void Msg_Forward(struct _fwdp *fp)
         memset(fwdp, 0, sizeof *fwdp);
     }
 
-    /* Save the current message number */
-
-    uid = MsgMsgnToUid(sq, last_msg);
-
-    /* Unless we were alreaady given a fwdp structure, find out which message *
-     * number to forward.  Then check to make sure that the message is okay   *
-     * (has a priv level high enough to see it and so on), and get the        *
-     * area name (unless we were already given a fwdp structure).             */
 
     if ((fp || Fwd_Get_Parms(fwdp) == 0) && Fwd_MsgIsOkay(fwdp) == 0 &&
         (fp || Fwd_Get_Area(fwdp) == 0))
     {
         if (!AreaIsReadOnly(&fwdp->toar))
         {
-            /* Finally, do the forward */
-
-            Fwd_Message(fwdp, fp);
-        }
-
-        /* If the MSG* provided isn't the default MSG*, then close it */
 
         if (fwdp->tosq && fwdp->tosq != sq)
             MsgCloseArea(fwdp->tosq);
@@ -572,11 +315,3 @@ void Msg_Forward(struct _fwdp *fp)
 
     DisposeMah(&fwdp->toar);
 
-    /* If we allocated this before, then free it. */
-
-    if (!fp)
-        free(fwdp);
-
-    if ((mn = MsgUidToMsgn(sq, uid, UID_PREV)) != 0)
-        last_msg = mn;
-}

@@ -1,24 +1,6 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*# name=SILT include file
- */
+
 
 #ifndef __SILT_H_INCLUDED
 #define __SILT_H_INCLUDED
@@ -33,17 +15,6 @@ typedef struct _ovlist
 
 typedef struct
 {
-    int marea;  /* always false */
-    HEAP h;     /* must always be 2nd element */
-    OVRLIST ol; /* must always be 3rd element */
-    FAREA fa;
-} FAINFO;
-
-typedef struct
-{
-    int marea;  /* always true */
-    HEAP h;     /* must always be 2nd element */
-    OVRLIST ol; /* must always be 3rd element */
     MAREA ma;
 } MAINFO;
 
@@ -65,8 +36,6 @@ struct _vbtab
 #define MAX_MSG_HEAP 2048
 #define MAX_FILE_HEAP 2048
 
-#define LAST_NONE 0x00    /* Used in SILT to control the status      */
-#define LAST_SECTION 0x01 /* display.                                */
 #define LAST_AREA 0x02
 #define LAST_MENU 0x03
 #define LAST_ACCESS 0x04
@@ -137,4 +106,3 @@ extern struct _maxcol col;
 
 #include "siltprot.h"
 
-#endif /* __SILT_H_INCLUDED */

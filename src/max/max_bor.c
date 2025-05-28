@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: max_bor.c,v 1.1.1.1 2002/10/01 17:51:28 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=BORED, the line-oriented editor
- */
 
 #define MAX_LANG_max_bor
 
@@ -67,51 +49,7 @@ int Bored(XMSG *msg, HMSG msgh, struct _replyp *pr)
 
     max_lines = (int)min(tlong, (long)MAX_LINES);
 
-    if (max_lines <= 0) /* Something's really wrong here! */
     {
-        logit(mem_nmsgb);
-        Puts(mem_nmsgb);
-
-        Press_ENTER();
-        return ABORT;
-    }
-    else /* Things look A-OK! */
-    {
-        if (setjmp(jumpto) == 0) /* Really ugly, but the best way to handle errs */
-        {
-            int rc;
-
-            if (usr.help == NOVICE)
-                Display_File(0, NULL, PRM(hlp_editor));
-
-            in_msghibit++;
-
-            if (msgh)
-                Load_Message(msgh);
-            else
-                Bored_Continue();
-
-            rc = Bored_Menu(msg);
-
-            in_msghibit--;
-
-            return rc;
-        }
-        else
-        {
-            Free_All();
-            return ABORT;
-        }
-    }
-}
-
-static void near Bored_Continue(void)
-{
-    linenum = num_lines + 1;
-
-    Putc('\n');
-
-    Bored_GetLine(0); /* Get as many lines as required */
 }
 
 static void near Bored_GetLine(int max)
@@ -307,11 +245,6 @@ static void near Bored_Handling(XMSG *msg)
                     msg->attr &= ~(1 << x);
                 else
                 {
-                    /* If user tries to convert a message with subject line into
-                     * a file attach (which could allow them to specify a full
-                     * filename/path to download), null out the subject line so
-                     * that it does not cause a security problem.
-                     */
 
                     if ((1 << x) == MSGFILE && (msg->attr & MSGFILE) == 0 &&
                         (mah.ma.attribs & (MA_NET | MA_ATTACH)) == (MA_NET | MA_ATTACH) &&
@@ -355,12 +288,6 @@ static void near Bored_Delete(void)
     for (ln = from; ln <= to; ln++)
         Free_Line(ln);
 
-    /* Now shift 'move' lines back by the appropriate amount */
-
-    move = old_num_lines - to;
-    memmove(screen + from, screen + to + 1, move * sizeof(char *));
-
-    /* Set the remaining lines to null */
 
     memset(screen + num_lines + 1, '\0', (old_num_lines - num_lines) * sizeof(char *));
 }
@@ -397,85 +324,6 @@ static void near Bored_Insert(void)
     if (!*linebuf)
         Puts(line_ins);
 
-    /* Now allow the user to enter text on that line. */
-
-    Puts(editl1);
-    Puts(editl2);
-
-    Puts(CYAN);
-
-    InputGetsL(screen[cx] + 1, min(BUFLEN, LINELEN) - 7, new_st);
-}
-
-static void near Bored_Edit(void)
-{
-    char temp[PATHLEN];
-    char search[PATHLEN];
-    char replace[PATHLEN];
-    char *p;
-
-    word rep_len, cx;
-
-    WhiteN();
-
-    InputGets(temp, line_edit_num);
-
-    cx = atoi(temp);
-
-    if (cx > 0 && cx <= num_lines)
-    {
-        if (!*linebuf)
-        {
-            Putc('\n');
-            Printf(blfmt1, cx, screen[cx] + 1);
-
-            WhiteN();
-            WhiteN();
-        }
-
-        if (usr.priv == NOVICE)
-            Display_File(0, NULL, PRM(hlp_replace));
-
-        InputGetsL(search, BUFLEN, rep_what);
-
-        if (*search && !stristr(screen[cx] + 1, search))
-        {
-            Printf(word_not_found, search);
-            return;
-        }
-
-        rep_len = (LINELEN - strlen(screen[cx] + 1) - 6) + strlen(search);
-
-        if (rep_len <= 0)
-        {
-            Puts(noroom);
-            return;
-        }
-
-        Puts(editl1);
-
-        if (!*search)
-            Puts(editl2);
-        else
-            Printf(editl3, search);
-
-        Printf(e_numch, rep_len);
-
-        InputGetsL(replace, min(BUFLEN, rep_len), new_st);
-
-        if (!*search)
-        {
-            strocpy(screen[cx] + 1 + strlen(replace), screen[cx] + 1);
-
-            memmove(screen[cx] + 1, replace, strlen(replace));
-
-            Putc('\n');
-            Printf(blfmt1, cx, screen[cx] + 1);
-            Putc('\n');
-        }
-        else
-        {
-            /* Substitute the replacement for the search. */
 
             if ((p = stristr(screen[cx] + 1, search)) != NULL)
             {
@@ -512,145 +360,7 @@ struct _hinfo
     word lc;
 };
 
-/* WARNING!  This function must be declared global, even though it is
- * only referenced locally!  WATCOM's WHOOSH (dynamic overlay manager)
- * only creates thunks for global functions, so this would bomb
- * (if declared static) when called by a pointer from another module.
- */
 
-/*static*/ word BodyToMsg(byte *txt, void *info, word lt)
-{
-    struct _hinfo *hi = (struct _hinfo *)info;
-    char line[MAX_LINELEN];
-
-    if ((lt & MSGLINE_SEENBY) && !GEPriv(usr.priv, prm.seenby_priv))
-        return TRUE;
-    else if (lt & MSGLINE_KLUDGE && !GEPriv(usr.priv, prm.ctla_priv))
-        return TRUE;
-    else if (lt & MSGLINE_END)
-        return TRUE;
-
-    if (++hi->total_lines >= hi->startline && num_lines < max_lines - 1)
-    {
-        if (hi->total_lines > hi->endline)
-            return FALSE;
-
-        if (QuoteThisLine(txt))
-            sprintf(line, " %s> %s", hi->initials, txt);
-        else
-            strcpy(line, txt);
-
-        if (!hi->display_msg)
-        {
-            if (Allocate_Line(num_lines + 1))
-                EdMemOvfl();
-
-            linenum = num_lines;
-
-            screen[linenum][0] = '\r';
-            strcpy(screen[linenum] + 1, line);
-        }
-
-        Printf(GRAY "%2d: " CYAN "%s\n", hi->display_msg ? hi->lc++ : linenum++, line);
-
-        if (hi->display_msg && MoreYnBreak(&hi->nonstop, CYAN))
-            return FALSE;
-    }
-
-    return TRUE;
-}
-
-static void near Bored_Quote(void)
-{
-    HMSG qmh;
-    XMSG msg;
-
-    char temp[PATHLEN];
-    char initials[10];
-
-    struct _hinfo hi;
-    int wid, swid;
-
-    if (!preply)
-    {
-        Puts(not_reply);
-        return;
-    }
-
-    for (hi.display_msg = TRUE; hi.display_msg;)
-    {
-        WhiteN();
-        InputGets(temp, qstart);
-
-        if (!*temp)
-            return;
-        else if (eqstri(temp, qmark))
-        {
-            hi.display_msg = TRUE;
-            hi.startline = 1;
-            hi.endline = 0x7fff;
-        }
-        else
-        {
-            hi.display_msg = FALSE;
-            hi.startline = atoi(temp);
-
-            InputGets(temp, qend);
-
-            if (!*temp)
-                return;
-
-            hi.endline = atoi(temp);
-
-            if (hi.startline < 1)
-                hi.startline = 1;
-
-            if (hi.endline < hi.startline)
-                hi.endline = hi.startline;
-
-            if (hi.endline - hi.startline >= 20)
-                Puts(sstmt);
-        }
-
-        display_line = display_col = 0;
-
-        Putc('\n');
-
-        qmh = MsgOpenMsg(preply->fromsq, MOPEN_READ,
-                         MsgUidToMsgn(preply->fromsq, preply->original, UID_EXACT));
-        if (qmh == NULL)
-            return;
-
-        if (MsgReadMsg(qmh, &msg, 0L, 0L, NULL, 0L, NULL) == -1)
-        {
-            MsgCloseMsg(qmh);
-            return;
-        }
-
-        Parse_Initials(msg.from, initials);
-
-        hi.nonstop = FALSE;
-        hi.initials = initials;
-        hi.total_lines = 0;
-        hi.lc = 1;
-
-        wid = usrwidth - strlen(initials) - HARD_SAFE - 6;
-        swid = usrwidth - strlen(initials) - SOFT_SAFE - 6;
-
-        ShowBody(qmh, BodyToMsg, (void *)&hi, wid, swid, MRL_QEXP);
-
-        MsgCloseMsg(qmh);
-    }
-}
-
-static int near MessageToFile(HAREA sq, dword lmsg, HMSG msgh, char *name, word flag)
-{
-    HMSG imsgh;
-    char initials[MAX_INITIALS];
-    FILE *out;
-    XMSG imsg;
-
-    if (msgh) /* If it's a change */
         imsgh = msgh;
     else
         imsgh = MsgOpenMsg(sq, MOPEN_READ, lmsg);
@@ -673,27 +383,6 @@ static int near MessageToFile(HAREA sq, dword lmsg, HMSG msgh, char *name, word 
 
     fclose(out);
 
-    if (msgh == NULL) /* Only close if it's a reply */
-        MsgCloseMsg(imsgh);
-
-    return TRUE;
-}
-
-word Local_Editor(XMSG *msg, HMSG msgh, long msgnum, char *ctrl_buf, struct _replyp *pr)
-{
-    union stamp_combo d1, d2;
-    FILE *out;
-
-    byte temp[PATHLEN];
-    byte msgtemp[PATHLEN];
-    byte *ed;
-
-    word aborted;
-    word erlv;
-
-    sprintf(msgtemp, msgtemp_name, PRM(temppath), task_num);
-
-    /* If we need to copy the message to a file, do so now */
 
     if (pr)
         MessageToFile(pr->fromsq, MsgUidToMsgn(pr->fromsq, pr->original, UID_EXACT), msgh, msgtemp,
@@ -701,21 +390,12 @@ word Local_Editor(XMSG *msg, HMSG msgh, long msgnum, char *ctrl_buf, struct _rep
     else if (msgh)
         MessageToFile(sq, last_msg, msgh, msgtemp, 0);
 
-    /* Create the editor command */
-
-    ed = PRM(local_editor);
-
-    sprintf(temp, ed + (*ed == '@'), msgtemp);
-
-    /* Get the date of the file as it stands now */
 
     FileDate(msgtemp, &d1);
 
     erlv =
         Outside(NULL, NULL, OUTSIDE_RUN | OUTSIDE_STAY, temp, FALSE, CTL_NONE, RESTART_MENU, NULL);
 
-    /* Now get the date of the file as it stands now.  If nothing has been    *
-     * changed, assume that it's an abort.                                    */
 
     FileDate(msgtemp, &d2);
 
@@ -725,92 +405,3 @@ word Local_Editor(XMSG *msg, HMSG msgh, long msgnum, char *ctrl_buf, struct _rep
         return ABORT;
     }
 
-    /* Now try to open the reply file */
-
-    if ((out = shfopen(msgtemp, fopen_readb, O_RDONLY | O_BINARY | O_NOINHERIT)) == NULL)
-        return ABORT;
-
-    aborted = SaveMsg(msg, out, TRUE, msgh ? msgnum : 0L, msgh != NULL, &mah, usr.msg, sq, ctrl_buf,
-                      (pr) ? pr->fromareaname : NULL, FALSE);
-
-    fclose(out);
-
-    if (aborted)
-        return ABORT;
-    else
-    {
-        unlink(msgtemp);
-        return LOCAL_EDIT;
-    }
-}
-
-int Exec_Edit(int type, char **result, XMSG *msg, unsigned *puiFlag)
-{
-    *result = NULL;
-
-    if (!msg)
-        return 0;
-
-    switch (type)
-    {
-    case edit_abort:
-        WhiteN();
-
-        if (GetyNAnswer(abortmsg, 0) == YES)
-        {
-            *puiFlag |= RO_QUIT;
-            Free_All();
-            return 0;
-        }
-        break;
-
-    case edit_continue:
-        if (inmagnet)
-        {
-            *puiFlag |= RO_SAVE;
-            return 0;
-        }
-
-        Bored_Continue();
-        break;
-
-    case edit_save:
-        *puiFlag |= RO_SAVE;
-        return 0;
-    case edit_list:
-        Bored_List(msg);
-        break;
-    case edit_edit:
-        Bored_Edit();
-        break;
-    case edit_insert:
-        Bored_Insert();
-        break;
-    case edit_delete:
-        Bored_Delete();
-        break;
-    case edit_to:
-        Bored_To(msg);
-        break;
-    case edit_from:
-        Bored_From(msg);
-        break;
-    case edit_subj:
-        Bored_Subject(msg);
-        break;
-    case edit_handling:
-        Bored_Handling(msg);
-        break;
-    case read_diskfile:
-        Read_DiskFile();
-        break;
-    case edit_quote:
-        Bored_Quote();
-        break;
-    default:
-        logit(bad_menu_opt, type);
-        return 0;
-    }
-
-    return 0;
-}

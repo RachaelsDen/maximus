@@ -1,25 +1,6 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*# name=Case-insensitive, regular-expression pattern matching
-    name=routine.  See also CREP.C.
-*/
+
 
 #define PRODUCTION
 #define INSENSITIVE
@@ -29,41 +10,6 @@
 #include <ctype.h>
 #include <stdio.h>
 
-/* If no match, check exp-- with last_found++ */
-
-char *_fast stristrx(char *string, struct _rep *rep)
-{
-    static int last_found, match, madeone;
-
-    static char *orig_str;
-
-    static char rtlf;
-
-    orig_str = string;
-    last_found = 0;
-
-    while (*string)
-    {
-        madeone = FALSE;
-        rtlf = rep->type[last_found];
-
-        for (;;)
-        {
-            match = FALSE;
-
-            if (rtlf & (CHAR_SOL | CHAR_EOL))
-            {
-                switch (*string)
-                {
-                case '\x00':
-                    if (rtlf & CHAR_SOL)
-                    {
-                        match = FALSE;
-                        break;
-                    }
-
-                    string--;
-                    /* fall-through! */
 
                 case '\x0a':
                 case '\x0d':
@@ -176,9 +122,3 @@ char *_fast stristrx(char *string, struct _rep *rep)
             return (string - last_found);
     }
 
-    /* Terminating NULL! */
-    if ((rep->type[last_found] & (CHAR_SOL | CHAR_EOL)) && ++last_found == rep->max_ch)
-        return (string - last_found);
-
-    return (NULL);
-}

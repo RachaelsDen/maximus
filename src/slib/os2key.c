@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #if defined(OS_2)
 
@@ -40,79 +24,6 @@ int pascal kgetch(void)
 
     KbdCharIn(&kki, IO_WAIT, 0);
 
-    if (kki.chChar == 0 || (kki.chChar == 0xe0 && (kki.fbStatus & 2 /*KBDTRF_EXTENDED_CODE*/)))
-    {
-        last_scan = kki.chScan;
-        kki.chChar = 0;
-    }
-
-    return kki.chChar;
-}
-
-int pascal kpeek(void)
-{
-    KBDKEYINFO kki;
-
-    if (last_scan)
-        return last_scan;
-
-    if (KbdPeek(&kki, 0) == 0 && (kki.fbStatus & 0xe0))
-        return kki.chChar;
-
-    return -1;
-}
-
-int pascal khit(void) { return (kpeek() != -1); }
-
-#elif defined(NT)
-
-#include "prog.h"
-#include "pwin.h"
-
-static int console_inited = FALSE;
-static HANDLE hIn;
-static int last_scan = 0;
-
-static void _console_init(void)
-{
-    DWORD dwMode;
-
-    hIn = GetStdHandle(STD_INPUT_HANDLE);
-
-    GetConsoleMode(hIn, &dwMode);
-    dwMode |= ENABLE_PROCESSED_INPUT;
-    dwMode &= ~ENABLE_WINDOW_INPUT | ~ENABLE_MOUSE_INPUT;
-    SetConsoleMode(hIn, ENABLE_PROCESSED_INPUT);
-
-    last_scan = 0;
-    console_inited = TRUE;
-}
-
-static int InputRecToKey(PINPUT_RECORD pir, int peek)
-{
-    if (pir->Event.KeyEvent.uChar.AsciiChar == 9 &&
-        (pir->Event.KeyEvent.dwControlKeyState & SHIFT_PRESSED))
-    {
-        if (!peek)
-            last_scan = pir->Event.KeyEvent.wVirtualScanCode;
-
-        return 0;
-    }
-
-    if (pir->Event.KeyEvent.uChar.AsciiChar == 0 ||
-        (pir->Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)))
-    {
-        if (!peek)
-            last_scan = pir->Event.KeyEvent.wVirtualScanCode;
-
-        return 0;
-    }
-
-    return pir->Event.KeyEvent.uChar.AsciiChar;
-}
-
-/* Screen out input records which are not key events, downward keypresses,  *
- * or actual characters.                                                    */
 
 static int BadKeyRec(PINPUT_RECORD pir)
 {
@@ -189,11 +100,6 @@ int pascal khit(void) { return (kpeek() != -1); }
 #include <sys/time.h>
 #include <unistd.h>
 
-int kgetch() /* might conflict with newer ncurses - feedback, please -- wes */
-{
-    if (stdscr)
-    {
-        /* curses - preferred way */
         int ch = getch();
 
         if (ch == ERR)
@@ -203,48 +109,10 @@ int kgetch() /* might conflict with newer ncurses - feedback, please -- wes */
     }
     else
     {
-        /* fall back to stdio */
-
-        fd_set rfds;
-        struct timeval tv;
-
-        FD_ZERO(&rfds);
-        FD_SET(fileno(stdin), &rfds);
-
-        tv.tv_sec = 0;
-        tv.tv_usec = 50; /* very short wait! */
 
         if (select(fileno(stdin) + 1, &rfds, NULL, NULL, &tv) <= 0)
-            return -1; /* Nothing pending; don't block! */
-
-        return getchar();
-    }
-}
-
-int kpeek()
-{
-    int ch;
-
-    ch = kgetch();
-
-    if (stdscr)
-    {
-        /* curses */
         if (ch >= 0)
             ungetch(ch);
     }
     else
     {
-        /* stdio */
-        if (ch >= 0)
-            ungetc(ch, stdin);
-    }
-
-    return ch;
-}
-
-int khit(void) { return (kpeek() != -1); }
-
-#else
-#error Unknown OS!
-#endif

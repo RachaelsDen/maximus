@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifndef _WES_SHARE_H
 #define _WES_SHARE_H
 
@@ -10,10 +12,6 @@ int flock(int fd, int lockmode);
 #endif
 
 #if !defined(LOCK_EX)
-#define LOCK_SH 0x01 /**< shared file lock */
-#define LOCK_EX 0x02 /**< exclusive file lock */
-#define LOCK_NB 0x04 /**< don't block when locking */
-#define LOCK_UN 0x08 /**< unlock file */
 #ifndef FLOCK_IS_FCNTL
 #error flock header missing!
 #endif

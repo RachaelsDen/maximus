@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: s_colour.c,v 1.1.1.1 2002/10/01 17:57:40 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=SILT: 'Section Matrix and EchoMail' processing logic
- */
 
 #define SILT
 #define NOVARS
@@ -78,42 +60,6 @@ static struct _coltab
     char *opt;
     byte *col_ptr;
 } coltab[] = {
-    /* Obsolete */
-    {"menu name", NULL},
-    {"menu highlight", NULL},
-    {"menu text", NULL},
-    {"hotflash bar", NULL},
-    {"hotflash more", NULL},
-    {"hotflash clear", NULL},
-    {"file name", NULL},
-    {"file size", NULL},
-    {"file date", NULL},
-    {"file desc", NULL},
-    {"file find", NULL},
-    {"file offline", NULL},
-    {"file new", NULL},
-    {"message from", NULL},
-    {"message fromtxt", NULL},
-    {"message to", NULL},
-    {"message totxt", NULL},
-    {"message subj", NULL},
-    {"message subjtxt", NULL},
-    {"message attrib", NULL},
-    {"message date", NULL},
-    {"message address", NULL},
-    {"message locus", NULL},
-    {"message body", NULL},
-    {"message quote", NULL},
-    {"message kludge", NULL},
-    {"fsr msgnum", NULL},
-    {"fsr msglinks", NULL},
-    {"fsr attribute", NULL},
-    {"fsr msginfo", NULL},
-    {"fsr date", NULL},
-    {"fsr address", NULL},
-    {"fsr static", NULL},
-    {"fsr border", NULL},
-    /* End Obsolete */
     {"status bar", &col.status_bar},
     {"status chat", &col.status_cht},
     {"status key", &col.status_key},
@@ -147,13 +93,6 @@ static void near handle_colour(struct _coltab *ct, char *col)
             colour |= 128;
         else if (eqstri(s, "on"))
         {
-            /* handle background colours */
-
-            s = strtok(NULL, ctl_delim);
-
-            if (s)
-            {
-                /* Strip off the background bits */
 
                 colour &= ~0x70;
 

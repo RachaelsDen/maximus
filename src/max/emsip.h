@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 static char emsi_seq[] = "**EMSI_";
 
@@ -42,13 +26,6 @@ static void near EmsiBldBAD(void);
 
 static struct _eft eft[] = {{"ACK", EMSI_ACK, EmsiFtACK, NULL, 16},
                             {"NAK", EMSI_NAK, EmsiFtNAK, NULL, 16},
-                            {"IRQ", EMSI_IRQ, EmsiFtBAD, NULL, 16}, /* used by server only */
-                            {"IIR", EMSI_IIR, EmsiFtIIR, NULL, 16},
-                            {"ICI", EMSI_ICI, EmsiFtICI, EmsiBldBAD, 32}, /* used by client only */
-                            {"ISI", EMSI_ISI, EmsiFtBAD, EmsiBldISI, 32}, /* used by server only */
-                            {"ISM", EMSI_ISM, EmsiFtBAD, EmsiBldISM, 32}, /* used by server only */
-                            {"CHT", EMSI_CHT, EmsiFtBAD, NULL, 16},       /* used by server only */
-                            {"TCH", EMSI_TCH, EmsiFtBAD, NULL, 16},       /* used by server only */
                             {"", EMSI_BAD, EmsiFtBAD, EmsiBldBAD}};
 
 static struct _efield ici_fields[] = {

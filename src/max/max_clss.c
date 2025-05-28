@@ -1,25 +1,6 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
- * User class API
- */
+
 
 #include "max_oldu.h"
 #include "mm.h"
@@ -32,8 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Read class information file and return a classinfo handle
- */
 
 int ClassReadFile(char *pszName)
 {
@@ -56,18 +35,6 @@ int ClassReadFile(char *pszName)
             if (pclh != NULL)
             {
 
-                /* Set up control information */
-
-                pclh->usn = chdr.usn;
-                pclh->ussize = chdr.ussize;
-                pclh->pcInfo = (CLSREC *)(((char *)pclh) + sizeof(*pclh));
-                pclh->pHeap = (char *)(pclh->pcInfo + pclh->usn);
-
-                sz = (sizeof(CLSREC) * pclh->usn) + chdr.usstr;
-
-                lseek(fd, chdr.usclfirst, SEEK_SET);
-
-                /* Read in records & strings buffer in one hit */
 
                 if (read(fd, pclh->pcInfo, sz) == sz)
                     rc = TRUE;
@@ -84,8 +51,6 @@ int ClassReadFile(char *pszName)
     return rc;
 }
 
-/* Dispose of a class info handle
- */
 
 void ClassDispose()
 {
@@ -93,14 +58,9 @@ void ClassDispose()
         free(pclh);
 }
 
-/* Return ptr to a class record
- */
 
 CLSREC *ClassRec(int idx)
 {
-    if (ValidClassIndex(idx)) /* Do this manually in case struct has grown */
-        return (CLSREC *)(((char *)pclh->pcInfo) + (idx * pclh->ussize));
-    return pclh->pcInfo; /* Return first record */
 }
 
 int ClassKeyIndex(word key)
@@ -117,8 +77,6 @@ int ClassKeyIndex(word key)
     return -1;
 }
 
-/* Convert a privilege 'key' to a privilege level
- */
 
 word ClassKeyLevel(word key)
 {
@@ -126,8 +84,6 @@ word ClassKeyLevel(word key)
     return (i == -1) ? (word)-1 : ClassRec(i)->usLevel;
 }
 
-/* Convert priv symbol to a a class index
- */
 
 int ClassAbbrevIndex(char *pszAbbrev)
 {
@@ -137,38 +93,6 @@ int ClassAbbrevIndex(char *pszAbbrev)
     {
         word usn = (word)atol(pszAbbrev);
 
-        /* Assume it is a numeric privilege */
-
-        return ClassLevelIndex(usn);
-    }
-
-    n = strcspn(pszAbbrev, " \t/,-=+<>()&|");
-    for (i = 0; i < pclh->usn; ++i)
-    {
-        char *cName = ClassAbbrev(i);
-        char *cAlias = ClassAlias(i);
-
-        if ((strnicmp(cName, pszAbbrev, n) == 0 && cName[n] == '\0') ||
-            (strnicmp(cAlias, pszAbbrev, n) == 0 && cAlias[n] == '\0'))
-        {
-            return i;
-        }
-    }
-
-    logit(log_invalid_acs, pszAbbrev);
-    return -1;
-}
-
-word ClassLevel(char *pszAbbrev)
-{
-    if (isdigit(*pszAbbrev) || *pszAbbrev == '-')
-        return (word)atol(pszAbbrev);
-
-    return ClassAbbrevLevel(pszAbbrev);
-}
-
-/* Return priv level for a abbrev symbol
- */
 
 word ClassAbbrevLevel(char *pszAbbrev)
 {
@@ -177,9 +101,6 @@ word ClassAbbrevLevel(char *pszAbbrev)
     return (idx == -1) ? (word)-1 : ClassRec(idx)->usLevel;
 }
 
-/* Convert level to index
- * Note: this match is actually <= so an exact level is not required
- */
 
 int ClassLevelIndex(word usLevel)
 {
@@ -198,8 +119,6 @@ int ClassLevelIndex(word usLevel)
     return j;
 }
 
-/* Return class information
- */
 
 dword ClassGetInfo(int idx, int itype)
 {
@@ -261,14 +180,6 @@ dword ClassGetInfo(int idx, int itype)
             rc = pcr->usOldPriv;
             break;
         default:
-            rc = 0; /*logit(class_err);?*/
-            break;
-        }
-    }
-    return rc;
-}
-
-/* Convert an ASCIIZ keys string to a bitmask */
 
 static void SZKeyMask(char *pszKeys, dword *maskon, dword *maskoff)
 {
@@ -277,77 +188,18 @@ static void SZKeyMask(char *pszKeys, dword *maskon, dword *maskoff)
     *maskon = 0L;
     *maskoff = 0L;
 
-    /* Now test to see if the user needs to have certain keys on or off */
-
-    if ((p = strchr(pszKeys, '/')) != NULL)
-    {
-
-        /* Scan through each key in turn */
 
         while (*++p)
         {
             unsigned char ch;
             dword *maskptr = maskon;
 
-            if (*p == '!') /* Not key */
-            {
-                maskptr = maskoff;
-                ++p;
-            }
-
-            ch = (unsigned char)toupper(*p);
-
-            if (ch >= '1' && ch <= '8')
-                *maskptr |= (1L << (ch - '1'));
-            else if (ch >= 'A' && ch <= 'X')
-                *maskptr |= (1L << ((ch - 'A') + 8));
-            else
-                break;
-        }
-    }
-}
-
-static int _PrivOK(char *acstest, unsigned use_real_priv)
-{
-    int rc;
-    int privop;
-    char *equals;
-
-    /* Test for "item=value" comparisons */
 
     equals = strchr(acstest, '=');
 
     if (equals)
     {
 
-        /* See if it is actually a comparison operator */
-
-        if (equals == acstest || equals[1] == '=' || equals[-1] == '<' || equals[-1] == '>' ||
-            equals[-1] == '!')
-            ;
-        else
-        {
-            int len = equals - acstest;
-
-            Strip_Underscore(equals + 1);
-
-            if (strnicmp(acstest, "name", len) == 0)
-            {
-                return eqstri(equals + 1, usr.name);
-            }
-            else if (strnicmp(acstest, "alias", len) == 0)
-            {
-                return eqstri(equals + 1, usr.alias);
-            }
-            else
-            {
-                logit(log_invalid_acs, acstest);
-                return FALSE;
-            }
-        }
-    }
-
-    privop = privGE; /* Default to >= comparison */
 
     if (*acstest == '>')
     {
@@ -375,24 +227,11 @@ static int _PrivOK(char *acstest, unsigned use_real_priv)
     else if (*acstest == '!')
     {
         privop = privNE;
-        if (*(++acstest) == '=') /* Superfluous */
-            ++acstest;
-    }
-    else if (*acstest == '=')
-    {
-        privop = privEQ;
-        if (*(++acstest) == '=') /* Superfluous */
             ++acstest;
     }
 
     if (*acstest == '@')
     {
-        use_real_priv = TRUE; /* Force use of real priv */
-        ++acstest;
-    }
-
-    rc = TRUE;
-    if (*acstest && *acstest != '/') /* Blank priv, assume ok */
     {
         word compareto_priv = use_real_priv ? realpriv() : usr.priv;
         word compare_priv = ClassLevel(acstest);
@@ -421,22 +260,6 @@ static int _PrivOK(char *acstest, unsigned use_real_priv)
         }
     }
 
-    /* Finally, make sure that the keys match okay */
-
-    if (rc)
-    {
-        dword maskon, maskoff;
-
-        SZKeyMask(acstest, &maskon, &maskoff);
-        rc = ((usr.xkeys & maskon) == maskon) && ((usr.xkeys & maskoff) == 0);
-    }
-
-    return rc;
-}
-
-/* PrivOK - function used to check an ACS string to see if the current
- * user has enough privileges to be given access to the resource.
- */
 
 int PrivOK(char *acstest, unsigned use_real_priv)
 {
@@ -447,17 +270,6 @@ int PrivOK(char *acstest, unsigned use_real_priv)
 
     int rc = TRUE;
 
-    /* If not enough memory to duplicate the string, get out */
-
-    if ((acsdup = alloca(strlen(acstest) + 1)) == NULL)
-    {
-        logit(log_badnm);
-        return FALSE;
-    }
-
-    strcpy(acsdup, acstest);
-
-    /* Find all of the qualifiers in the string */
 
     for (next = acsdup; next;)
     {
@@ -465,25 +277,16 @@ int PrivOK(char *acstest, unsigned use_real_priv)
 
         s = next;
 
-        if ((p = strpbrk(s, ",|&")) == NULL) /* AND (,&) + OR (|) */
-            next = NULL;
-        else
-        {
-            rel = (*p == '|'); /* For OR relation */
             *p = 0;
             next = p + 1;
         }
 
         if (!_PrivOK(s, use_real_priv))
         {
-            rc = FALSE; /* Switch default to FALSE */
-            if (!rel)   /* If AND, then fail immediately */
                 break;
         }
         else
         {
-            rc = TRUE; /* Switch default to TRUE */
-            if (rel)   /* If OR, then return success immediately */
                 break;
         }
     }
@@ -528,37 +331,6 @@ char *privstr(word priv, char *buf)
     return prv;
 }
 
-/* Convert an old priv level to a new */
 
-word max3priv(int iPriv)
-{
-    int i;
-    word j = ClassRec(0)->usLevel; /* Assume lowest possible level */
-
-    if (iPriv == HIDDEN) /* Automatic assumption */
-        return (word)-1;
-
-    for (i = 0; i < pclh->usn; i++)
-    {
-        CLSREC *pc = ClassRec(i);
-        int lvl = (short)pc->usOldPriv;
-
-        if (lvl == iPriv) /* Got an exact match */
             return pc->usLevel;
 
-        if (iPriv > lvl && pc->usLevel > j) /* Find a close match anyway */
-            j = pc->usLevel;
-    }
-
-    return j;
-}
-
-int ValidClassIndex(int idx) { return ((int)idx >= 0 && idx < (int)(pclh)->usn); }
-
-char *ClassAbbrev(int idx) { return ((pclh)->pHeap + (ClassRec(idx)->zAbbrev)); }
-
-char *ClassDesc(int idx) { return ((pclh)->pHeap + (ClassRec(idx)->zDesc)); }
-
-char *ClassFile(int idx) { return ((pclh)->pHeap + (ClassRec(idx)->zLoginFile)); }
-
-char *ClassAlias(int idx) { return ((pclh)->pHeap + (ClassRec(idx)->zAlias)); }

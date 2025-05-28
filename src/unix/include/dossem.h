@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifndef _WES_DOSSEM_H
 #define _WES_DOSSEM_H
 struct _hsem;
@@ -13,9 +15,6 @@ typedef struct _hsem **PHMTX;
 #define SEM_IMMEDIATE_RETURN 0
 #define SEM_INDEFINITE_WAIT -1
 
-/* WARP return values, hope they're okay from 1.x functions */
-#define NO_ERROR 0
-#define ERROR_ALREADY_EXISTS 1 /* 'wrong' value */
 #define ERROR_INVALID_HANDLE 6
 #define ERROR_NOT_ENOUGH_MEMORY 8
 #define ERROR_INVALID_PARAMETER 87

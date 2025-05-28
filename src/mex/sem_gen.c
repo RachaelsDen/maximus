@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: sem_gen.c,v 1.2 2003/06/05 01:10:36 wesgarland Exp $";
@@ -30,12 +14,6 @@ static char *near OpName(QUADOP op);
 static char *near AddressName(ADDRESS *a, char *out);
 static char *near ObjName(DATAOBJ *o, char *out);
 
-/*
-static void near hc(void)
-{
-  printf("hc=%d\n", _heapchk());
-}
-*/
 
 void Generate(QUADOP op, DATAOBJ *o1, DATAOBJ *o2, ADDRESS *r)
 {
@@ -127,10 +105,6 @@ void GenerateTXT(QUADOP op, DATAOBJ *o1, DATAOBJ *o2, ADDRESS *r)
         printf("(%s, %s, %s, %s)\n", p1, p2, p3, p4);
     }
 
-        /*
-          printf("(%s, %s, %s, %s)\n",
-                 OpName(op),ObjName(o1,l1),ObjName(o2,l2),AddressName(r,l3));
-        */
     }
 }
 

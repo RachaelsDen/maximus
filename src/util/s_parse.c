@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: s_parse.c,v 1.2 2003/06/05 03:18:58 wesgarland Exp $";
 #pragma on(unreferenced)
 
-/*# name=SILT: .CTL file parsing routines
- */
 
 #define SILT
 #define NOVARS
@@ -46,8 +28,6 @@ void Initialize_Prm(void)
 {
     int x;
 
-    /* Set the whole thing to zero, so items we've forgotten to initialize,  *
-     * and all of the offsets, will be equal to zero initially.              */
 
     memset(&prm, '\0', sizeof(struct m_pointers));
 
@@ -76,8 +56,6 @@ void Initialize_Prm(void)
 
     prm.ctla_priv = prm.seenby_priv = (word)-1;
 
-    prm.min_ulist = 0; /* Obsolete - Max 2.x compatibility */
-    prm.max_ulist = 8; /* Obsolete - Max 2.x compatibility */
 
     prm.mc_reply_priv = 0;
     prm.mc_kill_priv = 0;
@@ -107,27 +85,6 @@ void Initialize_Prm(void)
 
     *strings = '\0';
 
-    /* OBSOLETE.  Only used for Max 2.x compatibility */
-
-    for (x = 0; x < MAXCLASS; x++)
-    {
-        prm.cls[x].priv = 0;
-        prm.cls[x].max_time = 60;
-        prm.cls[x].max_call = 60;
-        prm.cls[x].max_dl = 400;
-        prm.cls[x].ratio = 0;
-        prm.cls[x].min_baud = 300;
-        prm.cls[x].min_file_baud = 300;
-    }
-
-    return;
-}
-
-int Parse_Ctlfile(char *ctlname)
-{
-    FILE *ctlfile;
-
-    char p[MAX_LINE]; /* First word on line */
     char temp[MAX_LINE];
     char *bufr;
 
@@ -216,8 +173,6 @@ int Parse_Ctlfile(char *ctlname)
 
                 linenum++;
 
-                /* MsgDivisionBegin  comp  sysop/1234   misc\msgname The InterNet comp.* hierarchy
-                 */
 
                 getword(line, p, ctl_delim, 2);
                 getword(line, acs, ctl_delim, 3);
@@ -232,8 +187,6 @@ int Parse_Ctlfile(char *ctlname)
 
                 linenum++;
 
-                /* FileDivisionBegin  comp  sysop/1234   misc\filename The InterNet comp.* hierarchy
-                 */
 
                 getword(line, p, ctl_delim, 2);
                 getword(line, acs, ctl_delim, 3);

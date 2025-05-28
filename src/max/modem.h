@@ -1,24 +1,6 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*# name=FOSSIL #define's and declarations
- */
+
 
 #ifndef _MODEM_H_INCLUDED
 #define _MODEM_H_INCLUDED
@@ -80,44 +62,6 @@ int mdm_blockwrite(int max_chars, char *offset);
 #include "ntcomm.h"
 #endif
 
-#define mdm_getc() ComGetc(hcModem) /*PLF Sun  07-28-1991  15:47:29 */
-extern void com_XON_enable(void);
-extern void com_XON_disable(void);
-extern void com_HHS_enable(int mask);
-extern void com_HHS_disable(int mask);
-extern void com_DTR_on(void);
-extern void com_DTR_off(void);
-extern void com_break(int on);
-
-#define mdm_break_on() com_break(1)
-#define mdm_break_off() com_break(0)
-
-extern void MDM_ENABLE(int ignore);
-extern void MDM_DISABLE(void);
-extern int Cominit(int port);
-int mdm_ggetcw(void);
-
-int mdm_ctrlc(char mask);
-void mdm_dtr(char dtr);
-/*void mdm_flow(int  flow);*/
-#define mdm_flow(f) /*PLF Sun  04-22-1990  19:48:12 */
-void _fast vbuf_flush(void);
-
-#define mdm_peek() ComPeek(hcModem)
-#define mdm_pputcw(c) ComPutc(hcModem, c)
-
-#define mdm_fflush() ComTxWait(hcModem, -1L)
-
-#define CARRIER() carrier()
-#define out_empty() (ComOutCount(hcModem) == 0)
-int mdm_avail(void);
-extern HCOMM hcModem;
-word carrier(void);
-word real_carrier(void);
-int GetConnectionType(void);
-#else
-
-#ifdef __WATCOMC__ /* in-line FOSSIL call */
 
 extern int cdecl port;
 
@@ -158,13 +102,6 @@ word real_carrier(void);
 #define GetConnectionType() CTYPE_ASYNC
 #endif
 
-/* Return types for GetConnectionType */
-
-#define CTYPE_LOCAL -1      /* local connection */
-#define CTYPE_ASYNC 0       /* not a vmodem port, or vmodem not running */
-#define CTYPE_VM_INACTIVE 1 /* virtual modem, but no connection */
-#define CTYPE_VM_ACTIVE 2   /* virtual modem, active caller */
-#define CTYPE_TELNET 3      /* telnet session */
 
 #define FOSSIL_baud 0x00
 #define FOSSIL_xmitw 0x01
@@ -234,30 +171,3 @@ word real_carrier(void);
 #define FLOW_OFF 0x02
 #define FLOW_NO_CCK 0x03
 
-#define MAX_CMDLEN 28 /* Maximum length of command modem will return */
-
-#define CTRLC_OFF 0x00
-#define CTRLC_ON 0x01
-
-#define XMIT_DISABLE 0x00
-#define XMIT_ENABLE 0x02
-
-#define WATCHDOG_ON 0x01
-#define WATCHDOG_OFF 0x00
-
-#define BREAK_ON 0x01
-#define BREAK_OFF 0x00
-
-#define STATUS_ACTIVE 0x0008 /* FOSSIL is active */
-#define STATUS_CTS 0x0010    /* CTS */
-#define STATUS_DSR 0x0020    /* DSR */
-#define STATUS_DCD 0x0080    /* Carrier detect */
-
-#define STATUS_ANYDATA 0x0100    /* Some data in input buffer */
-#define STATUS_OVERRUN 0x0200    /* Input buffer overrun */
-#define STATUS_PARITYERR 0x0400  /* Parity error */
-#define STATUS_FRAMINGERR 0x0800 /* Framing error */
-#define STATUS_ROOMAVAIL 0x2000  /* Room available in output buffer */
-#define STATUS_OUTEMPTY 0x4000   /* Output buffer is empty */
-
-#endif

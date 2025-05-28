@@ -1,8 +1,5 @@
-/*
- *  XMSGAPI; eXtended MsgAPI
- *
- *  Please refer to the file named LICENCE for copyright information.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #ifndef __PUTWORD_H__
 #define __PUTWORD_H__
@@ -14,19 +11,6 @@ extern "C"
 
 #include "typedefs.h"
 
-    /*
-     *  get_dword
-     *
-     *  Reads in a 4 byte word that is stored in little endian (Intel) notation
-     *  and converts it to the local representation n an architecture-
-     *  independent manner
-     *
-     *  get_word
-     *
-     *  Reads in a 2 byte word that is stored in little endian (Intel) notation
-     *  and converts it to the local representation in an architecture-
-     *  independent manner
-     */
 
 #ifdef __LITTLE_ENDIAN__
 

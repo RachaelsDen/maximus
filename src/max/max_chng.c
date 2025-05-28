@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: max_chng.c,v 1.1.1.1 2002/10/01 17:51:31 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=Change Setup menu options
- */
 
 #define MAX_LANG_max_bor
 #define MAX_LANG_max_chng
@@ -64,17 +46,6 @@ static void near Chg_RIP(void)
 
 static void near Chg_Hotkeys(void)
 {
-    if (usr.bits & BITS_RIP) /* Hitkeys must be left on in this case */
-        usr.bits |= BITS_HOTKEYS;
-    else
-        usr.bits ^= BITS_HOTKEYS;
-}
-
-static void near Chg_FSR(void)
-{
-    usr.bits ^= BITS_FSR;
-
-    if (usr.bits & BITS_RIP) /* FSR must be left on in this case */
     {
         if ((usr.bits & BITS_FSR) == 0)
         {
@@ -87,10 +58,6 @@ static void near Chg_FSR(void)
 
     if (usr.bits & BITS_FSR)
     {
-        if (usr.video == GRAPH_TTY) /* FSR requires graphics */
-            usr.bits &= ~BITS_FSR;
-        else
-            usr.bits2 |= BITS2_MORE; /* Also requires more prompting */
     }
 }
 
@@ -119,54 +86,7 @@ static void near Chg_More(void)
 {
     usr.bits2 ^= BITS2_MORE;
 
-    /* User can't have both FSR and More on at the same time. */
-
-    if ((usr.bits2 & BITS2_MORE) == 0 && (usr.bits & BITS_FSR))
-        usr.bits &= ~BITS_FSR;
-}
-
-static void near Chg_Tabs(void) { usr.bits ^= BITS_TABS; }
-
-static void near Chg_Password(void)
-{
-    char string[BUFLEN]; /* string entered by the user */
 #ifdef CANENCRYPT
-    byte abMd5[MD5_SIZE]; /* MD5 of string entered by user */
-#endif
-    int fMatch; /* TRUE if correct pwd entered */
-    int tries;  /* Number of invalid passwords entered */
-
-    tries = 0;
-
-    logit(log_ch_pwd);
-
-    WhiteN();
-
-    for (;;)
-    {
-        if (tries != 0)
-        {
-            Clear_KBuffer();
-            logit(log_inv_pwd, string);
-            Printf(wrong_pwd, tries);
-            Putc('\n');
-
-            if (tries == 3)
-            {
-                logit(l_invalid_pwd);
-                Puts(invalid_pwd);
-                ci_ejectuser();
-                mdm_hangup();
-            }
-        }
-
-        *string = '\0';
-
-        while (!*string)
-        {
-            InputGetsLLe(string, BUFLEN, '.', current_pwd);
-
-            if (tries == 0 && !*string) /* Abort if first attempt */
                 return;
         }
 
@@ -206,77 +126,7 @@ static void near Chg_Help(void)
 
         ch = toupper(KeyGetRNP(help_prompt));
 
-        if (ch == hk[0]) /* novice */
-            usr.help = NOVICE;
-        else if (ch == hk[1]) /* regular */
             usr.help = REGULAR;
-        else if (ch == hk[2]) /* expert */
-            usr.help = EXPERT;
-        else
-            Clear_KBuffer();
-    }
-}
-
-static void near Chg_Nulls(void)
-{
-    char string[BUFLEN];
-
-    WhiteN();
-
-    InputGets(string, num_nulls);
-
-    if ((usr.nulls = (byte)atoi(string)) > 200)
-        usr.nulls = 0;
-}
-
-static void near Chg_Width(void)
-{
-    char string[BUFLEN];
-    extern int loc_cols;
-
-    WhiteN();
-
-    for (;;)
-    {
-        InputGets(string, mon_width);
-
-        usr.width = (byte)atoi(string);
-
-        if (usr.width < 20 || usr.width > 132)
-        {
-            usr.width = 80;
-            Puts(bad_width);
-            Clear_KBuffer();
-        }
-        else
-        {
-            if (!*linebuf)
-                Printf(draw_line, usr.width);
-
-            if (GetYnAnswer(check_x, 0) == YES)
-            {
-                if (local)
-                    loc_cols = usr.width;
-
-                return;
-            }
-            else
-            {
-                Puts(incorrect_width);
-                Clear_KBuffer();
-            }
-        }
-    }
-}
-
-static void near Chg_Length(void)
-{
-    char string[BUFLEN];
-    extern int loc_rows;
-    byte x;
-
-    if (hasRIP())
-        Puts("\r!|*|#|#|#\n"); /* Kludge, but required */
 
     WhiteN();
 
@@ -284,8 +134,6 @@ static void near Chg_Length(void)
         for (x = CHANGE_SCREENLEN; x >= 2; x--)
             Printf("%d\n", x);
 
-    x = usr.help;      /* Temporarily change help level, so HFLASH doesn't */
-    usr.help = NOVICE; /* screw us up! */
 
     InputGets(string, top_num);
 
@@ -383,14 +231,6 @@ void Chg_Alias(void)
 
         InputGetsL(temp, sizeof(usr.alias) - 1, enter_name);
 
-        /* Strip trailing blanks from the alias entered by the user */
-
-        l = strlen(temp);
-
-        while (l && temp[l - 1] == ' ')
-            temp[--l] = 0;
-
-        /* If nothing left, default to the user's name */
 
         if (!*temp)
             strnncpy(temp, usr.name, sizeof(usr.alias) - 1);
@@ -452,27 +292,6 @@ static int near Invalid_Name(char *usr_name)
         }
     }
 
-    /* Names need at least one alnum */
-
-    if (!*p)
-        return TRUE;
-
-    if (*p && !eqstri(usr_name, usr.name) && !eqstri(usr_name, usr.alias) &&
-        (IsInUserList(usr_name, FALSE) || Bad_Word_Check(usr_name)))
-    {
-        Puts(already_used);
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-static int near Invalid_Phone(char *usr_phone)
-{
-    char szNewPhone[PATHLEN];
-    char *p, *s;
-
-    /* Strip all spaces if the number is too long */
 
     if (strlen(usr_phone) <= 14)
         strcpy(szNewPhone, usr_phone);
@@ -485,15 +304,6 @@ static int near Invalid_Phone(char *usr_phone)
         *s = '\0';
     }
 
-    /* If it's still too long, complain. */
-
-    if (strlen(szNewPhone) > 14)
-    {
-        Puts(ph_too_long);
-        return TRUE;
-    }
-
-    /* Now check to see if it contains any alpha chars... */
 
     for (p = szNewPhone; *p; p++)
         if (isalpha(*p))
@@ -510,26 +320,6 @@ static int near Invalid_Phone(char *usr_phone)
         return TRUE;
     }
 
-    /* Asshole detector */
-    if (stristr(szNewPhone, "555-1212") || stristr(szNewPhone, "5551212"))
-    {
-        Puts(cantskip);
-        return TRUE;
-    }
-
-    strcpy(usr_phone, szNewPhone);
-    return FALSE;
-}
-
-static void near Chg_Archiver(void)
-{
-    byte a = Get_Archiver();
-
-    if (a)
-        usr.compress = a;
-}
-
-/* Get the user to select an archiver */
 
 byte Get_Archiver(void)
 {

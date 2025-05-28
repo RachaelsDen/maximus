@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: f_xfer.c,v 1.1.1.1 2002/10/01 17:51:12 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=File area routines: Required functions for both ULing and DLing
- */
 
 #include "alc.h"
 #include <ctype.h>
@@ -66,9 +48,6 @@ int File_Get_Protocol(sword *protocol, int chng, int need_nonexit)
         else
         {
             if (!chng)
-                Puts(avail_proto); /* "Available protocols:" */
-
-            /* Now, calculate the minimum required width of the box... */
 
             max = 9;
 
@@ -79,11 +58,6 @@ int File_Get_Protocol(sword *protocol, int chng, int need_nonexit)
                         max = strlen(s);
                 }
 
-            /* Display the top of the box */
-
-            Printf(proto_box_top, max + 3);
-
-            /* Print the middle of the box */
 
             for (ps = intern_proto; ps->name; ps++)
                 if (*ps->name)
@@ -136,9 +110,6 @@ int File_Get_Protocol(sword *protocol, int chng, int need_nonexit)
     return -1;
 }
 
-/* This file is only written during file transfers, so some other part      *
- * of a multitasking system can tell that we're not free for a two-way      *
- * chat, or whatever.                                                       */
 
 void Open_OpusXfer(FILE **xferinfo)
 {
@@ -207,41 +178,7 @@ char *zalloc(void)
 }
 #endif
 
-/* Wait 'x' seconds for user to either press <esc> or press <enter> */
-
-word Shall_We_Continue(word timeout, char *do_what)
-{
-    word pause, ret;
-    int ch;
-
-    long tmr;
-
-    ret = TRUE;
-
-    Putc('\n');
-
-    Printf(pause_msg, pause = timeout, do_what);
-
-    while (pause-- > 0)
-    {
-        Printf(pause_time, pause);
-
-        tmr = timerset(100);
-
-        vbuf_flush();
-
-        while (!timeup(tmr) && !Mdm_keyp())
-            Giveaway_Slice();
-
-        if (Mdm_keyp())
-        {
-            ch = Mdm_getcw();
-
-            if (ch == '\x0d') /* C/R */
                 break;
-            else if (ch == '\x1b') /* ESC */
-            {
-                /*        Puts(xferaborted);*/
                 ret = FALSE;
                 break;
             }

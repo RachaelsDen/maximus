@@ -5,20 +5,26 @@ project(MaximusCBCS VERSION 3.03 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(UNIX)
+    add_definitions(-DUNIX)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_definitions(-DLINUX)
+endif()
+
 # Output directory for binaries
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Include paths
 include_directories(
-    ${PROJECT_SOURCE_DIR}/slib
-    ${PROJECT_SOURCE_DIR}/unix/include
+    ${PROJECT_SOURCE_DIR}/src/slib
+    ${PROJECT_SOURCE_DIR}/src/unix/include
 )
 
 # Collect all source files (can refine later)
 file(GLOB_RECURSE SRC_FILES
     src/*.cpp src/*.c
-    slib/*.c
-    unix/*.c
 )
 
 # Main executable (adjust as needed)

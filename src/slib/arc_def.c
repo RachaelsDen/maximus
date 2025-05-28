@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include "arc_def.h"
 #include "alc.h"
@@ -144,15 +128,6 @@ struct _arcinfo *_fast Parse_Arc_Control_File(char *afname)
                 continue;
             }
 
-            /* Now convert the hex bytes into a string */
-
-            for (o = temp, p++; *p; p += 2)
-                if (sscanf(p, "%02x", &tempx) == 1)
-                    *o++ = (char)tempx;
-
-            *o = '\0';
-
-            /* And copy it into the 'ari' structure */
 
             if ((ari->id = strdup(temp)) == NULL)
                 return NULL;

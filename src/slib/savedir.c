@@ -1,24 +1,6 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*# name=Save and restore-directory functions
- */
+
 
 #include "alc.h"
 #include "dr.h"
@@ -43,29 +25,6 @@ int _fast Save_Dir(char *orig_disk, char *orig_path[], char *path)
     else
         dn = (char)getdisk();
 
-    if (!orig_path[dn]) /* Do this if it's NULL, otherwise skip it */
-    {
-        setdisk(dn);
-
-        if (getdisk() != dn) /* If we didn't change drives successfully... */
-            return 0;        /* We return 0 because -1 indicates out of memory */
-        else
-        {
-            if ((orig_path[dn] = (char *)malloc(PATHLEN)) == NULL)
-                return -1;
-
-            if (getcwd(orig_path[dn], PATHLEN) == NULL)
-            {
-                free(orig_path[dn]);
-                orig_path[dn] = NULL;
-            }
-        }
-    }
-
-    if (strlen(temp) > 3 && temp[strlen(temp) - 1] == '\\')
-        temp[strlen(temp) - 1] = '\0';
-
-    /* Now change to the right directory... */
     if ((p = strchr(temp, ':')) != NULL)
     {
         if (p == temp + 1)

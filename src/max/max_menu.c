@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: max_menu.c,v 1.1.1.1 2002/10/01 17:51:51 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=Menu server
- */
 
 #define MAX_LANG_max_main
 #define MAX_INCL_COMMS
@@ -69,8 +51,6 @@ static int near DoHdrFile(byte help, word flag)
             (help == EXPERT && (flag & MFLAG_HF_EXPERT)) || (hasRIP() && (flag & MFLAG_HF_RIP)));
 }
 
-/* This shows the header part of the menu (in general, the headerfile)      *
- * to the user.                                                             */
 
 static void near ShowMenuHeader(PAMENU pam, byte help, int first_time)
 {
@@ -87,14 +67,6 @@ static void near ShowMenuHeader(PAMENU pam, byte help, int first_time)
     }
     else
     {
-        /* Is it a MEX file? */
-
-        if (*filename == ':')
-        {
-            char temp[PATHLEN];
-
-            /* Run the MEX file, passing it an argument stating whether or not    *
-             * this is the first time we've been through the menu.                */
 
             sprintf(temp, "%s %d", filename + 1, first_time);
 
@@ -123,19 +95,6 @@ static void near ShowMenuFile(PAMENU pam, char *filename)
     }
 }
 
-/* Returns TRUE if the next waiting keystroke is a non-junk menu option */
-
-static int near GotMenuStroke(void)
-{
-    int ch;
-
-    while ((ch = Mdm_kpeek()) == 8 || ch == 0x7f)
-        Mdm_getcw();
-
-    return (ch != -1);
-}
-
-/* Show one individual menu command */
 
 static void near ShowMenuCommand(PAMENU pam, struct _opt *popt, int eol, int first_opt, byte help)
 {
@@ -144,23 +103,6 @@ static void near ShowMenuCommand(PAMENU pam, struct _opt *popt, int eol, int fir
 
     switch (help)
     {
-    default: /* novice */
-        nontty = usr.video != GRAPH_TTY;
-
-        Printf("%s%c%s%s%-*.*s%c", menu_high_col, *optname, menu_opt_col, ")" + nontty,
-               pam->m.opt_width + nontty - 3, pam->m.opt_width + nontty - 3, optname + 1,
-               eol ? '\n' : ' ');
-        break;
-
-    case REGULAR:
-        Printf("%s%c", " " + !!first_opt, *optname);
-
-    case EXPERT:
-        break;
-    }
-}
-
-/* This shows all of the canned menu commands for the menu body */
 
 static void near ShowMenuCanned(PAMENU pam, byte help, char *title, char *menuname)
 {
@@ -168,98 +110,11 @@ static void near ShowMenuCanned(PAMENU pam, byte help, char *title, char *menuna
     int opts_per_line, num_opts, num_shown;
     int first_opt = TRUE;
 
-    /* Exit if we have stacked input */
-
-    if (*linebuf || ((usr.bits & BITS_HOTKEYS) && GotMenuStroke()))
-        return;
-
-    Printf("%s%s:%c", menu_name_col, title, help == NOVICE ? '\n' : ' ');
-
-    if (help == REGULAR)
-        Printf(menu_start);
-
-    if (!pam->m.opt_width)
-        pam->m.opt_width = DEFAULT_OPT_WIDTH;
-    opts_per_line = (TermWidth() + 1) / pam->m.opt_width;
-    if (opts_per_line <= 0)
-        opts_per_line = 1;
-    num_opts = 0;
-
-    for (popt = pam->opt, eopt = popt + pam->m.num_options, num_shown = 0;
-         popt < eopt && !brk_trapped && !mdm_halt() &&
-         ((usr.bits & BITS_HOTKEYS) == 0 || !GotMenuStroke());
-         popt++)
-    {
-        if (popt->type && OptionOkay(pam, popt, TRUE, NULL, &mah, &fah, menuname))
-        {
-            if (++num_opts < opts_per_line)
-                ShowMenuCommand(pam, popt, FALSE, first_opt, help);
-            else
-            {
-                ShowMenuCommand(pam, popt, TRUE, first_opt, help);
-                num_opts = 0;
-            }
-
-            num_shown++;
-
-            first_opt = FALSE;
-        }
-    }
-
-    switch (help)
-    {
-    case REGULAR:
-        Printf(menu_end);
-        break;
-    case NOVICE:
-        Printf(ATTR "%s%s", CWHITE, (num_shown % opts_per_line) == 0 ? "" : "\n", select_p);
-        break;
-    }
-
-    Puts(GRAY);
-}
-
-/* This displays the body of a menu to the user */
 
 static void near ShowMenuBody(PAMENU pam, byte help, char *title, char *menuname)
 {
     char *filename = MNU(*pam, m.dspfile);
 
-    /* If there is a custom menu file to be displayed */
-
-    if (*filename && DoDspFile(help, pam->m.flag))
-    {
-        ShowMenuFile(pam, filename);
-        return;
-    }
-    else
-    {
-        ShowMenuCanned(pam, help, title, menuname);
-        return;
-    }
-}
-
-static option near GetMenuResponse(char *title)
-{
-    char prompt[PATHLEN];
-    int ch;
-
-    sprintf(prompt, "%s%s: " GRAY, menu_name_col, title);
-
-    do
-    {
-        ch = Input_Char(CINPUT_NOUPPER | CINPUT_PROMPT | CINPUT_P_CTRLC | CINPUT_NOXLT |
-                            CINPUT_DUMP | CINPUT_MSGREAD | CINPUT_SCAN,
-                        prompt);
-
-        if (ch == 10 || ch == 13 || ch == 0)
-            ch = '|';
-    } while (ch == 8 || ch == 9 || ch == 0x7f);
-
-    return ch;
-}
-
-/* Display the option that was selected by the user */
 
 static void near ShowOption(int ch, byte help, word flag)
 {
@@ -271,30 +126,6 @@ static void near ShowOption(int ch, byte help, word flag)
     }
 }
 
-/* Process the user's keystroke */
-
-static int near ProcessMenuResponse(PAMENU pam, int *piSameMenu, char *name, XMSG *msg,
-                                    byte *pbHelp, unsigned int ch, int *piRanOpt, char *menuname)
-{
-    struct _opt *popt, *eopt;
-    unsigned upper_ch = toupper(ch);
-    int shown = FALSE;
-    unsigned flag;
-    char *p;
-
-    *piRanOpt = FALSE;
-
-    if (ch == '.')
-    {
-        *pbHelp = NOVICE;
-        return 0;
-    }
-
-    for (popt = pam->opt, eopt = popt + pam->m.num_options; popt < eopt; popt++)
-    {
-        int scan = -1;
-
-        /* Handle cursor keys and other keys that use scan codes */
 
         if (ch > 255 && pam->menuheap[popt->name] == '`')
             scan = atoi(pam->menuheap + popt->name + 1) << 8;
@@ -356,30 +187,6 @@ static int near ProcessMenuResponse(PAMENU pam, int *piSameMenu, char *name, XMS
     return 0;
 }
 
-/* Perform menu-name substitutions based on the menu to be entered */
-
-static int near EnterMenu(char *name, char *menu_name)
-{
-    static char old_replace[PATHLEN];
-    static char old_name[PATHLEN];
-    int rc = FALSE;
-
-    /* The old_replace/name fields are used to hold the menuname/menureplace  *
-     * strings of the area which caused us to shift into a custom menu.  If   *
-     * these fields are non-null, they mean that we ARE currently in a custom *
-     * menu.                                                                  *
-     *                                                                        *
-     * The idea behind this code is to cover the changes in the current menu  *
-     * when switching between areas.  The first test checks to see if the     *
-     * custom menu name is still equal to the current menu name.  If this     *
-     * is true, we are either still in the current area (and no action        *
-     * needs to be taken), or we are in the process of leaving that area      *
-     * (and the menu must be restored).                                       *
-     *                                                                        *
-     * If the menunames of the current message and file areas do not match    *
-     * the current menu name, we know that we have switched message/file      *
-     * areas, so we restore the menu name to that which was in use            *
-     * originally.  This is what was stored in the old_replace value.         */
 
     if (*old_name)
     {
@@ -396,15 +203,11 @@ static int near EnterMenu(char *name, char *menu_name)
         }
         else
         {
-            /* We have switched to a different menu completely, as opposed to     *
-             * just changing areas, so clear the save/restore information.        */
 
             *old_name = *old_replace = 0;
         }
     }
 
-    /* If the current menu is to be replaced with a custom name, and          *
-     * replace-name is not same as menu-name, then switch to the new menu.    */
 
     if (fah.heap && eqstri(menu_name, FAS(fah, menureplace)) &&
         !eqstri(menu_name, FAS(fah, menuname)))
@@ -419,22 +222,6 @@ static int near EnterMenu(char *name, char *menu_name)
         rc = TRUE;
     }
 
-    /* Repeat same for file areas */
-
-    if (eqstri(menu_name, MAS(mah, menureplace)) && !eqstri(menu_name, MAS(mah, menuname)))
-    {
-        strcpy(old_name, MAS(mah, menuname));
-
-        if (!*old_replace)
-            strcpy(old_replace, MAS(mah, menureplace));
-
-        strcpy(name, MAS(mah, menuname));
-        ProcessMenuName(name, menu_name);
-        rc = TRUE;
-    }
-
-    /* If we have an active msg area pushed on the stack, and if we are       *
-     * supposed to be using a barricade priv level                            */
 
     if (lam && mah.bi.use_barpriv)
         if (lam->biOldPriv.use_barpriv)
@@ -495,8 +282,6 @@ static int near MagnEtOkay(struct _opt *opt)
     return TRUE;
 }
 
-/* Check the priv level of the option against the standard priv level       *
- * required, in addition to checking override priv levels.                  */
 
 static int near OverridePrivOkay(struct _amenu *menu, struct _opt *popt, PMAH pmah, PFAH pfah,
                                  char *menuname)
@@ -545,18 +330,10 @@ int OptionOkay(struct _amenu *menu, struct _opt *popt, int displaying, char *bar
 
     bi.use_barpriv = FALSE;
 
-    /* See if we have to temporarily adjust user's priv level because of      *
-     * an extended barricade.                                                 */
 
     if (barricade && *barricade && GetBarPriv(barricade, FALSE, pmah, pfah, &bi, TRUE) &&
         bi.use_barpriv)
     {
-        /* Save user's old priv level */
-
-        biSave.priv = usr.priv;
-        biSave.keys = usr.xkeys;
-
-        /* Temporarily use this new priv level */
 
         usr.priv = bi.priv;
         usr.xkeys = bi.keys;
@@ -568,51 +345,15 @@ int OptionOkay(struct _amenu *menu, struct _opt *popt, int displaying, char *bar
           (!displaying || (popt->flag & OFLAG_NODSP) == 0) &&
           (hasRIP() ? (popt->flag & OFLAG_NORIP) == 0 : (popt->flag & OFLAG_RIP) == 0));
 
-    /* Restore user's priv level */
-
-    if (bi.use_barpriv)
-    {
-        usr.priv = biSave.priv;
-        usr.xkeys = biSave.keys;
-    }
-
-    return rc;
-}
-
-/* The main menu handler */
 
 int Display_Options(char *first_name, XMSG *msg)
 {
-    char name[PATHLEN];      /* Name of current menu */
-    char menu_name[PATHLEN]; /* Name of current menu, after P_O_C */
-    struct _amenu menu;      /* Current menu */
-    char title[PATHLEN];
-    char *title_temp;
-    int same_menu, first_time, opt_rc;
-    byte help, orig_help; /* Current help level */
 
     next_menu_char = -1;
 
-    /* Initialize the current menu and get menu name */
-
-    Initialize_Menu(&menu);
-
-    strcpy(name, first_name);
-
-    halt();
-
-    /* Keep displaying until we are told to exit */
 
     do
     {
-        /* We are just about to enter the named menu */
-
-        ProcessMenuName(name, menu_name);
-        EnterMenu(name, menu_name);
-
-        Free_Menu(&menu);
-
-        /* Read current menu into memory */
 
         if (Read_Menu(&menu, menu_name) != 0)
         {
@@ -628,24 +369,6 @@ int Display_Options(char *first_name, XMSG *msg)
             int ran_opt;
             unsigned ch;
 
-            /* Get and display the title of this menu */
-
-            title_temp = menu.m.title ? MNU(menu, m.title) : name;
-            Parse_Outside_Cmd(title_temp, title);
-
-            if (nullptr())
-                Got_A_Null_Pointer(blank_str, menu_name);
-
-            if (next_menu_char == -1)
-            {
-                menuhelp = help;
-                ShowMenuHeader(&menu, help, first_time);
-                ShowMenuBody(&menu, help, title, menu_name);
-            }
-
-            do
-            {
-                /* Get a keystroke from the user */
 
                 if (next_menu_char == -1)
                     ch = GetMenuResponse(title);
@@ -655,20 +378,10 @@ int Display_Options(char *first_name, XMSG *msg)
                     next_menu_char = -1;
                 }
 
-                /* Save the user's current help level */
-
-                orig_help = usr.help;
-
-                opt_rc = ProcessMenuResponse(&menu, &same_menu, name, msg, &help, ch, &ran_opt,
-                                             menu_name);
-
-                /* If the user's help level changed, update it for this menu */
 
                 if (usr.help != orig_help)
                     help = usr.help;
 
-                /* If we have to switch to a new menu due to the current msg/file   *
-                 * area, do so now.                                                 */
 
                 ProcessMenuName(name, menu_name);
 
@@ -678,8 +391,6 @@ int Display_Options(char *first_name, XMSG *msg)
                     same_menu = FALSE;
                 }
 
-                /* Don't display error messages for invalid f-keys or cursor        *
-                 * keys -- just ignore them.                                        */
             } while (!ran_opt && ch > 255 && opt_rc == 0);
 
             first_time = FALSE;

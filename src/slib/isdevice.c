@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include "prog.h"
 #include <dos.h>
@@ -24,17 +8,6 @@
 
 #if defined(__MSDOS__)
 
-/* Mapping of device word:
-                     6 5 4       3 2 1 0
-
-   0 0 0 0 0 0 0 0 0 0 0 0       0 0 0 0
-        reserved    \ \ \ \rsvd   \ \ \ \ if stdin
-                     \ \ \raw      \ \ \if stdout
-                      \ \eof        \ \if nul
-                       \char device  \if clock
-
-  Test for mask 0x47 for char|stdin|stdout|nul|clock
-*/
 
 #define DEV_MASK 0x0047
 
@@ -42,8 +15,6 @@ unsigned _fast is_device(int fd)
 {
     union REGS r;
 
-    r.h.ah = 0x44; /* ioctl */
-    r.h.al = 0x00; /* get device info */
 
 #ifdef __386__
     r.x.ebx = fd;
@@ -115,23 +86,6 @@ unsigned _fast is_device(int fd)
 
 #include "unistr.h"
 
-/* Check for other special device names */
-
-unsigned _fast is_devicename(char *filename)
-{
-    byte **pp;
-    unsigned len;
-
-    static byte *bad_names[] = {
-        "CON",   "AUX",    "PRN",  "NUL",    "LPT",      "LPT1",     "LPT2",    "LPT3",  "LPT4",
-        "COM",   "COM1",   "COM2", "COM3",   "COM4",     "GATE1",    "GATE2",   "GATE3", "GATE4",
-        "CLOCK", "CLOCK$", "KBD$", "MOUSE$", "POINTER$", "QEMM386$", "SCREEN$", "..",    NULL};
-
-    for (pp = bad_names; *pp; pp++)
-    {
-        len = strlen(*pp);
-
-        /* Filter out 'COM1' or even 'COM1.ABC' */
 
         if (eqstri(filename, *pp) || (eqstrn(filename, *pp, len) && (*pp)[len] == '.'))
         {

@@ -1,71 +1,11 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: s_hole.c,v 1.2 2003/06/05 03:13:40 wesgarland Exp $";
 #pragma on(unreferenced)
 
 #define NOVARS
-/*#define DEBUG_HOLE*/
-
-#include "s_hole.h"
-#include "alc.h"
-#include "dr.h"
-#include "max.h"
-#include "msgapi.h"
-#include "prog.h"
-#include "squish.h"
-#include <ctype.h>
-#include <dos.h>
-#include <fcntl.h>
-#include <io.h>
-#include <share.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <time.h>
-
-static char *msgfrom = "ARCmail";
-char bsy_pkt_queued[] = ":%s busy - packet queued";
-static HAREA netmail = NULL;
-
-static struct _netinf *netmsg = NULL;
-static word n_netmsg = 0;
-
-struct _hpkt *hpl = NULL;
-static word n_hpkt = 0;
-
-static void near TooManyPkts(void)
-{
-    S_LogMsg("!|Too many packets in .SQ hold area!");
-    S_LogMsg("!|Remaining packets queued for next run");
-}
-
-static void near TooManyNetmsgs(void)
-{
-    S_LogMsg("!|Too many netmail attaches!");
-    S_LogMsg("!|Increase `MaxAttach' in SQUISH.CFG!");
-}
-
-/* Set the name of a packet in our hpkt list */
 
 static void near SetHpktName(char *hpname, char *setname)
 {
@@ -76,41 +16,10 @@ static void near SetHpktName(char *hpname, char *setname)
 
     from = setname + strlen(temp);
 
-    /* Make sure that we can get a substring out of it */
-
-    if (strncmp(setname, temp, strlen(temp)) != 0)
-    {
-        S_LogMsg("!Internal error in path compare!");
-        S_LogMsg("!Internal error - have '%s', need substring '%s'!\n", setname, temp);
-
-        exit(ERL_ERROR);
-    }
-
-    if (strlen(from) >= MAX_HPKT_NAME - 1)
-    {
-        S_LogMsg("!Internal error - from pkt '%s' is more than %d", MAX_HPKT_NAME);
-        exit(ERL_ERROR);
-    }
-
-    strcpy(hpname, from);
-
-    /* Convert the filename to uppercase */
 
     upper_fn(hpname);
 }
 
-/* Return the name of a packet in the holding area */
-
-char *GetHpktName(char *hpname)
-{
-    static char pktname[PATHLEN];
-
-    strcpy(pktname, FixOutboundName(0xffff));
-    strcat(pktname, hpname);
-    return pktname;
-}
-
-/* Add a packet to our linked list of packets */
 
 void HoleAddPacket(char *name, BLIST far *bl)
 {
@@ -156,31 +65,6 @@ void HoleScanHole(void)
     (void)strcpy(fname, hpath);
     (void)strcat(fname, "*.?ut");
 
-    /* If there aren't any packets, then there's nothing to do */
-
-    if ((ff = FindOpen(fname, 0)) == NULL)
-        return;
-
-    do
-    {
-#ifndef UNIX
-        (void)strupr(ff->szName);
-#endif
-
-        (void)strcpy(fname, hpath);
-        (void)strcat(fname, ff->szName);
-
-#ifdef DEBUG_HOLE
-        (void)printf("Attempting to read %s\n", fname);
-#endif
-
-        if ((pfd = sopen(fname, O_RDONLY | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE)) == -1)
-            continue;
-
-        bytes = (unsigned)fastread(pfd, (char *)&hdr, sizeof(struct _pkthdr));
-        (void)close(pfd);
-
-        /* If there was an error reading the file, just continue */
 
         if (bytes != sizeof(struct _pkthdr))
             continue;
@@ -218,11 +102,6 @@ void HoleScanHole(void)
         case 'D':
             hpkt->attr = MSGCRASH | MSGHOLD;
             break;
-        default: /* happy lint */
-            break;
-        }
-
-        /* Add to linked list */
 
 #ifdef DEBUG_HOLE
         (void)printf("%s: %hu:%hu/%hu.%hu -> %hu:%hu/%hu.%hu\n", GetHpktName(hpkt->name),
@@ -286,8 +165,6 @@ void Hole_Read_Netmail_Area(void)
                 if (ctrl)
                     free(ctrl);
 
-                /* Send message if it's FROM "SquishMail", if it originated from    *
-                 * here, and if it has the F'Att bit (but not Sent) turned on.      */
 
                 if ((xmsg.attr & (MSGSENT | MSGFILE)) == MSGFILE)
                 {
@@ -394,15 +271,6 @@ word Hole_Add_To_Net(NETADDR *to, char *txt, int flavour)
         break;
 
     default:
-        /* happy lint */
-        break;
-    }
-
-#ifdef DEBUG_HOLE
-    (void)printf("Searching for match for %s\n", txt);
-#endif
-
-    /* Now scan the linked list, to see if we can find this file in there */
 
     for (nm = netmsg, end = netmsg + n_netmsg; nm < end; nm++)
     {
@@ -416,8 +284,6 @@ word Hole_Add_To_Net(NETADDR *to, char *txt, int flavour)
         }
     }
 
-    /* It we got this far, it must not have been found.  So, prepare to       *
-     * write the message.                                                     */
 
     (void)memset(&msg, '\0', sizeof(XMSG));
 
@@ -472,86 +338,6 @@ word Hole_Add_To_Net(NETADDR *to, char *txt, int flavour)
     (void)printf("Generated attach to %s of file %s\n", Address(to), txt);
 #endif
 
-    /* Add to list */
-
-    if (n_netmsg > config.maxattach)
-    {
-        TooManyNetmsgs();
-        return 0;
-    }
-
-    nm = netmsg + n_netmsg++;
-
-    nm->name = sstrdup(txt);
-
-    (void)NetaddrToSblist(to, &nm->to);
-    nm->attr = msg.attr;
-
-    return 1;
-}
-
-MATCHOUT *HoleMatchOutOpen(NETADDR *who, int type, byte flavour)
-{
-    MATCHOUT *mo;
-
-    if ((mo = (MATCHOUT *)malloc(sizeof(MATCHOUT))) == NULL)
-        return NULL;
-
-    mo->ff = NULL;
-    mo->who = *who;
-    mo->flavour = flavour;
-    mo->type = (sword)type;
-    mo->config = &config;
-
-    mo->hpkt = hpl;
-
-    if (HoleMatchOutNext(mo))
-        return mo;
-
-    free(mo);
-    return NULL;
-}
-
-int HoleMatchOutNext(MATCHOUT *mo)
-{
-    byte *fn;
-    struct _hpkt *end;
-
-    mo->got_type = MATCH_OUT;
-
-    for (end = hpl + n_hpkt; mo->hpkt < end; mo->hpkt++)
-    {
-        fn = strrchr(GetHpktName(mo->hpkt->name), '.');
-
-        if (fn && AddrMatchNS(&mo->who, &mo->hpkt->to) && fexist(GetHpktName(mo->hpkt->name)) &&
-            (mo->flavour == 0 || mo->flavour == (byte)toupper(fn[1]) ||
-             (mo->flavour == 'F' && fn[1] == 'O') || (mo->flavour == 'O' && fn[1] == 'F') ||
-             (mo->flavour == 'L' && fn[1] == 'N') || (mo->flavour == 'U' && fn[1] != 'N')))
-        {
-            (void)SblistToNetaddr(&mo->hpkt->to, &mo->found);
-            (void)strcpy(mo->name, GetHpktName(mo->hpkt->name));
-            mo->fFromHole = TRUE;
-            return 1;
-        }
-    }
-
-    return 0;
-}
-
-void HoleMatchOutClose(MATCHOUT *mo)
-{
-    if (mo)
-        free(mo);
-}
-
-void GetFunkyPacketName(char *name, struct _sblist *from, struct _sblist *to, int flavour)
-{
-    struct _hpkt *hp, *end;
-    char *last;
-
-    for (hp = hpl, end = hpl + n_hpkt; hp < end; hp++)
-        if (AddrMatchS(&hp->from, from) && AddrMatchS(&hp->to, to) &&
-            (MsgAttrToFlavour(hp->attr) == flavour /*|| (config.flag & FLAG_ADDMODE)*/))
         {
             char hpname[PATHLEN];
 
@@ -568,86 +354,6 @@ void GetFunkyPacketName(char *name, struct _sblist *from, struct _sblist *to, in
                 exit(ERL_ERROR);
             }
 
-            /* Copy name of packet, but not path. */
-
-            (void)strcpy(name, last ? last + 1 : name);
-
-            return;
-        }
-
-    (void)sprintf(name, "%08lx.%cut", get_unique_number(), flavour);
-}
-
-#ifdef NEVER
-
-void HoleOpenList(void)
-{
-    char temp[PATHLEN];
-
-    if ((config.flag & FLAG_FRODO) == 0)
-        return;
-
-    (void)sprintf(temp, holename, FixOutboundName(1u));
-
-    if ((holefile = sopen(temp, O_CREAT | O_WRONLY | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE)) ==
-        -1)
-    {
-        S_LogMsg("!Error creating HOLELIST.DAT!");
-        exit(ERL_ERROR);
-    }
-
-    lseek(holefile, 0L, SEEK_END);
-}
-
-void HoleCloseList(void)
-{
-    if ((config.flag & FLAG_FRODO) == 0)
-        return;
-
-    if (holefile != -1)
-    {
-        close(holefile);
-        holefile = -1;
-    }
-}
-
-#endif
-
-void HoleMoveOut(void)
-{
-    NETADDR addr;
-    struct _hpkt *hp, *end;
-    char newname[PATHLEN];
-    char *dot;
-    char flavour;
-
-    if (config.flag & FLAG_FRODO)
-        return;
-
-    for (hp = hpl, end = hpl + n_hpkt; hp < end; hp++)
-    {
-        dot = strrchr(GetHpktName(hp->name), '.');
-
-        if (dot == NULL || dot < strrchr(GetHpktName(hp->name), PATH_DELIM))
-            flavour = 'O';
-        else
-            flavour = dot[1];
-
-        if (fexist(GetHpktName(hp->name)))
-        {
-            MakeOutboundName(SblistToNetaddr(&hp->to, &addr), newname);
-            (void)sprintf(newname + strlen(newname), "%cut", flavour);
-
-            if (BusyFileExist(&addr))
-            {
-                S_LogMsg(bsy_pkt_queued, Address(SblistToNetaddr(&hp->to, &addr)));
-            }
-            else if (!eqstri(GetHpktName(hp->name), newname))
-                (void)Merge_Pkts(GetHpktName(hp->name), newname);
-        }
-
-        /*    free(hp->name);
-            hp->name=NULL;*/
         *hp->name = 0;
     }
 }
@@ -658,20 +364,12 @@ void HoleRemoveFromList(char *name)
 
     for (hp = hpl; hp < hpl + n_hpkt; hp++)
     {
-        /* Not found, so skip to next entry */
-
-        if (!eqstri(GetHpktName(hp->name), name))
-            continue;
-
-        /*    free(hp->name);*/
 
         (void)memmove(hp, hp + 1, (n_hpkt - (word)(hp - hpl) - 1) * sizeof(struct _hpkt));
         n_hpkt--;
     }
 }
 
-/* Handle the renaming of a packet in the OUT.SQ area.  This is used        *
- * when the CHANGE routing verb changes the flavour of a message.           */
 
 void HoleRename(char *from, char *to)
 {
@@ -683,8 +381,6 @@ void HoleRename(char *from, char *to)
             continue;
 
         SetHpktName(hp->name, to);
-        /*    free(hp->name);
-            hp->name=strdup(to);*/
         break;
     }
 }
@@ -712,9 +408,6 @@ void HoleDeinitHole(void)
 
     if (hpl)
     {
-        /*    for (n=0; n < n_hpkt; n++)
-              if (hpl[n].name)
-                free(hpl[n].name);*/
 
         free(hpl);
         hpl = NULL;
@@ -736,8 +429,6 @@ void HoleDeinitHole(void)
     }
 }
 
-/* Nuke all bundles in the outbound area which don't have an accompanying   *
- * attach message.                                                          */
 
 void Hole_Nuke_Bundles(void)
 {
@@ -765,80 +456,19 @@ void Hole_Nuke_Bundles(void)
 
             (void)upper_fn(ff->szName);
 
-            /* Find the extension of the file */
-
-            ext = ff->szName + strlen(ff->szName) - 4;
-
-            /* Make sure that it ends with a dot. */
 
             if (*ext++ != '.')
                 continue;
 
-            /* Make sure that it's an arcmail file */
-
-            for (p = strs; *p; p++)
-                if (eqstrin(ext, *p, 2))
-                    break;
-
-            /* If it's not arcmail, loop to the next filename */
 
             if (!*p)
                 continue;
 
-            /* GOT IT!  OK, now search the netmail attach list.  Stop when        *
-             * we find a match.                                                   */
 
             for (nm = netmsg, end = netmsg + n_netmsg; nm < end; nm++)
                 if (stristr(nm->name, ff->szName))
                     break;
 
-            /* If we found it in attach list, there's no need to nuke bundle */
-
-            if (nm < end)
-                continue;
-
-            (void)strcpy(full, hpath);
-            (void)strcat(full, ff->szName);
-            (void)fancy_fn(full);
-
-            (void)unlink(full);
-        } while (FindNext(ff) == 0);
-
-        FindClose(ff);
-    }
-}
-
-#if 0
-
-void FloToArc(void)
-{
-  MATCHOUT *mo;
-  NETADDR node={ZONE_ALL, NET_ALL, NODE_ALL, POINT_ALL};
-  FILE *flo;
-  word flag;
-
-  flag=config.flag;
-
-  config.flag &= ~FLAG_FRODO;
-  
-  mo=MatchOutOpen(&node, MATCH_FLO, 0);
-  
-  if (!mo)
-    return;
-  
-  do
-  {
-    char temp[PATHLEN];
-    byte *fp, flav;
-      
-    
-    if ((flo=shfopen(mo->name, "r", O_RDONLY))==NULL)
-    {
-      (void)printf("Error opening %s\n", mo->name);
-      continue;
-    }
-
-    /* Determine the flavour of this file */
 
     fp=strrchr(mo->name, '.');
       

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifndef _WES_COMPAT_H
 #define _WES_COMPAT_H
 #include "dosproc.h"

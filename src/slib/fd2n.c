@@ -1,38 +1,11 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/* Wrapper to convert normal file-handle I/O to new-style I/O */
 
-#include "nopen.h"
-
-char __fd2n;
-
-#if !defined(NT) && !defined(UNIX)
-
-#ifdef __TOPAZ__ /* BC++/2 does things a bit differently */
 #define IOTYPE _RTLENTRYF _EXPFUNC
 #else
 #define IOTYPE _stdc
 #endif
 
-/* Add a "extern char __fd2n" to cause your app to be linked with these     *
- * routines.                                                                */
 
 int _stdc sopen(const char *name, int mode, int shacc, ...)
 {

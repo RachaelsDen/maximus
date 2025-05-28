@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: ansi2bbs.c,v 1.2 2003/06/05 03:18:58 wesgarland Exp $";
 #pragma on(unreferenced)
 
-/*# name=ANSI2BBS and ANSI2MEC, ANSI to .BBS/MEC conversion utilities
- */
 
 #define MAX_INCL_VER
 
@@ -117,8 +99,6 @@ int _stdc main(int argc, char *argv[])
     lastcount = 0;
     last_x = 1;
 
-    colour = 7;                      /* White-on-black, starting colour */
-    high = blink = lasthigh = FALSE; /* NOT high-intensity */
 
     Hello(A_NAME, A_DESC, VERSION, "1990, " THIS_YEAR);
 
@@ -159,38 +139,6 @@ int _stdc main(int argc, char *argv[])
     if ((p = strrchr(outname, '.')) == NULL)
         strcat(outname, EXT);
 
-    /* printf("Compiling %s to %s...\n",strupr(inname),strupr(outname)); */
-    printf("Compiling %s to %s...\n", fancy_fn(inname), fancy_fn(outname));
-
-    if ((ansifile = fopen(inname, "rb")) == NULL)
-    {
-        printf("Error opening `%s' for read!\n", inname);
-        exit(1);
-    }
-
-    if ((bbsfile = fopen(outname, "wb")) == NULL)
-    {
-        printf("Error opening `%s' for write!\n", outname);
-        exit(1);
-    }
-
-    linelen = 0;
-
-    for (;;)
-    {
-#ifdef ANSI2MEC
-        if (linelen > MAX_LLEN)
-        {
-            fprintf(bbsfile, "[\r\n]");
-            linelen = 0;
-        }
-#endif
-
-        if ((ch = getc(ansifile)) == EOF)
-            break;
-
-#ifdef ANSI2MEC
-        if (ch == '[') /* Double up the `['s */
         {
             if (lastch == '[')
                 lastcount++;
@@ -248,18 +196,10 @@ int _stdc main(int argc, char *argv[])
                 }
             }
 
-            /* In case ANSI string was too long */
-            ansibuf[ANSIBUFLEN - 1] = '\0';
-
-            /* Delete the beginning '[' */
             memmove(ansibuf, ansibuf + 1, strlen(ansibuf) + 1);
 
             switch (ch)
             {
-                /* We can't really handle the save/restore cursor commands, so     *
-                 * just strip everything between here and the restore command...   *
-                 * This will disrupt SOME screens, but it will make converting     *
-                 * TheDraw files possible...                                       */
 
             case 'u':
                 break;
@@ -272,63 +212,13 @@ int _stdc main(int argc, char *argv[])
                     while ((ch = getc(ansifile)) != '\x1b' && ch != EOF)
                         ;
 
-                    /* Got to EOF before save_restore, so continue! */
-
-                    if (ch == EOF)
                     {
                         fseek(ansifile, offset, SEEK_SET);
                         break;
-                    }
-
-                    if ((ch = getc(ansifile)) != '[')
-                    {
-                        ungetc(ch, ansifile);
-                        continue;
-                    }
-
-                    if ((ch = getc(ansifile)) == 'u')
-                        break;
-                    else /* back-track */
-                    {
-                        fseek(ansifile, offset, SEEK_SET);
-                        break;
-                        /*
-                                      ungetc(ch,ansifile);
-                                      continue;
-                        */
                     }
                 }
                 break;
 
-            case 'm': /* Attribute! */
-                if (lasthigh)
-                    colour += 8;
-
-                high = lasthigh;
-
-                for (x = 1, *temp = '\x01'; *temp; x++)
-                {
-                    getword(ansibuf, temp, ";", x);
-
-                    switch (*temp)
-                    {
-                    case '\0':
-                        break;
-
-                    case '0':
-                        colour = 7;
-                        high = lasthigh = blink = FALSE;
-                        break;
-
-                    case '1':
-                        if (!high)
-                        {
-                            colour += 8;
-                            high = TRUE;
-                        }
-                        break;
-
-                    case '5': /* Blink */
                         if (!blink)
                         {
                             colour += 128;
@@ -380,16 +270,6 @@ int _stdc main(int argc, char *argv[])
                         break;
 
                     case '4':
-                        while (colour > 15) /* While we still have a background... */
-                            colour -= 16;
-
-                        switch (temp[1])
-                        {
-                        case '\0':              /* Just a "4m", means we go to underline */
-                            while (colour > 15) /* While we still have a background... */
-                                colour -= 16;
-
-                            colour += 16; /* Blue bkgr for underline */
                             break;
 
                         case '1':
@@ -432,16 +312,6 @@ int _stdc main(int argc, char *argv[])
                     colour -= 8;
                 break;
 
-            case 'J': /* CLS */
-#ifdef ANSI2MEC
-                linelen += 5;
-                fprintf(bbsfile, "[cls]");
-#else
-                fprintf(bbsfile, "\x0c");
-#endif
-                break;
-
-            case 'K': /* CLEOL */
 #ifdef ANSI2MEC
                 linelen += 7;
                 fprintf(bbsfile, "[cleol]");
@@ -450,39 +320,6 @@ int _stdc main(int argc, char *argv[])
 #endif
                 break;
 
-            case 'A': /* UP */
-                if (*ansibuf != 'A')
-                    y = atoi(ansibuf);
-                else
-                    y = 1;
-
-#ifdef ANSI2MEC
-                if (y > 3)
-                {
-                    linelen += 19;
-                    fprintf(bbsfile, "[repeatseq 2 up %d]", y);
-                }
-                else
-                {
-                    linelen += 2 + (3 * y);
-
-                    fprintf(bbsfile, "[");
-
-                    for (x = 0; x < y; x++)
-                        fprintf(bbsfile, "%sup", x ? " " : "");
-
-                    fprintf(bbsfile, "]");
-                }
-#else
-                if (y > 3)
-                    fprintf(bbsfile, "\x16\x19\x02\x16\x03%c", (char)y);
-                else
-                    for (x = 0; x < y; x++)
-                        fprintf(bbsfile, "\x16\x03");
-#endif
-                break;
-
-            case 'B': /* DOWN */
                 if (*ansibuf != 'B')
                     y = atoi(ansibuf);
                 else
@@ -514,39 +351,6 @@ int _stdc main(int argc, char *argv[])
 #endif
                 break;
 
-            case 'C': /* RIGHT */
-                if (*ansibuf != 'C')
-                    y = atoi(ansibuf);
-                else
-                    y = 1;
-
-#ifdef ANSI2MEC
-                if (y > 3)
-                {
-                    linelen += 22;
-                    fprintf(bbsfile, "[repeatseq 2 right %d]", y);
-                }
-                else
-                {
-                    linelen += 2 + (6 * y);
-
-                    fprintf(bbsfile, "[");
-
-                    for (x = 0; x < y; x++)
-                        fprintf(bbsfile, "%sright", x ? " " : "");
-
-                    fprintf(bbsfile, "]");
-                }
-#else
-                if (y > 3)
-                    fprintf(bbsfile, "\x16\x19\x02\x16\x06%c", (char)y);
-                else
-                    for (x = 0; x < y; x++)
-                        fprintf(bbsfile, "\x16\x06");
-#endif
-                break;
-
-            case 'D': /* LEFT */
                 if (*ansibuf != 'C')
                     y = atoi(ansibuf);
                 else
@@ -578,99 +382,3 @@ int _stdc main(int argc, char *argv[])
 #endif
                 break;
 
-            case 'H': /* Set position */
-            case 'f':
-                if (*ansibuf == ';')
-                {
-                    getword(ansibuf, temp, ";", 1);
-                    y = atoi(temp);
-                    x = --last_x;
-                }
-                else
-                {
-                    getword(ansibuf, temp, ";", 1);
-                    x = last_x = atoi(temp);
-
-                    getword(ansibuf, temp, ";", 2);
-                    y = atoi(temp);
-                }
-
-#ifdef ANSI2MEC
-                linelen += 14;
-
-                fprintf(bbsfile, "[locate %d %d]", x ? x : 1, y ? y : 1);
-#else
-                {
-                    int x_26 = (x == 26);
-                    int y_26 = (y == 26);
-
-                    if (x_26)
-                        x--;
-
-                    if (y_26)
-                        y--;
-
-                    fprintf(bbsfile, "\x16\x08%c%c", (char)(x ? x : 1), (char)(y ? y : 1));
-
-                    if (x_26)
-                        fprintf(bbsfile, "\x16\x06");
-
-                    if (y_26)
-                        fprintf(bbsfile, "\x16\x04");
-                }
-#endif
-                break;
-
-            default:
-                printf("\aWarning!  Unknown ANSI command: `[%s'\n", ansibuf);
-                break;
-            }
-        }
-    }
-
-    Compress_Sequence();
-
-    fclose(bbsfile);
-    fclose(ansifile);
-
-    printf("Done!\n");
-    return 0;
-}
-
-void WriteColour(int colour, FILE *bbsfile)
-{
-#ifdef ANSI2MEC
-    char *colours[] = {"black",    "blue",         "green",      "cyan",
-                       "red",      "magenta",      "brown",      "gray",
-                       "darkgray", "lightblue",    "lightgreen", "lightcyan",
-                       "lightred", "lightmagenta", "yellow",     "white"};
-
-    char string[120];
-
-    if ((colour & 0x7f) < 16)
-        sprintf(string, "[%s]", colours[colour & 0x7f]);
-    else
-        sprintf(string, "[%s on %s]", colours[(colour & 0x7f) % 16], colours[(colour & 0x7f) / 16]);
-
-    linelen += strlen(string);
-    fprintf(bbsfile, "%s", string);
-
-#else
-    if (colour < 128)
-        fprintf(bbsfile, "\x16\x01\x10%c", colour + 128);
-    else if (colour > 160)
-        fprintf(bbsfile, "\x16\x01\x10%c", colour - 128);
-    else
-        fprintf(bbsfile, "\x16\x01%c", colour - 128);
-#endif
-
-    if (blink)
-#ifdef ANSI2MEC
-    {
-        fprintf(bbsfile, "[blink]");
-        linelen += 7;
-    }
-#else
-        fprintf(bbsfile, "\x16\x02");
-#endif
-}

@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #ifndef __NTCOMM_H_DEFINED
 #define __NTCOMM_H_DEFINED
@@ -28,43 +12,14 @@
 #endif
 
 #ifndef UNIX
-#define COMMAPI NTstdcall /* Standard NT API calling convention */
-#else
-#define COMMAPI
-#endif
-
-/*#define DEFAULT_COMM_MASK   (EV_ERR | EV_RLSD | EV_RXFLAG)*/
 #define DEFAULT_COMM_MASK (EV_ERR | EV_RLSD)
 
 #ifndef UNIX
 #define COMMAPI_VER 1
 typedef struct
 {
-    HANDLE h; /* Handle of the physical com port file */
 
-    COMQUEUE cqTx; /* Transmit queue */
-    COMQUEUE cqRx; /* Receive queue */
 
-    HANDLE hRx, hTx, hMn;          /* Handles for read and write threads */
-    HANDLE hevTx, hevRx;           /* Semaphores for the tx/rx threads */
-    HANDLE hevTxDone;              /* Pending transmit has completed */
-    HANDLE hevRxWait, hevTxWait;   /* Waiting for input/output buf to clear */
-    HANDLE hevRxPause, hevTxPause; /* Stop transmitter for compause/resume */
-    HANDLE hevRxDone;              /* Pending receive has completed */
-    HANDLE hevMonDone;             /* Pending monitor has completed */
-
-    BOOL fDCD;               /* Current status of DCD */
-    volatile BOOL fDie;      /* True if we are trying to kill threads */
-    DWORD dwCtrlC;           /* How many ^C's have we received from user? */
-    volatile DWORD cThreads; /* Number of active threads */
-
-    COMMTIMEOUTS ct; /* Timeout values */
-} * HCOMM;
-#else
-#define COMMAPI_VER 2
-/** Forward declaration, populated only within current comm module
- *  @ingroup 	max_comm
- */
 struct _hcomm;
 typedef struct _hcomm *HCOMM;
 #endif
@@ -100,4 +55,3 @@ BOOL COMMAPI ComWatchDog(HCOMM hc, BOOL fEnable, DWORD ulTimeOut);
 BOOL COMMAPI ComIsAModem(HCOMM hc);
 BOOL COMMAPI ComBurstMode(HCOMM hc, BOOL fEnable);
 #endif
-#endif /* __NTCOMM_H_DEFINED */

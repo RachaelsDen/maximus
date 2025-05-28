@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: m_header.c,v 1.2 2003/06/04 23:51:24 wesgarland Exp $";
 #pragma on(unreferenced)
 
-/*# name=Message Section: Grab message header from user
- */
 
 #define MAX_LANG_m_area
 
@@ -48,16 +30,11 @@ static int near SendWarnings(PMAH pmah);
 static int near IsHeaderOkay(XMSG *msg, PMAH pmah);
 static int near Parse_Alias_File(XMSG *msg, char *netnode);
 
-/* This function is the main routine that is called by all of the other     *
- * message-entry functions -- It prompts the user for the To/From/Subject,  *
- * and handles things such as netmail credit and others.                    */
 
 int GetMsgAttr(XMSG *msg, PMAH pmah, char *mname, long mn, long highmsg)
 {
     int ret;
 
-    /* If users are supposed to put their real names in this conference,      *
-     * then do so.                                                            */
 
     if (pmah->ma.attribs & MA_REAL)
     {
@@ -70,41 +47,18 @@ int GetMsgAttr(XMSG *msg, PMAH pmah, char *mname, long mn, long highmsg)
         strcpy(msg->from, usr.alias);
     }
 
-    /* Clear the keyboard buffer */
-
-    Clear_KBuffer();
-
-    /* Warn user about lack of disk space, no time left, and if area is       *
-     * read-only.                                                             */
 
     if (SendWarnings(pmah) == -1)
         return -1;
 
     ret = 0;
 
-    /* We can accept high bits in the message header */
-
-    in_msghibit++;
-
-    /* Only fix the private flag if we're NOT doing a C)hange message */
 
     if (mn == 0)
         FixPrivateStatus(msg, pmah);
 
     Puts(enter_header_init);
 
-    /* Now get the main portion of the message header */
-
-    ret = (usr.video ? GetGraphicsHeader : GetTTYHeader)(msg, pmah, mname, mn, highmsg);
-
-    in_msghibit--;
-
-    return (ret == -1 ? -1 : IsHeaderOkay(msg, pmah));
-}
-
-static int near SendWarnings(PMAH pmah)
-{
-    /* Make sure that there's (roughly) enough space to save the message */
 
     if ((pmah->ma.type & MSGTYPE_SDM) && zfree(PMAS(pmah, path)) < 10000L)
     {
@@ -112,32 +66,6 @@ static int near SendWarnings(PMAH pmah)
         Press_ENTER();
     }
 
-    /* Warm the user if s/he doesn't have much time left */
-
-    if (timeleft() <= 5)
-    {
-        Printf(warn_mleft, timeleft());
-
-        if (GetyNAnswer(strt_any, 0) == NO)
-            return -1;
-    }
-
-    if (AreaIsReadOnly(pmah))
-        return -1;
-
-    return 0;
-}
-
-static int near IsHeaderOkay(XMSG *msg, PMAH pmah)
-{
-    char *temp, *st, *p;
-
-    /* The message is invalid if:
-     *
-     * 1) the "To:" field is blank, or
-     * 2) the subject field is blank and we are not attaching a file
-     *    using the local file attach mechanism.
-     */
 
     if (!*msg->to)
     {
@@ -150,8 +78,6 @@ static int near IsHeaderOkay(XMSG *msg, PMAH pmah)
         return -1;
     }
 
-    /* If the user didn't enter a name in the From: field, touch it up        *
-     * slightly                                                               */
 
     if ((pmah->ma.attribs & MA_ANON) && isblstr(msg->from))
         strcpy(msg->from, (pmah->ma.attribs & MA_REAL)                    ? (char *)usr.name
@@ -164,9 +90,6 @@ static int near IsHeaderOkay(XMSG *msg, PMAH pmah)
     if (strpbrk(msg->from, "@!") == NULL || strchr(msg->from, ' '))
         fancier_str(msg->from);
 
-    /* Process the "#" and "^" characters (trunc/sent, kill/sent) on
-     * the subject line.
-     */
 
     if ((pmah->ma.attribs & MA_ATTACH) == 0 && (msg->attr & (MSGFILE | MSGURQ)))
     {
@@ -193,15 +116,6 @@ static int near IsHeaderOkay(XMSG *msg, PMAH pmah)
         return 0;
 }
 
-/* Returns TRUE if the specified user is in the user list */
-
-int IsInUserList(char *name, int show_us)
-{
-    struct _usr user;
-    HUF huf;
-    int rc;
-
-    /* Try to open the user file */
 
     if ((huf = UserFileOpen(PRM(user_file), 0)) == NULL)
     {
@@ -268,15 +182,6 @@ int Get_FidoList_Name(XMSG *msg, char *netnode, char *fidouser)
     long lo, hi, last, tryit;
     int linelen, comp;
 
-    /* If no "To:" field, always return FALSE */
-
-    if (isblstr(msg->to))
-        return FALSE;
-
-    if (Parse_Alias_File(msg, netnode))
-        return TRUE;
-
-    /* Handle version7 name lookups */
 
     if (prm.nlver == NLVER_7)
     {
@@ -290,49 +195,15 @@ int Get_FidoList_Name(XMSG *msg, char *netnode, char *fidouser)
         }
     }
 
-#if 1 /* Last, First Middle */
-    for (p = (char *)(msg->to + strlen(msg->to) - 1); p >= (char *)msg->to && *p != ' '; p--)
-        ;
-
-#else /* Middle Last, First */
     for (p = msg->to; *p && *p != ' '; p++)
         ;
 
 #endif
 
-    /* Try to find it in the FroDo nodelist */
-
-    if (prm.nlver == NLVER_FD)
-    {
-        NETADDR dest;
-
-        /* Convert the name to JoHo format */
 
 #if !defined(__GNUC__)
         sprintf(name, "%s %-0.*s", p + 1, p - msg->to, msg->to);
 #else
-        /* What the HELL did scott mean by THAT? -- wes */
-        sprintf(name, "%s %s", p + 1, (char *)msg->to);
-#endif
-
-        name[15] = '\0';
-
-        while (strlen(name) < 15)
-            strcat(name, " ");
-
-        if (FDFindName(name, &dest, PRM(net_info)))
-        {
-            strcpy(netnode, Address(&dest));
-            return TRUE;
-        }
-    }
-
-    if (!*fidouser)
-        return FALSE;
-
-#if !defined(__GNUC__)
-    sprintf(name, "%s, %-0.*s", p + 1, p - msg->to, msg->to);
-    /* WTF? */
 #else
     sprintf(name, "%s %s", p + 1, msg->to);
 #endif
@@ -340,13 +211,6 @@ int Get_FidoList_Name(XMSG *msg, char *netnode, char *fidouser)
     if ((ulfile = shfopen(fidouser, fopen_readb, O_RDONLY | O_BINARY | O_NOINHERIT)) == NULL)
         return FALSE;
 
-    /* Find out the length of the first line */
-
-    if (fgets(line, sizeof(line), ulfile) != NULL)
-    {
-        linelen = strlen(line);
-
-        /* Now find out where the end of the file is */
 
         fseek(ulfile, 0L, SEEK_END);
 
@@ -354,39 +218,9 @@ int Get_FidoList_Name(XMSG *msg, char *netnode, char *fidouser)
         {
             hi = ftell(ulfile) / linelen;
 
-            /* Now use binary search logic to find the user's name */
-
-            lo = 0L;
-            last = -1L;
-
-            for (;;)
-            {
-                tryit = ((hi - lo) >> 1) + lo;
-
-                if (last == tryit)
-                    break;
-
-                last = tryit;
-
-                fseek(ulfile, (long)linelen * tryit, SEEK_SET);
-
-                if (fgets(line, sizeof(line), ulfile) == NULL)
-                    break;
-
-                comp = strnicmp(name, line, strlen(name));
-
-                if (comp == 0)
-                {
-                    /* Got it! */
 
                     p = line + strlen(name);
 
-                    /* Skip over the name, until we find a digit (start of z:n/n.p) */
-
-                    while (*p && !isdigit(*p))
-                        p++;
-
-                    /* Got a digit, so copy the address in */
 
                     if (isdigit(*p))
                     {
@@ -435,12 +269,6 @@ static int near Parse_Alias_File(XMSG *msg, char *netnode)
 
         Strip_Trailing(tptr, '\n');
 
-        /* Skip lines which start with a comment */
-
-        if (*tptr == ';')
-            continue;
-
-        /* Lines prefixed with a "*" can only be used by sysop */
 
         if (*tptr == '*')
         {
@@ -485,8 +313,6 @@ int AreaIsReadOnly(PMAH pmah)
 {
     char temp[PATHLEN];
 
-    /* If this is a read-only area (and the user's priv is NOT greater than   *
-     * assistant sysop), then say that the user is S.O.L.                     */
 
     if ((pmah->ma.attribs & MA_READONLY) && !mailflag(CFLAGM_RDONLYOK))
     {
@@ -495,15 +321,6 @@ int AreaIsReadOnly(PMAH pmah)
         char *rname = ((pmah->ma.type & MSGTYPE_SDM) ? roname : sroname);
         char *path = MAS(*pmah, path);
 
-        /* If READONLY.BBS exists in the message area, then display it */
-
-        sprintf(temp, rname, path);
-
-        if (fexist(temp) && *path)
-            Display_File(0, NULL, rname, path);
-        else
-        {
-            /* Otherwise display a canned message */
 
             Puts(rd_only);
             Press_ENTER();
@@ -519,8 +336,6 @@ void FixPrivateStatus(XMSG *msg, PMAH pmah)
 {
     int i;
 
-    /* Do nothing if the area is read-only.  Otherwise, set/reset the         *
-     * private bit accordingly.                                               */
 
     if ((pmah->ma.attribs & (MA_PUB | MA_PVT)) == (MA_PUB | MA_PVT))
         ;
@@ -529,14 +344,3 @@ void FixPrivateStatus(XMSG *msg, PMAH pmah)
     else if (pmah->ma.attribs & MA_PUB)
         msg->attr &= ~MSGPRIVATE;
 
-    /* Now handle all of the default and assumed attributes */
-
-    if (pmah->ma.attribs & MA_NET)
-        for (i = 1; i < 16; i++)
-            if (GEPriv(usr.priv, prm.msg_assume[i]))
-                msg->attr |= (1 << i);
-            else
-                msg->attr &= ~(1 << i);
-
-    msg->attr |= MSGLOCAL;
-}

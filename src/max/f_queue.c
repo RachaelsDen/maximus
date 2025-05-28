@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$id";
 #pragma on(unreferenced)
 
-/*# name=File area routines: upload/download fileslist management
- */
 
 #include "alc.h"
 #include "ffind.h"
@@ -36,45 +18,6 @@ static char rcs_id[] = "$id";
 #include <stdio.h>
 #include <string.h>
 
-/*#if defined( OS_2 ) || defined( __FLAT__ )*/
-#if 0
-#define EXPAND_BUF 1
-#define MAXEXPAND 16
-#define CAN_DO_EXPAND
-#else
-#define EXPAND_BUF 0
-#define MAXEXPAND 32
-#endif
-
-static word maxnames = MAXEXPAND; /* Current buffer size */
-static word fnames;               /* Number of filenames */
-
-#ifdef CAN_DO_EXPAND
-static char canexpand = EXPAND_BUF;
-#endif
-
-static FENTRY *filebuf;
-static strbuf *filestr;
-
-void Init_File_Buffer(void)
-{
-    int x;
-
-    x = maxnames * sizeof(FENTRY);
-    filebuf = malloc(x);
-    filestr = sb_new(maxnames * 64);
-    if (!filebuf || !filestr)
-    {
-        logit(mem_none);
-        quit(ERROR_CRITICAL);
-    }
-    memset(filebuf, 0, x);
-}
-
-void Free_File_Buffer(void)
-{
-    free(filebuf);
-    /* code to free filestr goes here */
 }
 
 int relocnm(char *fold, char *fnew)
@@ -126,15 +69,6 @@ void Free_Filenames_Buffer(word usLeave)
 
     if (usLeave == 0)
     {
-        /* Do this the fast way */
-
-        fnames = 0;
-        sb_reset(filestr);
-        memset(filebuf, 0, maxnames * sizeof(FENTRY));
-    }
-    else
-    {
-        /* Do it the slow way */
 
         word n;
         FENTRY *f = filebuf;
@@ -163,40 +97,6 @@ int RemoveFileEntry(word n)
     {
         FENTRY *f = filebuf + n;
 
-        /* Remove filename from list */
-
-        if (f->szName)
-            freestr(f->szName);
-        if (f->szDesc)
-            freestr(f->szDesc);
-
-        fnames--;
-        k = fnames - n;
-
-        if (k)
-            memmove(f, f + 1, k * sizeof(FENTRY));
-
-        memset(f + k, 0, sizeof(FENTRY));
-
-        return TRUE;
-    }
-    return FALSE;
-}
-
-int CanAddFileEntry(void)
-{
-    return (fnames < maxnames)
-#ifdef CAN_DO_EXPAND
-           || canexpand
-#endif
-        ;
-}
-
-int AddFileEntry(char *fname, word flags, long size)
-{
-    if (fnames == maxnames)
-    {
-        /* Try to expand it */
 #ifdef CAN_DO_EXPAND
         if (canexpand)
         {

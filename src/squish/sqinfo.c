@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: sqinfo.c,v 1.2 2003/06/05 03:13:40 wesgarland Exp $";
@@ -130,42 +114,6 @@ int debug_chain(char *name, FILE *sfd, FILE *ifd, struct _sqbase *sqbase, FOFS n
             }
             else
             {
-                /************************************************************************/
-
-                if (ifd)
-                {
-                    fseek(ifd, count * (long)sizeof(SQIDX), SEEK_SET);
-
-                    if (ftell(ifd) != count * (long)sizeof(SQIDX))
-                    {
-                        printf("\aError seeking index file to right offset!\n");
-                        goterr = TRUE;
-                    }
-
-                    if (fread((char *)&idx, 1, sizeof(SQIDX), ifd) != sizeof(SQIDX))
-                    {
-                        printf("\aerror reading index entry at %#010lx\n",
-                               count * (long)sizeof(SQIDX));
-
-                        goterr = TRUE;
-                    }
-
-                    if (!quiet)
-                        printf("idxofs=       %#010lx", idx.ofs);
-
-                    if (idx.ofs != new_frame)
-                    {
-                        printf("\a (should be %08lx!)\n", new_frame);
-                        goterr = TRUE;
-                    }
-                    else if (!quiet)
-                        printf(" (OK)\n");
-
-                    if (!quiet)
-                        printf("umsgid=       %#010lx\n", idx.umsgid);
-                }
-
-                /************************************************************************/
 
                 if (!quiet)
                     printf("id=           %#010lx", frame.id);
@@ -341,102 +289,3 @@ int sqvalidate(char *name, FILE *sfd, FILE *ifd)
         printf("free_frame=  %#010lx\n", sqbase.free_frame);
         printf("end_frame=   %#010lx\n", sqbase.end_frame);
         printf("sz_sqhdr=    %d\n", sqbase.sz_sqhdr);
-        /*  printf("sz_sqidx=    %d\n",sqbase.sz_sqidx);*/
-        printf("max_msg=     %ld\n", sqbase.max_msg);
-        printf("skip_msg=    %ld\n", sqbase.skip_msg);
-        printf("keep_days=   %u\n", sqbase.keep_days);
-        printf("high_water=  %ld\n\n", sqbase.high_water);
-    }
-
-    divider();
-
-    x = debug_chain(name, sfd, ifd, &sqbase, sqbase.begin_frame, sqbase.last_frame, "message",
-                    &sqbase, (int)sqbase.num_msg, FALSE);
-
-    y = debug_chain(name, sfd, NULL, &sqbase, sqbase.free_frame, sqbase.last_free_frame, "free",
-                    NULL, -1, TRUE);
-
-    return ((x || y) ? 1 : 0);
-}
-
-int squishtest(char *name)
-{
-    char temp[PATHLEN];
-
-    FILE *sfd;
-    FILE *ifd;
-    char *p, *s;
-
-    int x;
-
-    p = strrchr(name, '.');
-    s = strrstr(name, "/\\");
-
-    if (p && (!s || p > s))
-        *p = '\0';
-
-    strcpy(temp, name);
-    strcat(temp, ".sqd");
-
-    if ((sfd = shfopen(temp, "rb", O_RDONLY | O_BINARY)) == NULL)
-    {
-        printf("error opening data file %s for read.\n", temp);
-        exit(1);
-    }
-
-    strcpy(temp, name);
-    strcat(temp, ".sqi");
-
-    if ((ifd = shfopen(temp, "rb", O_RDONLY | O_BINARY)) == NULL)
-    {
-        printf("error opening index file %s for read.\n", temp);
-        exit(1);
-    }
-
-    x = sqvalidate(name, sfd, ifd);
-
-    fclose(ifd);
-    fclose(sfd);
-
-    return x;
-}
-
-int _stdc main(int argc, char *argv[])
-{
-    if (argc > 2)
-    {
-        if (eqstri(argv[2], "-q") || eqstri(argv[2], "/q"))
-            quiet = 1;
-        else if (eqstri(argv[2], "-b") || eqstri(argv[2], "/b"))
-            quiet = findbug = 1;
-        else if (eqstri(argv[2], "-e") || eqstri(argv[2], "/e"))
-            quiet = findbug = batch = 1;
-    }
-
-    if (!quiet)
-    {
-        printf("\nSQINFO  SquishMail Database Diagnostic Utility, Version " SQVERSION ".\n");
-        printf("Copyright 1990, " THIS_YEAR " by Lanius Corporation.  All rights reserved.\n\n");
-    }
-
-    if (argc < 2)
-    {
-        printf("Command-line format:\n\n");
-
-        printf("%s <area name> [<options>...]\n\n", argv[0]);
-
-        printf("SQINFO will display a diagnostic dump of the headers for the specified\n"
-               "message area, and it will report any problems which are found.  SQINFO\n"
-               "supports the following options:\n\n");
-
-        printf("      -q   Quiet mode.  Only display one line per message.\n"
-               "      -b   Bugfind mode.  Only print messages if an error occurs.\n"
-               "      -e   Errorlevel mode.  Only print messages if an error occurs,\n"
-               "           and SQINFO returns a non-zero errorlevel instead of pausing\n"
-               "           when it discovers a problem.\n");
-
-        exit(1);
-    }
-
-    return (squishtest(argv[1]));
-}

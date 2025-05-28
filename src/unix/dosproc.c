@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include "dosproc.h"
 #include "compat.h"
 #include <pthread.h>
@@ -43,10 +45,6 @@ void dosProc_exitHandler()
 
 unsigned long _DosExitList(unsigned long ulAction, unsigned long (*function)(unsigned short))
 {
-    /* Known bugs: does not check for dupe on add. Does not process "in order". "in order"
-     * in this case is looking at (ulAction & ~0xff), and processing them in that order.
-     * I don't think that will kill max. Also, there is no way to shrink the list.
-     */
 
     exitHandler_t *exitList_new;
     size_t i;

@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: mex_err.c,v 1.1.1.1 2002/10/01 17:53:47 sdudley Exp $";
@@ -123,22 +107,6 @@ void _stdc warn(int errnum, ...)
     va_list var_args;
     char string[MAX_ERRMSG_LEN];
 
-    /* Convert the variable-argument format into a string */
-
-    va_start(var_args, errnum);
-    vsprintf(string, err_string(errnum), var_args);
-    va_end(var_args);
-
-    n_warnings++;
-    report_err(errnum, "warning", string);
-}
-
-void _stdc error(int errnum, ...)
-{
-    va_list var_args;
-    char string[MAX_ERRMSG_LEN];
-
-    /* Convert the variable-argument format into a string */
 
     va_start(var_args, errnum);
     vsprintf(string, err_string(errnum), var_args);
@@ -153,23 +121,6 @@ void _stdc fatal_error(int errnum, ...)
     va_list var_args;
     char string[MAX_ERRMSG_LEN];
 
-    /* Convert the variable-argument format into a string */
-
-    va_start(var_args, errnum);
-    vsprintf(string, err_string(errnum), var_args);
-    va_end(var_args);
-
-    n_errors++;
-    report_err(errnum, "fatal error", string);
-    exit(1);
-}
-
-void _stdc bug(char *s, ...)
-{
-    va_list var_args;
-    char string[MAX_ERRMSG_LEN];
-
-    /* Convert the variable-argument format into a string */
 
     va_start(var_args, s);
     vsprintf(string, s, var_args);
@@ -189,24 +140,6 @@ void _stdc debug(char *s, ...)
     if (!sdebug)
         return;
 
-    /* Convert the variable-argument format into a string */
-
-    va_start(var_args, s);
-    vsprintf(string, s, var_args);
-    va_end(var_args);
-
-    report_err(MEXERR_DEBUG, "debug", string);
-}
-
-void yyerror(char *s)
-{
-    char *where = NULL;
-    struct _id *i;
-
-    NW(s);
-
-    /* Search through the list of reserved words, and translate token to      *
-     * its string representation, if necessary.                               */
 
     for (i = idlist; i->name; i++)
         if (i->value == yychar)
@@ -215,18 +148,6 @@ void yyerror(char *s)
             break;
         }
 
-    /* No go, so check to see if it's an operator */
-
-    if (i->name == NULL)
-        for (i = ops; i->name; i++)
-            if (i->value == yychar)
-            {
-                where = i->name;
-                break;
-            }
-
-    /* Finally, if it isn't an op or a reserved work, check to see if it's    *
-     * an identifier.                                                         */
 
     if (i->name == NULL)
         where = yytext;

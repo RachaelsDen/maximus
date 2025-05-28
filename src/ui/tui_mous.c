@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include "prog.h"
 #include "tui.h"
@@ -23,127 +7,6 @@
 
 #ifdef __MSDOS__
 
-/* Install the mouse driver */
-
-static word near buttons = 2;
-static word near hidden = 0;
-word has_mouse = FALSE;
-
-static void near _fast CallMouse(word *ax, word *bx, word *cx, word *dx)
-{
-    union REGS r;
-
-#ifdef __FLAT__
-    r.x.eax = *ax;
-
-    if (bx)
-        r.x.ebx = *bx;
-
-    if (cx)
-        r.x.ecx = *cx;
-
-    if (dx)
-        r.x.edx = *dx;
-
-    int386(0x33, &r, &r);
-
-    if (ax)
-        *ax = r.x.eax;
-
-    if (bx)
-        *bx = r.x.ebx;
-
-    if (cx)
-        *cx = r.x.ecx;
-
-    if (dx)
-        *dx = r.x.edx;
-#else
-    r.x.ax = *ax;
-
-    if (bx)
-        r.x.bx = *bx;
-
-    if (cx)
-        r.x.cx = *cx;
-
-    if (dx)
-        r.x.dx = *dx;
-
-    int86(0x33, &r, &r);
-
-    if (ax)
-        *ax = r.x.ax;
-
-    if (bx)
-        *bx = r.x.bx;
-
-    if (cx)
-        *cx = r.x.cx;
-
-    if (dx)
-        *dx = r.x.dx;
-#endif
-}
-
-sword _fast MouseOpen(void)
-{
-    word ax = 0;
-    word bx = 0, cx = 0, dx = 0;
-
-    CallMouse(&ax, &bx, &cx, &dx);
-
-    if (ax != 0xffff)
-        return FALSE;
-
-    if (bx == 0xffff)
-        buttons = 2;
-    else
-        buttons = 3;
-
-    hidden = 0;
-    has_mouse = TRUE;
-
-    return TRUE;
-}
-
-void _fast MouseShow(void)
-{
-    word ax = 1;
-
-    if (!has_mouse)
-        return;
-
-    do
-    {
-        ax = 1;
-        CallMouse(&ax, NULL, NULL, NULL);
-
-        if (hidden > 0)
-            hidden--;
-    } while (hidden > 0);
-}
-
-void _fast MouseHide(void)
-{
-    word ax;
-
-    if (!has_mouse)
-        return;
-
-    ax = 2;
-    CallMouse(&ax, NULL, NULL, NULL);
-    hidden++;
-}
-
-void _fast MouseStatus(word *button, word *col, word *row)
-{
-    word ax = 3;
-
-    if (!has_mouse)
-        return;
-
-    /* See BUT_XXX constants for the 'button' field */
 
     CallMouse(&ax, button, col, row);
 
@@ -286,6 +149,3 @@ void _fast MouseSetEvent(word evtmask, void(far *evtproc)(void))
     int86x(0x33, &r, &r, &sr);
 }
 
-#endif /* NEVER */
-
-#endif /* __MSDOS__ */

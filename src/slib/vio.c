@@ -1,25 +1,6 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*# name=OS/2 drop-in functions for Scott's Vid...() functions
-    credit=Thanks to Peter Fitzsimmons for this module.
-*/
+
 
 #if defined(OS_2)
 
@@ -57,19 +38,6 @@ word _fast VidOpen(int has_snow, int desqview, int dec_rows)
     VIOMODEINFO viomi;
 
     NW(has_snow);
-    NW(desqview); /* keep /W3 happy*/
-
-    fflush(stdout);
-
-    viomi.cb = sizeof(viomi);
-    VioGetMode(&viomi, 0);
-    Vnumcols = viomi.col;
-    Vnumrows = viomi.row;
-
-    VioGetCurPos(&curRow, &curCol, 0);
-
-#if 1
-    /* Status-line? */
     if (dec_rows)
     {
         Vnumrows--;
@@ -189,17 +157,6 @@ void _fast VidHideCursor(void)
     VioSetCurType(&vct, 0);
 }
 
-void pascal _WinBlitz(word start_col,      /* offset from left side of screen.*/
-                      word num_col,        /* number of cols.     */
-                      char far *from_ofs,  /* data to be written  */
-                      sword win_start_col, /* add to from_ofs     */
-                      word this_row)       /* physical screen row.*/
-{
-
-    VioWrtCellStr(from_ofs + win_start_col * 2, num_col * 2, this_row, start_col, 0);
-}
-
-/* Scroll a portion of the OS/2 Vio screen */
 
 void pascal VidScroll(char Direction, char NumOfLines, char Attribute, char LeftCol, char TopRow,
                       char RightCol, char BotRow)
@@ -415,33 +372,6 @@ void _fast VidHideCursor(void)
 
 static CHAR_INFO aci[MAX_COL];
 
-void pascal _WinBlitz(word start_col,      /* offset from left side of screen.*/
-                      word num_col,        /* number of cols.     */
-                      char far *from_ofs,  /* data to be written  */
-                      sword win_start_col, /* add to from_ofs     */
-                      word this_row)       /* physical screen row.*/
-{
-    COORD c, origc;
-    SMALL_RECT sr;
-    PCHAR_INFO pci;
-    char *from;
-
-    c.X = num_col;
-    c.Y = 1;
-
-    origc.X = origc.Y = 0;
-
-    sr.Top = this_row;
-    sr.Bottom = this_row;
-    sr.Left = start_col;
-    sr.Right = start_col + num_col - 1;
-
-    from = from_ofs + win_start_col * 2;
-    pci = aci;
-
-    /* Adjust pointers so that we can use the faster preincrement/decrement
-     * instead of the postinc/dec.
-     */
 
     if (num_col > MAX_COL)
         num_col = MAX_COL;
@@ -458,47 +388,6 @@ void pascal _WinBlitz(word start_col,      /* offset from left side of screen.*/
     WriteConsoleOutput(hStdout, aci, c, origc, &sr);
 }
 
-/* Scroll a portion of the OS/2 Vio screen */
-
-void pascal VidScroll(char Direction, char NumOfLines, char Attribute, char LeftCol, char TopRow,
-                      char RightCol, char BotRow)
-{
-    CHAR_INFO ci;
-    COORD cDest;
-    SMALL_RECT srScroll, srClip;
-
-    ci.Char.AsciiChar = ' ';
-    ci.Attributes = Attribute;
-
-    srScroll.Left = LeftCol;
-    srScroll.Right = RightCol;
-
-    srClip.Left = srClip.Top = 0;
-    srClip.Right = lastCol;
-    srClip.Bottom = lastRow;
-
-    if (Direction == SCROLL_up)
-    {
-        srScroll.Top = TopRow + NumOfLines;
-        srScroll.Bottom = BotRow;
-        cDest.X = 0;
-        cDest.Y = TopRow;
-    }
-    else
-    {
-        srScroll.Top = TopRow;
-        srScroll.Bottom = BotRow - NumOfLines;
-        cDest.X = 0;
-        cDest.Y = TopRow + NumOfLines;
-    }
-
-    ScrollConsoleScreenBuffer(hStdout, &srScroll, NULL, cDest, &ci);
-}
-}
-
-#elif defined(UNIX)
-
-/* curses replacements for scott's direct video (dv*.*) by wes */
 
 #include "compiler.h"
 #include "dv.h"
@@ -539,142 +428,17 @@ void resize(int sig)
 {
     if (stdscr)
     {
-        /* SIGWINCH -- not sure how well this will work.. */
-        setsize();
-#ifdef NCURSES_VERSION
-        wresize(stdscr, Vnumrows, Vnumcols);
-#endif
-        refresh();
-    }
-}
-
-word VidOpen(int has_snow, int desqview, int dec_rows)
-{
-    if (!stdscr)
-    {
-        fflush(stdout);
-
-        if (!getenv("TERM"))
-            putenv("TERM=vt100");
-
-        initscr();             /* init curses */
-        keypad(stdscr, TRUE);  /* enable keyboard mapping */
-        cbreak();              /* char-by-char instead of line-mode input */
-        nodelay(stdscr, TRUE); /* Make getch() non-blocking */
-        nonl();                /* No LF->CRLF mapping on output */
-        noecho();              /* do not echo input */
-        noqiflush();           /* Do not flush on INTR, QUIT, SUSP */
 
 #if 0
-    raw();		   	/* Do not process ^C as SIGINT, etc + cbreak() */
-    timeout(0);			/* set getch timeout */
 #endif
 
-        scrollok(stdscr, TRUE);   /* Allow automatic scrolling */
-        immedok(stdscr, TRUE);    /* call refresh with many curses functions (slow) */
-        atexit((void *)VidClose); /* Try to reset the screen to a usable state on exit */
-    }
-
-    setsize();
-    signal(SIGWINCH, resize); /* Hope and pray */
     return 1;
 }
 
 int VidClose(void)
 {
     if (stdscr)
-        endwin(); /* destroy curses instance */
-
-    stdscr = NULL;
-    return 0;
-}
-
-int VidGotoXY(int Col, int Row, int sync)
 {
-    curRow = min((USHORT)Row - 1, lastRow);
-    curCol = min((USHORT)Col - 1, lastCol);
-    if (sync)
-        VioSetCurPos(curRow, curCol, 0);
-    return (0);
-}
-
-int VidNumRows(void) { return Vnumrows; }
-
-int VidNumCols(void) { return Vnumcols; }
-
-char VidGetAttr(void) { return Vcurattr; }
-
-void VidBios(int use_bios) { return; }
-
-void VidCls(char Attribute)
-{
-    curRow = curCol = 0;
-    if (stdscr)
-    {
-        clear();
-        refresh();
-    }
-}
-
-void _fast VidGetXY(int *Col, int *Row)
-{
-    *Col = curCol + 1;
-    *Row = curRow + 1;
-}
-
-int VidWhereX(void) { return curCol + 1; }
-
-int VidWhereY(void) { return curRow + 1; }
-
-void VidHideCursor(void)
-{
-    if (stdscr)
-        curs_set(0);
-}
-
-void _fast VidSetAttr(char Attribute) { Vcurattr = Attribute; }
-
-int VidGetch(int Row, int Col) { return stdscr ? (mvinch(Col, Row) & A_CHARTEXT) : 0; }
-
-void VidPutch(int Row, int Col, char Char, char Attr)
-{
-    chtype ch = (unsigned char)Char | (Attr & FOREGROUND_INTENSITY ? A_NORMAL : A_DIM);
-    VidSetAttr(Attr);
-
-#ifdef MANUAL_SCROLL
-    if ((Row == lastRow) && (Col == lastCol))
-    {
-        scrl(1);
-        Row--;
-    }
-#endif
-
-    if (stdscr)
-    {
-        mvaddch(Row, Col, ch);
-        refresh();
-    }
-}
-
-typedef unsigned char CHAR_INFO, *PCHAR_INFO;
-
-void pascal _WinBlitz(word start_col,      /* offset from left side of screen.*/
-                      word num_col,        /* number of cols.     */
-                      char far *from_ofs,  /* data to be written  */
-                      sword win_start_col, /* add to from_ofs     */
-                      word this_row)       /* physical screen row.*/
-{
-    /* mvaddstr(this_row, start_col, from_ofs + win_start_col * 2); */
-
-    /* We're putting out tonnes of garbage, mostly control-Gs - attr 7? I think
-     * this is no ordinary char *buffer, it's a buffer full of 16-bit words, with
-     * the high byte being an attribute and the low byte being the character
-     * we're interested in.
-     *
-     * The Windows NT version of this function suggests we're actually creating
-     * a one-line rectangle. We don't need to be that fancy, let's just create
-     * a curses chtype buffer, we can fill in the attributes later.
-     */
 
     chtype chbuf[num_col];
     int i;
@@ -715,17 +479,6 @@ void pascal _WinBlitz(word start_col,      /* offset from left side of screen.*/
 #endif
 
 #ifdef MANUAL_SCROLL
-    /* Wrap around */
-    if ((start_col + num_col) > lastCol)
-        newlineCount += (start_col + num_col) / lastCol;
-#endif
-
-#ifdef MANUAL_SCROLL
-    if ((this_row + newlineCount) > lastRow)
-    {
-        /* maybe we need to manually scroll the screen? it's
-         * certainly not scrolling by itself.
-         */
 
         scrl(newlineCount);
         if (newlineCount < this_row)

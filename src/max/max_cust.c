@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: max_cust.c,v 1.1.1.1 2002/10/01 17:51:35 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=Custom message/file-area listings
- */
 
 #include "alc.h"
 #include "max_msg.h"
@@ -39,8 +21,6 @@ static char rcs_id[] = "$Id: max_cust.c,v 1.1.1.1 2002/10/01 17:51:35 sdudley Ex
 
 #ifndef ORACLE
 
-/* This function parses the "Format MsgHeader xxx"-type junk into          *
- * something that is displayable.                                          */
 
 int ParseCustomMsgAreaList(PMAH pmah, char *div, char *parm, char *outparm, int first, int ch)
 {
@@ -153,21 +133,6 @@ int ParseCustomMsgAreaList(PMAH pmah, char *div, char *parm, char *outparm, int 
                     strcpy(out, blank_str);
                 break;
 
-            case 'd': /* Current division name */
-                if (pmah)
-                {
-                    strcpy(out, PMAS(pmah, name));
-                    if ((s = strrchr(out, '.')) != NULL)
-                        *s = '\0';
-                    break;
-                }
-                if (div)
-                    strcpy(out, div);
-                else
-                    strcpy(out, blank_str);
-                break;
-
-            case 'a': /* Name within division */
                 if (pmah)
                 {
                     strcpy(out, PMAS(pmah, name));
@@ -192,28 +157,7 @@ int ParseCustomMsgAreaList(PMAH pmah, char *div, char *parm, char *outparm, int 
                     mah = *pmah;
                 }
 
-                /* Copy the filename out of the prompt string */
-
-                for (s = temp; *++in > 32 && *in < 127 && s < temp + sizeof(temp) - 1;)
-                    *s++ = *in;
-
-                *out = *s = '\0';
-                in--;
-
-                Display_File(0, NULL, temp);
-
-                if (pmah)
-                    mah = save_mah;
-                break;
-
-            case '*':
-                if (ch == '@') /* This area is tagged */
                     strcpy(out, "@");
-                else if (ch == ' ') /* This area is NOT tagged */
-                    strcpy(out, " ");
-                else if (pmah && (pmah->ma.attribs & (MA_DIVBEGIN | MA_DIVEND)))
-                    strcpy(out, " ");
-                else if (pmah) /* Check if area has new mail */
                 {
                     if (pmah->ma.type & MSGTYPE_SDM)
                     {
@@ -237,8 +181,6 @@ int ParseCustomMsgAreaList(PMAH pmah, char *div, char *parm, char *outparm, int 
                     {
                         lseek(lrfile, (long)usr.lastread_ptr * (long)size, SEEK_SET);
 
-                        /* Check to see if we can read the LR.  If not, set it        *
-                         * to zero by default.                                        */
 
                         if (read(lrfile,
                                  (pmah->ma.type & MSGTYPE_SDM) ? (char *)&tempint : (char *)&uid,
@@ -256,12 +198,6 @@ int ParseCustomMsgAreaList(PMAH pmah, char *div, char *parm, char *outparm, int 
 
                     cvtit = TRUE;
 
-                    /* Get current bit from .area */
-
-                    if (mah.heap && eqstri(PMAS(pmah, name), MAS(mah, name)))
-                    {
-                        lrptr = last_msg;
-                        cvtit = FALSE; /* don't attempt to convert UID to msgn */
                     }
 
                     highmsg = 0L;
@@ -275,97 +211,6 @@ int ParseCustomMsgAreaList(PMAH pmah, char *div, char *parm, char *outparm, int 
                         if (fexist(temp))
                             highmsg = (long)lrptr + 1L;
                     }
-                    else /* MSGTYPE_SQUISH */
-                    {
-                        if (mah.heap && eqstr(PMAS(pmah, name), MAS(mah, name)))
-                            highmsg = sq ? MsgHighMsg(sq) : 0L;
-                        else
-                        {
-                            lrptr = 0L;
-
-                            if ((ta = MaxOpenArea(pmah)) != NULL)
-                            {
-                                highmsg = MsgHighMsg(ta);
-
-                                if (cvtit)
-                                    lrptr = MsgUidToMsgn(ta, uid, UID_PREV);
-
-                                MsgCloseArea(ta);
-                            }
-                        }
-                    }
-
-                    if (lrptr < highmsg)
-                        strcpy(out, "*");
-                    else
-                        strcpy(out, " ");
-                }
-                break;
-
-            case 'c':
-                if ((sword)++cnt < min)
-                {
-                    if (max == -1)
-                        to_skip = 1;
-                    else
-                        to_skip = (word)max;
-                }
-                else
-                    cnt = 0;
-
-                max = min = 0;
-                break;
-
-            default:
-                logit(inv_ccmd, *in);
-                break;
-            }
-
-            if (*in != 'c')
-            {
-                if (to_skip)
-                {
-                    *out = '\0';
-                    to_skip--;
-                }
-            }
-
-            if (max != -1)
-            {
-                if ((sword)strlen(out) > max)
-                    out[max] = '\0';
-            }
-
-            if (!lalign)
-            {
-                p = out;
-
-                while ((sword)strlen(out) < min)
-                {
-                    strocpy(p + 1, p);
-
-                    *p++ = ' ';
-                }
-            }
-            else if (min != -1)
-            {
-                while ((sword)strlen(out) < min)
-                    strcat(out, " ");
-            }
-
-            out += strlen(out);
-        }
-        else
-            *out++ = *in;
-    }
-
-    *out = '\0';
-
-    return (strlen(outparm));
-}
-
-/* This function parses the "Format MsgHeader xxx"-type junk into          *
- * something that is displayable.                                          */
 
 int ParseCustomFileAreaList(PFAH pfah, char *div, char *parm, char *outparm, int first)
 {
@@ -463,14 +308,6 @@ int ParseCustomFileAreaList(PFAH pfah, char *div, char *parm, char *outparm, int
                     strcpy(out, blank_str);
                 break;
 
-            case 'n': /* Area description */
-                if (pfah)
-                    strcpy(out, PFAS(pfah, descript));
-                else
-                    strcpy(out, blank_str);
-                break;
-
-            case 'd': /* Current division name */
                 if (pfah)
                 {
                     strcpy(out, PFAS(pfah, name));
@@ -484,25 +321,6 @@ int ParseCustomFileAreaList(PFAH pfah, char *div, char *parm, char *outparm, int
                     strcpy(out, blank_str);
                 break;
 
-            case 'a': /* Name within division */
-                if (pfah)
-                {
-                    strcpy(out, PFAS(pfah, name));
-                    if (div && *div && (s = strrchr(out, '.')) != NULL)
-                        strocpy(out, ++s);
-                    break;
-                }
-                strcpy(out, blank_str);
-                break;
-
-            case 'f':
-                if (pfah)
-                {
-                    save_fah = fah;
-                    fah = *pfah;
-                }
-
-                /* Copy the filename out of the prompt string */
 
                 for (s = temp; *++in > 32 && *in < 127 && s < temp + sizeof(temp) - 1;)
                     *s++ = *in;

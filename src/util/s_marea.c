@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: s_marea.c,v 1.1.1.1 2002/10/01 17:57:46 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=SILT: 'Section Area' processing logic
- */
 
 #define SILT
 #define NOVARS
@@ -53,41 +35,6 @@ static char prefix[PATHLEN] = "";
 
 static TRK_OWNER toNewOwner;
 
-/* Add a new owner for this area */
-
-static void near FiltOwner(void *v, char *words[], char *line)
-{
-    NW(v);
-    NW(words);
-
-    strncpy(toNewOwner, line, sizeof(toNewOwner) - 1);
-    toNewOwner[sizeof(toNewOwner) - 1] = 0;
-
-    if (strlen(line) >= sizeof(toNewOwner))
-    {
-        printf("\n\aError!  Owner \"%s\" is too long (must be <= %d chars)\n", line,
-               sizeof(toNewOwner) - 1);
-        Compiling(-1, NULL, NULL);
-    }
-}
-
-#endif
-
-static void near FiltBarricade(void *v, char *words[], char *line)
-{
-    NW(line);
-
-    if (!*words[1] || !*words[2])
-    {
-        printf("\n\aError!  Two arguments required for Barricade keyword on line %d!\n", linenum);
-        Compiling(-1, NULL, NULL);
-    }
-
-    HeapAdd(&PMI(v)->h, &PMI(v)->ma.barricademenu, words[1]);
-    HeapAdd(&PMI(v)->h, &PMI(v)->ma.barricade, words[2]);
-}
-
-/* Truncate origin to 61 chars */
 
 static void near FiltOrigin(void *v, char *words[], char *line)
 {
@@ -122,11 +69,6 @@ static void near FiltOrigin(void *v, char *words[], char *line)
     strocpy(line, txt);
 }
 
-/* Message area style information (read-only, etc.) */
-
-static void near FiltStyle(void *v, char *words[], char *line)
-{
-    int w; /* Word number */
 
     static struct
     {
@@ -161,21 +103,6 @@ static void near FiltStyle(void *v, char *words[], char *line)
 
     NW(line);
 
-    /* Parse all of the known keywords */
-
-    for (w = 1; w < MAX_PARSE_WORDS && *words[w]; w++)
-    {
-        for (pst = style_tab; pst->name; pst++)
-            if (eqstri(words[w], pst->name))
-            {
-                PMI(v)->ma.attribs |= pst->mask1;
-                PMI(v)->ma.attribs_2 |= pst->mask2;
-                break;
-            }
-
-        if (!pst->name)
-        {
-            /* Handle exceptions */
 
             if (eqstri(words[w], "squish"))
                 PMI(v)->ma.type = MSGTYPE_SQUISH;
@@ -187,27 +114,6 @@ static void near FiltStyle(void *v, char *words[], char *line)
     }
 }
 
-/* Message area renumbering information */
-
-static void near FiltRenum(void *v, char *words[], char *line)
-{
-    int atoi2;
-
-    NW(line);
-
-    atoi2 = atoi(words[2]);
-
-    if (eqstri(words[1], "max"))
-        PMI(v)->ma.killbynum = atoi2;
-    else if (eqstri(words[1], "days"))
-        PMI(v)->ma.killbyage = atoi2;
-    else if (eqstri(words[1], ""))
-        PMI(v)->ma.killskip = atoi2;
-    else
-        Unknown_Ctl(linenum, words[2]);
-}
-
-/* Make sure that area exists and update parameters in base header */
 
 static void near assert_msgarea(char *path, word type, word killbyage, word killbynum,
                                 word killskip)
@@ -222,32 +128,6 @@ static void near assert_msgarea(char *path, word type, word killbyage, word kill
 
     strcpy(szPath, path);
 
-    /* Make sure that path does not contain a trailing backslash */
-
-    if (strlen(szPath) > 3)
-        Strip_Trailing(szPath, PATH_DELIM);
-
-    if ((ha = MsgOpenArea(szPath, MSGAREA_CRIFNEC, type)) == NULL)
-    {
-        char *p;
-
-        strcpy(szUp, szPath);
-
-        if ((p = strrstr(szUp, ":\\/")) != NULL)
-            *p = 0;
-
-        if (*szUp && !direxist(szUp))
-            makedir(szUp);
-
-        if ((ha = MsgOpenArea(szPath, MSGAREA_CRIFNEC, type)) == NULL)
-        {
-            printf("\a\nError creating area %s!\n", path);
-            Compiling(-1, NULL, NULL);
-            return;
-        }
-    }
-
-    /* Set the parameters for a Squish area */
 
     if (type & MSGTYPE_SQUISH)
         SquishSetMaxMsg(ha, dwKillByNum, dwKillSkip, dwKillByAge);
@@ -271,9 +151,6 @@ static void near MsgAreaWrite(MAINFO *pmi, int closeit)
         MAREA ma;
         long pos = lseek(ma_fd, 0L, SEEK_END);
 
-        /* Find out the position of the last area in the file, so that we       *
-         * can fix the wraparound pointer in the first record to point          *
-         * to it.                                                               */
 
         pos -= cbLast + ADATA_START;
 
@@ -343,25 +220,9 @@ static void near MsgAreaWrite(MAINFO *pmi, int closeit)
 
     if (pmi)
     {
-        /* Fill out the structure length information */
-
-        pmi->ma.cbArea = sizeof(pmi->ma);
-        pmi->ma.cbHeap = pmi->h.end - pmi->h.heap;
-        pmi->ma.cbPrior = cbLast;
-
-        /* Record the size of this area */
 
         cbLast = pmi->ma.cbArea + pmi->ma.cbHeap + pmi->ma.num_override * sizeof(OVERRIDE);
 
-        /* Default to Squish format */
-
-        if (!pmi->ma.type)
-            pmi->ma.type = MSGTYPE_SQUISH;
-
-        if ((pmi->ma.attribs & (MA_PUB | MA_PVT)) == 0)
-            pmi->ma.attribs |= MA_PUB;
-
-        /* Strip the trailing backslash for Squish-style msg areas */
 
         if (pmi->ma.type & MSGTYPE_SQUISH)
         {
@@ -372,114 +233,20 @@ static void near MsgAreaWrite(MAINFO *pmi, int closeit)
                 p[len] = 0;
         }
 
-        /* Write the location of this area to the index file */
-
-        strnncpy(mfi.name, pmi->h.heap + pmi->ma.name, sizeof(mfi.name));
-        mfi.name_hash = SquishHash(pmi->h.heap + pmi->ma.name);
-        mfi.ofs = tell(ma_fd);
-
-        /* Touch the area's header, if necessary */
 
         if ((pmi->ma.attribs & (MA_DIVBEGIN | MA_DIVEND)) == 0)
             assert_msgarea(pmi->h.heap + pmi->ma.path, pmi->ma.type, pmi->ma.killbyage,
                            pmi->ma.killbynum, pmi->ma.killskip);
 
-        /* Do a little bit of error checking */
-
-        if (pmi->ma.attribs & (MA_AUDIT) && pmi->ma.type != MSGTYPE_SQUISH)
-        {
-            printf("\n\aError!  Style Audit can only be used in Squish areas! (area ending on line "
-                   "%d)\n",
-                   linenum);
-            Compiling(-1, NULL, NULL);
-
-            pmi->ma.attribs &= ~MA_AUDIT;
-        }
-
-        if (pmi->ma.attribs & (MA_ATTACH) && pmi->ma.type != MSGTYPE_SQUISH)
-        {
-            printf("\n\aError!  Style Attach can only be used in Squish areas! (area ending on "
-                   "line %d)\n",
-                   linenum);
-            Compiling(-1, NULL, NULL);
-
-            pmi->ma.attribs &= ~MA_ATTACH;
-        }
-
-        /* Write the header to disk */
 
         if (write(mai_fd, (char *)&mfi, sizeof mfi) != sizeof mfi)
             ErrWrite();
 
-        /* Write the main area data structure */
-
-        if (write(ma_fd, (char *)&pmi->ma, sizeof pmi->ma) != sizeof pmi->ma)
-            ErrWrite();
-
-        /* Write all of the message area overrides */
 
         for (ol = pmi->ol; ol; ol = ol->next)
             if (write(ma_fd, (char *)&ol->or, sizeof ol->or) != sizeof ol->or)
                 ErrWrite();
 
-        /* Figure out the size of the zstr heap and write it, too */
-
-        size = pmi->h.end - pmi->h.heap;
-
-        if (write(ma_fd, (char *)pmi->h.heap, size) != (signed)size)
-            ErrWrite();
-    }
-
-#ifdef MAX_TRACKER
-    if (*toNewOwner)
-    {
-        TRK t;
-
-        if ((t = TrkOpen("TRK", TRUE)) != NULL)
-        {
-            TrkSetDefaultOwner(t, pmi->h.heap + pmi->ma.name, toNewOwner);
-            TrkClose(t);
-        }
-
-        *toNewOwner = 0;
-    }
-#endif
-}
-
-void MsgAreaClose(void) { MsgAreaWrite(NULL, TRUE); }
-
-int ParseMsgArea(FILE *ctlfile, char *name)
-{
-    char line[PATHLEN];
-    char fullname[PATHLEN];
-    static MAINFO mi;
-    OVRLIST ol;
-
-    struct _vbtab verbs[] = {{0, "acs", &mi.ma.acs},
-                             {FiltPath, "path", &mi.ma.path},
-                             {0, "tag", &mi.ma.echo_tag},
-                             {0, "desc", &mi.ma.descript},
-                             {0, "description", &mi.ma.descript},
-                             {FiltOrigin, "origin", &mi.ma.origin},
-#ifdef MAX_TRACKER
-                             {FiltOwner, "owner", NULL},
-#endif
-                             {FiltMenuname, "menuname", NULL},
-                             {FiltOverride, "override", NULL},
-                             {FiltStyle, "style", NULL},
-                             {FiltRenum, "renum", NULL},
-                             {FiltBarricade, "barricade", NULL},
-                             {0, "app", NULL},
-                             {0, "application", NULL},
-                             {0, "attachpath", &mi.ma.attachpath},
-                             {0, NULL, NULL}};
-
-    if (strchr(name, '.'))
-        BadDivisionName();
-
-    if (do_marea)
-    {
-        /* Make sure that area file is open */
 
         MsgAreaWrite(NULL, FALSE);
 
@@ -569,11 +336,6 @@ void ParseMsgDivisionEnd(void)
         return;
     }
 
-    /* Strip off the trailing dot */
-
-    prefix[strlen(prefix) - 1] = 0;
-
-    /* Now set the prefix back to the prior area */
 
     if ((p = strrchr(prefix, '.')) != NULL)
         p[1] = 0;

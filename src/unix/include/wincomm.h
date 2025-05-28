@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifndef _WINCOMM_H
 #include <termios.h>
 
@@ -37,12 +39,6 @@ typedef struct _DCB
     WORD wReserved1;
 } DCB, *LPDCB;
 
-/* Can't use UNIX Bxxx definitions because on some platforms
- * (e.g. Linux) they are not the same numbers as the baud rate
- * they represent -- but are defined that way under Windows.
- * Changing the definition might break some silly code like
- * baud=atoi(config_variable)
- */
 
 #define CBR_110 110
 #define CBR_19200 19200
@@ -69,48 +65,4 @@ typedef struct _DCB
 #define RTS_CONTROL_HANDSHAKE 3
 #define RTS_CONTROL_TOGGLE 4
 
-/* Not sure if these are the right values, but maximus relies on 'N' */
-#define EVENPARITY 'E'
-#define MARKPARITY 'M'
-#define NOPARITY 'N'
-#define ODDPARITY 'O'
-#define SPACEPARITY 'S'
 
-#define ONESTOPBIT 1
-#define ONE5STOPBITS 15
-#define TWOSTOPBITS 2
-
-#define EV_BREAK 1 << 1   /* A break was detected on input. */
-#define EV_CTS 1 << 2     /* The CTS (clear-to-send) signal changed state. */
-#define EV_DSR 1 << 3     /* The DSR (data-set-ready) signal changed state. */
-#define EV_ERR 1 << 4     /* A line-status error occurred. */
-#define EV_RING 1 << 5    /* A ring indicator was detected. */
-#define EV_RLSD 1 << 6    /* The RLSD (receive-line-signal-detect) signal changed state. */
-#define EV_RXCHAR 1 << 7  /* A character was received and placed in the input buffer. */
-#define EV_RXFLAG 1 << 8  /* The event character was received and placed in the input buffer. */
-#define EV_TXEMPTY 1 << 9 /* The last character in the output buffer was sent.  */
-
-/* Line-status errors */
-#define CE_FRAME 1
-#define CE_OVERRUN 2
-#define CE_RXPARITY 3
-
-typedef struct _COMMTIMEOUTS
-{
-    DWORD ReadIntervalTimeout;
-    DWORD ReadTotalTimeoutMultiplier;
-    DWORD ReadTotalTimeoutConstant;
-    DWORD WriteTotalTimeoutMultiplier;
-    DWORD WriteTotalTimeoutConstant;
-} COMMTIMEOUTS, *LPCOMMTIMEOUTS;
-
-BOOL SetCommState(hfComm hFile, LPDCB lpDCB);
-BOOL GetCommState(hfComm hFile, LPDCB lpDCB);
-BOOL SetCommMask(hfComm hFile, DWORD dwEvtMask);
-BOOL SetCommTimeouts(OSCOMMHANDLE hFile, LPCOMMTIMEOUTS lpCommTimeouts);
-BOOL GetCommTimeouts(OSCOMMHANDLE hFile, LPCOMMTIMEOUTS lpCommTimeouts);
-BOOL SetupComm(OSCOMMHANDLE hFile, DWORD dwInQueue, DWORD dwOutQueue);
-BOOL SetCommBreak(OSCOMMHANDLE hFile);
-BOOL ClearCommBreak(OSCOMMHANDLE hFile);
-
-#endif /* _WINCOMM_H */

@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: max_in.c,v 1.2 2003/06/04 23:46:21 wesgarland Exp $";
 #pragma on(unreferenced)
 
-/*# name=Character/word/line general modem and keyboard input functions
- */
 
 #define MAX_INCL_COMMS
 
@@ -37,60 +19,6 @@ static char rcs_id[] = "$Id: max_in.c,v 1.2 2003/06/04 23:46:21 wesgarland Exp $
 #include <string.h>
 #include <time.h>
 
-/* Max recursion level support for GetListAnswer() */
-
-#define MAX_RECUR 8
-
-static char *szInputString = NULL;
-static char *szCharString = NULL;
-static char *aszListString[MAX_RECUR];
-
-#ifndef __GNUC__
-static int near Inputv(char *dest, int type, int ch, int max, char *prompt, char *va_args[1]);
-static int near Input_Charv(int type, char *extra, char *va_args[1]);
-#else
-static int near Inputv(char *dest, int type, int ch, int max, char *prompt, va_list va_args);
-static int near Input_Charv(int type, char *extra, va_list va_args);
-#endif
-
-void InputAllocStr(void)
-{
-    if (szInputString == NULL && (szInputString = malloc(MAX_PRINTF)) == NULL)
-    {
-        printf(printfstringtoolong, "Inputv:vs");
-        quit(ERROR_CRITICAL);
-    }
-
-    if (szCharString == NULL && (szCharString = malloc(MAX_PRINTF)) == NULL)
-    {
-        printf(printfstringtoolong, "Inputv:vs");
-        quit(ERROR_CRITICAL);
-    }
-
-    if ((aszListString[0] = malloc(MAX_PRINTF)) == NULL)
-    {
-        printf(printfstringtoolong, "GetListAnswer:vs");
-        quit(ERROR_CRITICAL);
-    }
-}
-
-void InputFreeStr(void)
-{
-    free(aszListString[0]);
-    free(szCharString);
-    free(szInputString);
-
-    aszListString[0] = NULL;
-    szCharString = NULL;
-    szInputString = NULL;
-}
-
-#ifdef MCP_VIDEO
-
-extern int usStrokes;
-extern byte cbStrokeBuf[MAX_BUF_STROKE];
-
-/* Functions to peek and get characters from the MCP keyboard buffer */
 
 static int near McpKeyGetch(void)
 {
@@ -126,125 +54,6 @@ int loc_getch(void)
 #endif
 }
 
-int loc_peek(void) /* Returns -1 on no character, else returns ch */
-{
-    int ch = kpeek();
-
-    if (ch != -1)
-        return ch;
-
-#ifdef MCP_VIDEO
-    ch = McpKeyPeek();
-#endif
-
-    return ch;
-}
-
-int cdecl InputGets(char *dest, char *prompt, ...)
-{
-    int rc;
-    va_list arg;
-
-    va_start(arg, prompt);
-    rc = Inputv(dest, INPUT_WORD, 0, 0, prompt, arg);
-    va_end(arg);
-    return rc;
-}
-
-int cdecl InputGetsM(char *dest, int max, char *prompt, ...)
-{
-    int rc;
-    va_list arg;
-
-    va_start(arg, prompt);
-    rc = Inputv(dest, INPUT_WORD, 0, max, prompt, arg);
-    va_end(arg);
-    return rc;
-}
-
-int cdecl InputGetse(char *dest, char ch, char *prompt, ...)
-{
-    int rc;
-    va_list arg;
-
-    va_start(arg, prompt);
-    rc = Inputv(dest, INPUT_WORD | INPUT_ECHO, ch, 0, prompt, arg);
-    va_end(arg);
-    return rc;
-}
-
-int cdecl InputGetsC(char *dest, char ch, char *prompt, ...)
-{
-    int rc;
-    va_list arg;
-
-    va_start(arg, prompt);
-    rc = Inputv(dest, INPUT_WORD | INPUT_ALREADYCH, ch, 0, prompt, arg);
-    va_end(arg);
-    return rc;
-}
-
-int cdecl InputGetsL(char *dest, int max, char *prompt, ...)
-{
-    int rc;
-    va_list arg;
-
-    va_start(arg, prompt);
-    rc = Inputv(dest, INPUT_NLB_LINE, 0, max, prompt, arg);
-    va_end(arg);
-    return rc;
-}
-
-int cdecl InputGetsLe(char *dest, int max, char ch, char *prompt, ...)
-{
-    int rc;
-    va_list arg;
-
-    va_start(arg, prompt);
-    rc = Inputv(dest, INPUT_NLB_LINE | INPUT_ECHO, ch, max, prompt, arg);
-    va_end(arg);
-    return rc;
-}
-
-int cdecl InputGetsLLe(char *dest, int max, char ch, char *prompt, ...)
-{
-    int rc;
-    va_list arg;
-
-    va_start(arg, prompt);
-    rc = Inputv(dest, INPUT_LB_LINE | INPUT_ECHO, ch, max, prompt, arg);
-    va_end(arg);
-    return rc;
-}
-
-int cdecl InputGetsLL(char *dest, int max, char *prompt, ...)
-{
-    int rc;
-    va_list arg;
-
-    va_start(arg, prompt);
-    rc = Inputv(dest, INPUT_LB_LINE, 0, max, prompt, arg);
-    va_end(arg);
-    return rc;
-}
-
-int cdecl Inputf(char *dest, int type, int ch, int max, char *prompt, ...)
-{
-    int rc;
-    va_list arg;
-
-    va_start(arg, prompt);
-    rc = Inputv(dest, type, ch, max, prompt, arg);
-    va_end(arg);
-    return rc;
-}
-
-/* General-purpose word/string input function.  `dest' is where we want
- * the output to go.  `type' defines the behaviour of Input();  See
- * MAX.H for details.  `ch' is only used if a particular value is used
- * for `type';  Again, see MAXIMUS.H.  `prompt' is the prompt to display
- * to the user.  (Use NULL if none required)
- */
 
 #ifndef __GNUC__
 static int near Inputv(char *dest, int type, int ch, int max, char *prompt, char *arg[1])
@@ -264,18 +73,9 @@ static int near Inputv(char *dest, int type, int ch, int max, char *prompt, va_l
     if (max == 0)
         max = BUFLEN;
 
-    /* Throw away any ^c's */
-
-    halt();
-
-    if (!*linebuf || (type & (INPUT_NLB_LINE | INPUT_ALREADYCH)))
-    {
-        /* Display the prompt */
 
         if (prompt)
         {
-            /* Strip off any leading '\n's when in hotflash mode, so we stay on   *
-             * one line!                                                          */
 
             Puts(prompt);
         }
@@ -286,32 +86,7 @@ static int near Inputv(char *dest, int type, int ch, int max, char *prompt, va_l
         ret = mdm_gets(linebuf, type, ch, min(max, BUFLEN - 1), prompt);
     }
 
-    /* Allow "|;<text>" or "|<cr>" to be used instead of <enter> */
-
-    if (*linebuf == '|' && (strchr(cmd_delim, linebuf[1]) || linebuf[1] == '\0') &&
-        (type & INPUT_WORDWRAP) == 0)
     {
-        *dest = '\0';
-
-        if (linebuf[1])
-            strocpy(linebuf, linebuf + 2);
-        else
-            *linebuf = '\0';
-    }
-    else /* normal text */
-    {
-        /* If we're just getting a WORD... */
-
-        if (type & INPUT_WORD)
-        {
-            getword(linebuf, dest, cmd_delim, 1);
-
-            if ((s = firstchar(linebuf, cmd_delim, 2)) == NULL)
-                s = blank_str;
-
-            strocpy(linebuf, s);
-        }
-        else /* else get the entire line! */
         {
             strcpy(dest, linebuf);
 
@@ -355,116 +130,6 @@ static int near Input_Charv(int type, char *extra, va_list arg)
         extra = szCharString;
     }
 
-    /* Don't allow CINPUT_DUMP ifthe user doesn't have hotkeys */
-
-    if ((usr.bits & BITS_HOTKEYS) == 0 && (type & CINPUT_DUMP))
-        type &= ~CINPUT_DUMP;
-
-    halt();
-
-    mdm_keyp = (usr.bits & BITS_HOTKEYS) && Mdm_keyp();
-
-    if ((isnllb = !*linebuf) != FALSE)
-    {
-        if ((type & CINPUT_PROMPT) && !(type & CINPUT_P_CTRLC) && !mdm_keyp)
-            Puts(extra);
-
-        vbuf_flush();
-    }
-
-    for (;;)
-    {
-        if (!*linebuf)
-        {
-            if ((usr.bits & BITS_HOTKEYS) == 0)
-            {
-                ret = mdm_gets(linebuf,
-                               ((type & CINPUT_NOCTRLC) ? INPUT_NOCTRLC : 0) |
-                                   ((type & CINPUT_MSGREAD) ? INPUT_MSGREAD : 0) |
-                                   ((type & CINPUT_NOLF) ? INPUT_NOLF : 0) |
-                                   ((type & CINPUT_SCAN) ? INPUT_SCAN : 0),
-                               '\0', BUFLEN - 1, (type & CINPUT_PROMPT) ? extra : NULL);
-            }
-            else
-            {
-                timer2 = FALSE;
-                input_timeout = timerset(timeout_tics);
-
-                if (!Mdm_keyp() && (type & CINPUT_AUTOP) && *linebuf == 0)
-                    Puts(extra);
-
-                vbuf_flush();
-
-                while (!Mdm_keyp())
-                {
-                    if (halt())
-                    {
-                        if ((type & CINPUT_PROMPT) && !(type & CINPUT_NOCTRLC))
-                        {
-                            mdm_dump(DUMP_ALL);
-
-                            ResetAttr();
-
-                            if (!mdm_keyp)
-                                Putc('\n');
-
-                            Puts(extra);
-
-                            mdm_keyp = FALSE;
-                            vbuf_flush();
-                        }
-                    }
-
-                    Check_Time_Limit(&input_timeout, &timer2);
-
-                    Check_For_Message(NULL, NULL);
-                    Giveaway_Slice();
-                }
-
-                *linebuf = (char)Mdm_getcw();
-
-                if (*linebuf == 0x0d)
-                    EatNulAfterCr();
-
-                if (type & CINPUT_DUMP)
-                {
-                    mdm_dump(DUMP_OUTPUT);
-                    ResetAttr();
-                }
-
-                timer2 = FALSE;
-
-                if (*linebuf == '\x00')
-                {
-                    if (loc_peek() == K_ALTJ)
-                    {
-                        loc_getch();
-
-                        Shell_To_Dos();
-
-                        if (type & CINPUT_PROMPT)
-                        {
-                            Putc('\r');
-                            Puts(extra);
-                        }
-
-                        vbuf_flush();
-                        continue;
-                    }
-                    else
-                    {
-                        if ((ret = DoEditKey(((type & CINPUT_MSGREAD) ? INPUT_MSGREAD : 0) |
-                                                 ((type & CINPUT_SCAN) ? INPUT_SCAN : 0),
-                                             NULL, Mdm_getcw(), '\0')) != 0)
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                if (*linebuf != '\r' && ((byte)*linebuf < (byte)32 || *linebuf == '\x7f'))
-                {
-                    /* If we didn't go to the top line because of type-ahead... */
 
                     if (*linebuf == K_CTRLX)
                         Puts(bs_sn);
@@ -492,33 +157,6 @@ static int near Input_Charv(int type, char *extra, va_list arg)
             }
         }
 
-        if ((type & CINPUT_NOXLT) == 0) /* If we should translate characters */
-        {
-            of = firstchar(linebuf, cmd_delim, 1);
-
-            if (of != NULL && of != linebuf)
-                strocpy(linebuf, of);
-        }
-
-        if ((type & CINPUT_ACCEPTABLE) == 0 || strpbrk(strupr(linebuf), strupr(extra)) == linebuf ||
-            ((*linebuf == '\r' || *linebuf == '\0' || *linebuf == ' ') &&
-             (strchr(extra, '|') || (type & CINPUT_ALLANSWERS) == 0)))
-        {
-            break;
-        }
-        else
-        {
-            if ((byte)linebuf[0] >= (byte)32)
-                Printf(no_undrstnd, linebuf[0]);
-
-            Puts(tryagain);
-            vbuf_flush();
-
-            Clear_KBuffer();
-        }
-    }
-
-    if (ret < 255) /* pos-process only non-cursor & non-function keys */
     {
 
         ret = *linebuf;
@@ -538,26 +176,10 @@ static int near Input_Charv(int type, char *extra, va_list arg)
         }
         else
         {
-            if (!(type & CINPUT_NOXLT)) /* If we should translate CR to a '|' */
-                lastmenu = ret = '|';
-
-            *linebuf = '\0';
-        }
-    }
-
-    /* If this has been recursed, we can junk the buffer to conserve memory */
 
     return (int)ret;
 }
 
-/* Gets an answer out of a list.  The string LIST contains all of the
-   acceptable answers;  All must be lower case, except for the DEFAULT
-   option (if any), which can be selected by pressing Enter.  If help_file
-   is non-NULL, then if the LAST CHARACTER in the list is selected, the
-   .BBS file `help_file' will be displayed, and the user will be
-   re-prompted.  `invalid_response' is what the function displays if
-   the user hits a wrong key, but before s/he is re-prompted.  `o_prompt'
-   is the actual prompt, such as "More" or "Use OPed full-screen editor".  */
 
 int cdecl GetListAnswer(char *list, char *help_file, char *invalid_response, int type,
                         char *o_prompt, ...)
@@ -572,8 +194,6 @@ int cdecl GetListAnswer(char *list, char *help_file, char *invalid_response, int
 
     static char lvl = -1;
 
-    /* We can recurse into this via the 'help' option */
-    /* So we may need more than one buffer            */
 
     if (++lvl == MAX_RECUR ||
         (aszListString[lvl] == NULL && (aszListString[lvl] = malloc(MAX_PRINTF)) == NULL))
@@ -590,10 +210,6 @@ int cdecl GetListAnswer(char *list, char *help_file, char *invalid_response, int
     else
     {
         if (strchr(o_prompt, '%') == NULL)
-            strcpy(scratch, o_prompt); /* The easy way */
-        else
-        {
-            va_list arg; /* Wants to format */
 
             va_start(arg, o_prompt);
             vsprintf(scratch, o_prompt, arg);
@@ -601,13 +217,6 @@ int cdecl GetListAnswer(char *list, char *help_file, char *invalid_response, int
         }
     }
 
-    /* These are (almost) always used */
-
-    type |= (CINPUT_NOXLT | CINPUT_DISPLAY | CINPUT_DUMP);
-
-    /* Force fullprompt if we're prompting with a RIP   */
-    /* sequence to prevent unexpected side-effects      */
-    /* Also suppress display (assumes hotkeys with RIP) */
 
     if (hasRIP() && strstr(scratch, "!|"))
     {
@@ -619,27 +228,6 @@ int cdecl GetListAnswer(char *list, char *help_file, char *invalid_response, int
     {
         int first = TRUE;
 
-        /* Tack on the options onto the end of the prompt string. */
-
-        len = strlen(scratch);
-
-        for (p = list; *p; p++)
-        {
-            if ((*p > ' ' || *p < 0) && *p != '|')
-            {
-                if (!first)
-                    scratch[len++] = ',';
-                else
-                {
-                    first = FALSE;
-                    strcat(scratch, listanswer_left);
-                    len = strlen(scratch);
-                }
-                scratch[len++] = *p;
-            }
-        }
-
-        /* Close the prompt, adding "=help" if there's a help file */
 
         if (!first)
         {
@@ -675,10 +263,6 @@ int cdecl GetListAnswer(char *list, char *help_file, char *invalid_response, int
             }
         }
 
-        if (*p == '\0') /* If we didn't match anything */
-        {
-            /* If we are allowed to return any response, simply return this       *
-             * one without displaying an error.                                   */
 
             if (type & CINPUT_ANY)
             {
@@ -704,19 +288,6 @@ int cdecl GetListAnswer(char *list, char *help_file, char *invalid_response, int
         }
     }
 
-    /* If this has been recursed, we can junk the buffer to conserve memory */
-
-    if (lvl > 0)
-    {
-        free(aszListString[lvl]);
-        aszListString[lvl] = NULL;
-    }
-
-    --lvl;
-    return retval;
-}
-
-#ifdef NEVER /* notused */
 
 int MoreYn(void)
 {
@@ -762,16 +333,6 @@ signed int timeleft(void)
 
 signed int timeonline(void) { return ((int)((time(NULL) - (signed long)timeon) / 60L)); }
 
-/* Tells the user to press enter */
-
-void Press_ENTER(void)
-{
-    int ch;
-    int timer2;
-    char *prompt = press_enter_s;
-    char *p;
-
-    /* If an <enter> has been queued */
 
     if (*linebuf && (*linebuf == '|' || strchr(cmd_delim, *linebuf)))
     {
@@ -787,50 +348,6 @@ void Press_ENTER(void)
     Puts(prompt);
     vbuf_flush();
 
-    /* Start the input timer */
-
-    timer2 = FALSE;
-    input_timeout = timerset(timeout_tics);
-
-    for (;;)
-    {
-        if (Mdm_kpeek() != -1)
-        {
-            ch = Mdm_getcw();
-
-            if (ch == K_RETURN)
-            {
-                EatNulAfterCr();
-                break;
-            }
-            else if (ch == 0)
-            {
-                if (loc_peek() == K_ALTJ)
-                {
-                    loc_getch();
-                    Shell_To_Dos();
-                }
-            }
-        }
-
-        if (halt())
-            break;
-
-        Check_Time_Limit(&input_timeout, &timer2);
-        Check_For_Message(NULL, NULL);
-        Giveaway_Slice();
-    }
-
-    Puts(press_enter_c);
-
-    *linebuf = '\0';
-    display_line = 1;
-}
-
-/* Do a more y/n/= only when required, keeping track of the current line,
-   HotFlash state, etc.  Nonstop should be a pointer to a char in the
-   calling program, which indicates whether or not we're supposed to be
-   running in non-stop mode.  (You shoukd initialize it to FALSE.)         */
 
 int MoreYnBreak(char *nonstop, char *colour)
 {
@@ -864,11 +381,6 @@ int MoreYnBreak(char *nonstop, char *colour)
     return FALSE;
 }
 
-/* EatNulAfterCr - if we are running an incoming telnet session,
- * eat NULs that may be present after incoming CRs.  This is so that
- * the remote user does not need to toggle the "crmod" setting
- * to interact properly with Maximus.
- */
 
 void EatNulAfterCr(void)
 {
@@ -877,20 +389,3 @@ void EatNulAfterCr(void)
 
     if (GetConnectionType() == CTYPE_TELNET)
     {
-        /* Wait for a tenth of a second */
-
-        t = timerset(10);
-
-        while (!timeup(t))
-        {
-            if (Mdm_kpeek() == 0)
-            {
-                Mdm_getcw();
-                break;
-            }
-
-            Giveaway_Slice();
-        }
-    }
-#endif
-}

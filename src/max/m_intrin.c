@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: m_intrin.c,v 1.2 2003/06/11 14:03:06 wesgarland Exp $";
 #pragma on(unreferenced)
 
-/*# name=Message Section: Intrinsic functions
- */
 
 #define MAX_LANG_max_bor
 
@@ -219,17 +201,6 @@ long verylongtime(union _stampu *sc)
     return (mktime(&t));
 }
 
-/* Determine if a user can see a particular message */
-
-word CanSeeMsg(XMSG *msg)
-{
-    return ((msg->attr & MSGPRIVATE) == 0 || ToOrFromUs(msg) || GEPriv(usr.priv, prm.pvt_priv) ||
-            mailflag(CFLAGM_PVT));
-}
-
-/* If it's to or from us in a local area, or if it's to us (and addressed   *
- * to us) in a netmail area, or from us (and addressed from us) in a        *
- * netmail area.                                                            */
 
 word ToOrFromUs(XMSG *msg)
 {
@@ -247,9 +218,6 @@ void Recd_Msg(HMSG msgh, XMSG *msg, word set_recd)
 {
     NW(set_recd);
 
-    /* Only mark msg as received if it's to us (or our alias), and            *
-     * if we're in a matrix area, only mark it as received if it's            *
-     * addressed TO one of our AKA's.                                         */
 
     if (MsgToThisUser(msg->to) && ((mah.ma.attribs & MA_NET) == 0 || MsgToUs(&msg->dest)) &&
         (msg->attr & MSGREAD) == 0)
@@ -287,50 +255,9 @@ void Dealloc_Outline(byte *outline[])
         }
 }
 
-#endif /* !ORACLE */
-
-/* Returns TRUE if a more prompt needed before we can return to menu */
 
 int MenuNeedMore(void)
 {
     return ((usr.bits2 & BITS2_MORE) && display_line > (byte)(TermLength() - (menu_lines + 4)));
 }
 
-/* Called when we can't open a message area */
-
-void AreaError(int err)
-{
-    Puts(err_entering_msg_area);
-
-    switch (err)
-    {
-    case MERR_NOENT:
-        Puts(areadoesntexist);
-        break;
-    case MERR_NOMEM:
-        Puts(merr_nomem);
-        break;
-    case MERR_NODS:
-        Puts(merr_nods);
-        break;
-    case MERR_NOLOCK:
-        Puts(merr_nolock);
-        break;
-    case MERR_SHARE:
-        Puts(merr_share);
-        break;
-    case MERR_BADH:
-    case MERR_BADF:
-    case MERR_BADA:
-    case MERR_EOPEN:
-        Puts(merr_corrupt);
-        break;
-    default:
-    case MERR_NONE:
-        Printf(merr_unknown, err);
-        break;
-    }
-
-    Putc('\n');
-    Press_ENTER();
-}

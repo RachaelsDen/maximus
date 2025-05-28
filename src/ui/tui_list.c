@@ -1,47 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include "tui.h"
 #include <stdlib.h>
 #include <string.h>
 
-/* Get the x/y dimensions of the listbox */
-
-void GetListDims(HVOPT opt, int *pcxList, int *pcyList)
-{
-    char *duped, *p;
-
-    if ((duped = strdup(opt->name)) != NULL)
-    {
-        if ((p = strtok(duped, ",")) != NULL)
-        {
-            *pcyList = atoi(p);
-
-            if ((p = strtok(NULL, ",")) != NULL)
-                *pcxList = atoi(p);
-        }
-
-        free(duped);
-    }
-}
-
-/* Display the listbox */
 
 MenuFunction(DlgLstShow)
 {
@@ -54,52 +17,6 @@ MenuFunction(DlgLstShow)
 
     GetListDims(opt, &cxList, &cyList);
 
-    /* Clear out the block of space for our listbox */
-
-    for (y = opt->cy; y < opt->cy + cyList; y++)
-    {
-        attr = col((byte)((puh->cur == pulThis && opt->parent->curopt == opt) ? LISTBOX_SELECT_COL
-                                                                              : LISTBOX_COL));
-
-        for (x = opt->cx; x < opt->cx + cxList - 1; x++)
-        {
-            *WinOfs(win, y, x) = (attr << 8) | ' ';
-            WinSetDirty(win, y, -1);
-        }
-
-        if (pulThis)
-        {
-            if (pulThis->txt)
-            {
-                char *p = strdup(pulThis->txt);
-
-                if (p)
-                {
-                    if (strlen(p) > cxList)
-                        p[cxList - 3] = '\0';
-
-                    WinPutstra(win, y, opt->cx + 1, attr, p);
-
-                    free(p);
-                }
-            }
-
-            pulThis = pulThis->next;
-        }
-
-        *WinOfs(win, y, opt->cx + cxList - 1) =
-            (col(LISTBOX_SCROLL_COL) << 8) | (y == opt->cy                ? (byte)''
-                                              : y == opt->cy + cyList - 1 ? (byte)''
-                                                                          : (byte)'±');
-    }
-
-    *WinOfs(win, opt->cy + puh->uiCur * (cyList - 2) / puh->uiNumItems + 1, opt->cx + cxList - 1) =
-        (col(LISTBOX_SCROLL_COL) << 8) | (byte)'þ';
-
-    return 0;
-}
-
-/* Activate an item in the listbox.  Execute the user-defined option. */
 
 MenuFunction(DlgLstAct)
 {
@@ -120,8 +37,6 @@ MenuFunction(DlgLstUp)
         puh->cur = puh->cur->prior;
         puh->uiCur--;
 
-        /* If this would take us above the top of the listbox, scroll           *
-         * it up by one.                                                        */
 
         if (puh->cur == puh->top->prior)
         {
@@ -149,12 +64,6 @@ MenuFunction(DlgLstDown)
 
         GetListDims(opt, &cxList, &cyList);
 
-        /* Find out how far we are from the top */
-
-        for (ofs = 0, pui = puh->cur; pui && pui != puh->top; pui = pui->prior, ofs++)
-            ;
-
-        /* If we went off the bottom of the listbox, scroll it up by one */
 
         if (ofs >= cyList)
         {
@@ -191,25 +100,6 @@ static void near DlgLstScrollDown(HVOPT opt, PUIHEAD puh, int cyList)
         puh->uiCur = puh->uiTop;
         puh->cur = puh->top;
 
-        /* Position the current element to the bottom of the list */
-
-        while (puh->uiCur + 1 < puh->uiTop + cyList && puh->cur)
-        {
-            puh->cur = puh->cur->next;
-            puh->uiCur++;
-        }
-
-        (*opt->display)(opt);
-        tdelay(100);
-    }
-}
-
-static void near DlgLstGotoRow(HVOPT opt, PUIHEAD puh, int press)
-{
-    PUILIST pui;
-    extern word lastrow;
-
-    /* Start scanning from the top of the listbox */
 
     puh->uiCur = puh->uiTop;
 
@@ -222,14 +112,6 @@ static void near DlgLstGotoRow(HVOPT opt, PUIHEAD puh, int press)
         (*opt->display)(opt);
     }
 
-    /* If it was a button release, activate the option */
-
-    if (!press)
-    {
-        static long ulLastClick = 0L;
-        static int uiLastSel;
-
-        /* Allow up to 0.60 sec for a double-click */
 
         if (timeup(ulLastClick) || puh->uiCur != uiLastSel)
         {
@@ -251,13 +133,6 @@ static void near DlgLstHandleScrollbar(HVOPT opt, PUIHEAD puh, int cyList, int p
             DlgLstScrollUp(opt, puh);
         else if (lastrow == cyList - 1)
             DlgLstScrollDown(opt, puh, cyList);
-        else /* go to somewhere in the middle */
-        {
-        }
-    }
-}
-
-/* Selection of list item using mouse */
 
 int DlgLstMouse(HVOPT opt, int press)
 {
@@ -283,21 +158,6 @@ int DlgLstMouse(HVOPT opt, int press)
     else
         DlgLstGotoRow(opt, puh, press);
 
-    /* Set the current option to this one */
-
-    opt->parent->lastopt = opt;
-    opt->parent->curopt = opt;
-
-    return 0;
-}
-
-MenuFunction(DlgLstMousePrs) { return DlgLstMouse(opt, TRUE); }
-
-MenuFunction(DlgLstMouseRel) { return DlgLstMouse(opt, FALSE); }
-
-/* If this listbox was selected (as opposed to another, non-listbox         *
- * option) by a mouse click, also activate the "mouse press" function       *
- * to highlight the line under the cursor.                                  */
 
 MenuFunction(DlgLstMaybeSelect)
 {
@@ -309,60 +169,12 @@ MenuFunction(DlgLstMaybeSelect)
     return 0;
 }
 
-/* Handle additional registration needs for the dialog button */
-
-MenuFunction(DlgLstReg)
-{
-    PUIHEAD puh = (PUIHEAD)opt->data;
-    HVOPT prior, next;
-    int cxList, cyList;
-
-    prior = _TuiGetPriorOpt(opt->parent, opt);
-    next = _TuiGetNextOpt(opt->parent, opt);
-
-    /* Make sure that the current option is selected on a mouse press */
 
     opt->ubefore = DlgLstMaybeSelect;
 
-    /* Add custom keys for the up/down action */
-
-    _TuiMenuAddKey(opt, VKEY_UP, DlgLstUp, NULL, NULL, 0, 0);
-    _TuiMenuAddKey(opt, VKEY_DOWN, DlgLstDown, NULL, NULL, 0, 0);
-    _TuiMenuAddKey(opt, VKEY_DOWN, DlgLstDown, NULL, NULL, 0, 0);
-    _TuiMenuAddKey(opt, 0xffff, DlgLstMousePrs, opt, opt->menu, HOT_PRESS1, VKF_AFTER);
-    _TuiMenuAddKey(opt, 0xffff, DlgLstMouseRel, opt, opt->menu, HOT_RELEASE1, VKF_AFTER);
-
-    puh->cur = puh->head;
-    puh->top = puh->head;
-
-    /* Hotspot region for this control */
 
     GetListDims(opt, &cxList, &cyList);
 
-    /* Make the row before the first our "hot row" */
-
-    opt->hot_row--;
-    opt->hot_n_rows = cyList + 2;
-    opt->hot_n_cols = cxList;
-
-    return 0;
-}
-
-void LstCreateList(PUIHEAD puh, int (*pfnSelect)(int idx, PUILIST pui))
-{
-    puh->head = puh->tail = NULL;
-    puh->uiNumItems = puh->uiTop = puh->uiCur = 0;
-    puh->pfnSelect = pfnSelect;
-}
-
-int LstAddList(PUIHEAD puh, char *txt, void *app_inf)
-{
-    PUILIST pul;
-
-    if ((pul = malloc(sizeof(*pul))) == NULL)
-        return FALSE;
-
-    /* Construct a new node */
 
     pul->txt = strdup(txt);
     pul->app_inf = app_inf;
@@ -373,23 +185,3 @@ int LstAddList(PUIHEAD puh, char *txt, void *app_inf)
 
     pul->next = NULL;
 
-    /* Append to list */
-
-    puh->tail = pul;
-
-    if (!puh->head)
-        puh->head = puh->tail;
-
-    puh->uiNumItems++;
-
-    return TRUE;
-}
-
-void LstDestroyList(PUIHEAD puh)
-{
-    PUILIST pul, pulNext;
-
-    for (pul = puh->head; pul; pulNext = pul->next, free(pul), pul = pulNext)
-        if (pul->txt)
-            free(pul->txt);
-}

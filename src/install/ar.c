@@ -1,25 +1,6 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/**************************************************************
-   ar.c -- main file       distribution archive = AR002.ZIP
-**************************************************************/
+
 
 static char *usage = "ar -- compression archiver -- written by Haruhiko Okumura\n"
                      "  PC-VAN:SCIENCE        CompuServe:74050,1022\n"
@@ -36,49 +17,12 @@ static char *usage = "ar -- compression archiver -- written by Haruhiko Okumura\
                      "   except for commands 'a' and 'd'.\n"
                      "You may copy, distribute, and rewrite this program freely.\n";
 
-/***********************************************************
-
-Structure of archive block (low order byte first):
------preheader
- 1  basic header size
-        = 25 + strlen(filename) (= 0 if end of archive)
- 1  basic header algebraic sum (mod 256)
------basic header
- 5  method ("-lh0-" = stored, "-lh5-" = compressed)
- 4  compressed size (including extended headers)
- 4  original size
- 4  not used
- 1  0x20
- 1  0x01
- 1  filename length (x)
- x  filename
- 2  original file's CRC
- 1  0x20
- 2  first extended header size (0 if none)
------first extended header, etc.
------compressed file
-
-***********************************************************/
 
 #include "ar.h"
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define FNAME_MAX (255 - 25) /* max strlen(filename) */
-#define namelen header[19]
-#define filename ((char *)&header[20])
-
-int unpackable;           /* global, set in io.c */
-ulong compsize, origsize; /* global */
-
-static uchar buffer[DICSIZ];
-static uchar header[255];
-static uchar headersize, headersum;
-static uint file_crc;
-static char *temp_name;
-
-static uint ratio(ulong a, ulong b) /* [(1000a + [b/2]) / b] */
 {
     int i;
 
@@ -112,44 +56,12 @@ static ulong get_from_header(int i, int n)
 
     s = 0;
     while (--n >= 0)
-        s = (s << 8) + header[i + n]; /* little endian */
-    return s;
-}
-
-static uint calc_headersum(void)
-{
-    int i;
-    uint s;
-
-    s = 0;
-    for (i = 0; i < headersize; i++)
-        s += header[i];
-    return s & 0xFF;
-}
-
-static int read_header(void)
-{
-    headersize = (uchar)fgetc(arcfile);
-    if (headersize == 0)
-        return 0; /* end of archive */
     headersum = (uchar)fgetc(arcfile);
-    fread_crc(header, headersize, arcfile); /* CRC not used */
-    if (calc_headersum() != headersum)
-        error("Header sum error");
-    compsize = get_from_header(5, 4);
-    origsize = get_from_header(9, 4);
-    file_crc = (uint)get_from_header(headersize - 5, 2);
-    filename[namelen] = '\0';
-    return 1; /* success */
 }
 
 static void write_header(void)
 {
     fputc(headersize, outfile);
-    /* We've destroyed file_crc by null-terminating filename. */
-    put_to_header(headersize - 5, 2, (ulong)file_crc);
-    fputc(calc_headersum(), outfile);
-    fwrite_crc(header, headersize, outfile); /* CRC not used */
 }
 
 static void skip(void) { fseek(arcfile, compsize, SEEK_CUR); }
@@ -192,9 +104,6 @@ static int add(int replace_flag)
     if ((infile = fopen(filename, "rb")) == NULL)
     {
         fprintf(stderr, "Can't open %s\n", filename);
-        return 0; /* failure */
-    }
-    setvbuf(infile, NULL, _IOFBF, 4096); /* EWE addition */
 
     if (replace_flag)
     {
@@ -206,8 +115,6 @@ static int add(int replace_flag)
     headerpos = ftell(outfile);
     namelen = strlen(filename);
     headersize = 25 + namelen;
-    memcpy(header, "-lh5-", 5); /* compress */
-    write_header();             /* temporarily */
     arcpos = ftell(outfile);
     origsize = compsize = 0;
     unpackable = 0;
@@ -215,56 +122,9 @@ static int add(int replace_flag)
     encode();
     if (unpackable)
     {
-        header[3] = '0'; /* store */
-        rewind(infile);
-        fseek(outfile, arcpos, SEEK_SET);
-        store();
-    }
-    file_crc = crc ^ INIT_CRC;
-    fclose(infile);
-    put_to_header(5, 4, compsize);
-    put_to_header(9, 4, origsize);
-    memcpy(header + 13, "\0\0\0\0\x20\x01", 6);
-    memcpy(header + headersize - 3, "\x20\0\0", 3);
-    fseek(outfile, headerpos, SEEK_SET);
-    write_header(); /* true header */
     fseek(outfile, 0L, SEEK_END);
     r = ratio(compsize, origsize);
     printf(" %d.%d%%\n", r / 10, r % 10);
-    return 1; /* success */
-}
-
-int get_line(char *s, int n)
-{
-    int i, c;
-
-    i = 0;
-    while ((c = getchar()) != EOF && c != '\n')
-        if (i < n)
-            s[i++] = (char)c;
-    s[i] = '\0';
-    return i;
-}
-
-static void extract(int to_file)
-{
-    int n, method;
-    uint ext_headersize;
-
-    if (to_file)
-    {
-        while ((outfile = fopen(filename, "wb")) == NULL)
-        {
-            fprintf(stderr, "Can't open %s\nNew filename: ", filename);
-            if (get_line(filename, FNAME_MAX) == 0)
-            {
-                fprintf(stderr, "Not extracted\n");
-                skip();
-                return;
-            }
-            namelen = strlen(filename);
-        }
-        setvbuf(outfile, NULL, _IOFBF, 4096); /* EWE addition */
         printf("Extracting %s ", filename);
     }
     else
@@ -376,38 +236,14 @@ int main(int argc, char *argv[])
 {
     int i, j, cmd, count, nfiles, found, done;
 
-    /* Check command line arguments. */
-    if (argc < 3 || argv[1][1] != '\0' || !strchr("AXRDPL", cmd = toupper(argv[1][0])) ||
-        (argc == 3 && strchr("AD", cmd)))
-        error(usage);
-
-    /* Wildcards used? */
     for (i = 3; i < argc; i++)
         if (strpbrk(argv[i], "*?"))
             break;
     if (cmd == 'A' && i < argc)
         error("Filenames may not contain '*' and '?'");
     if (i < argc)
-        nfiles = -1; /* contains wildcards */
-    else
-        nfiles = argc - 3; /* number of files to process */
 
-    /* Open archive. */
-    arcfile = fopen(argv[2], "rb");
-    if (arcfile == NULL && cmd != 'A')
-        error("Can't open archive '%s'", argv[2]);
-    if (arcfile != NULL)
-        setvbuf(arcfile, NULL, _IOFBF, 4096); /* EWE addition */
 
-    /* Open temporary file. */
-    if (strchr("ARD", cmd))
-    {
-        temp_name = tmpnam(NULL);
-        outfile = fopen(temp_name, "wb");
-        if (outfile == NULL)
-            error("Can't open temporary file");
-        else
-            setvbuf(outfile, NULL, _IOFBF, 4096); /* EWE addition */
         atexit(exitfunc);
     }
     else
@@ -491,13 +327,3 @@ int main(int argc, char *argv[])
 
     if (temp_name != NULL && count != 0)
     {
-        fputc(0, outfile); /* end of archive */
-        if (ferror(outfile) || fclose(outfile) == EOF)
-            error("Can't write");
-        remove(argv[2]);
-        rename(temp_name, argv[2]);
-    }
-
-    printf("  %d files\n", count);
-    return EXIT_SUCCESS;
-}

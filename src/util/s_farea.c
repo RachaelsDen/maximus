@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: s_farea.c,v 1.1.1.1 2002/10/01 17:57:41 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=SILT: 'Section Area' processing logic
- */
 
 #define SILT
 #define NOVARS
@@ -76,9 +58,6 @@ static void near FileAreaWrite(FAINFO *pfi, int closeit)
         FAREA fa;
         long pos = lseek(fa_fd, 0L, SEEK_END);
 
-        /* Find out the position of the last area in the file, so that we       *
-         * can fix the wraparound pointer in the first record to point          *
-         * to it.                                                               */
 
         pos -= cbLast + ADATA_START;
 
@@ -148,15 +127,6 @@ static void near FileAreaWrite(FAINFO *pfi, int closeit)
 
     if (pfi)
     {
-        /* Fill out the structure length information */
-
-        pfi->fa.cbArea = sizeof(pfi->fa);
-        pfi->fa.cbHeap = pfi->h.end - pfi->h.heap;
-        pfi->fa.cbPrior = cbLast;
-
-        cbLast = pfi->fa.cbArea + pfi->fa.cbHeap + pfi->fa.num_override * sizeof(OVERRIDE);
-
-        /* Make sure that directory exists, unless "slow" flag is set */
 
         if ((pfi->fa.attribs & (FA_DIVBEGIN | FA_DIVEND)) == 0)
             if (pfi->fa.downpath && (pfi->fa.attribs & FA_SLOW) == 0)
@@ -169,47 +139,14 @@ static void near FileAreaWrite(FAINFO *pfi, int closeit)
         if (write(fai_fd, (char *)&mfi, sizeof mfi) != sizeof mfi)
             ErrWrite();
 
-        /* Write the main area data structure */
-
-        if (write(fa_fd, (char *)&pfi->fa, sizeof pfi->fa) != sizeof pfi->fa)
-            ErrWrite();
-
-        /* Write all of the message area overrides */
 
         for (ol = pfi->ol; ol; ol = ol->next)
             if (write(fa_fd, (char *)&ol->or, sizeof ol->or) != sizeof ol->or)
                 ErrWrite();
 
-        /* Figure out the size of the zstr heap and write it, too */
-
-        size = pfi->h.end - pfi->h.heap;
-
-        if (write(fa_fd, (char *)pfi->h.heap, size) != (signed)size)
-            ErrWrite();
-    }
-}
-
-/* File area type information */
 
 static void near FiltType(void *v, char *words[], char *line)
 {
-    int w; /* Word number */
-
-    static struct
-    {
-        char *name;
-        word mask;
-    } * pst, style_tab[] = {{"Slow", FA_SLOW},          {"Staged", FA_STAGED},
-                            {"NoNew", FA_NONEW},        {"CD", FA_CDROM},
-                            {"Hidden", FA_HIDDN},       {"DateAuto", FA_AUTODATE},
-                            {"DateManual", FA_MANDATE}, {"DateList", FA_LISTDATE},
-                            {"FreeTime", FA_FREETIME},  {"FreeSize", FA_FREESIZE},
-                            {"FreeBytes", FA_FREESIZE}, {"Free", FA_FREEALL},
-                            {"NoIndex", FA_NOINDEX},    {NULL, 0}};
-
-    NW(line);
-
-    /* Parse all of the known keywords */
 
     for (w = 1; w < MAX_PARSE_WORDS && *words[w]; w++)
     {
@@ -251,115 +188,6 @@ int ParseFileArea(FILE *ctlfile, char *name)
     if (strchr(name, '.'))
         BadDivisionName();
 
-    /* Make sure that area file is open */
-
-    FileAreaWrite(NULL, FALSE);
-
-    if (do_farea)
-    {
-        memset(&fi, 0, sizeof fi);
-        fi.marea = FALSE;
-        fi.fa.division = division;
-
-        HeapNew(&fi.h, MAX_FILE_HEAP);
-
-        strcpy(fullname, prefix);
-        strcat(fullname, name);
-
-        HeapAdd(&fi.h, &fi.fa.name, fullname);
-    }
-
-    while (fgets(line, PATHLEN, ctlfile))
-        if (VerbParse(&fi, do_farea ? verbs : NULL, line))
-            break;
-
-    if (do_farea)
-    {
-        FileAreaWrite(&fi, FALSE);
-
-        for (ol = fi.ol; ol; ol = ol->next)
-            free(ol);
-
-        HeapDelete(&fi.h);
-    }
-
-    return 0;
-}
-
-void ParseFileDivisionBegin(char *name, char *acs, char *displayfile, char *descript)
-{
-    FAINFO fi;
-    char fullname[PATHLEN];
-
-    if (!do_farea)
-        return;
-
-    if (strchr(name, '.'))
-        BadDivisionName();
-
-    strcpy(fullname, prefix);
-    strcat(fullname, name);
-
-    strcat(prefix, name);
-    strcat(prefix, ".");
-
-    FileAreaWrite(NULL, FALSE);
-
-    memset(&fi, 0, sizeof fi);
-    fi.marea = FALSE;
-
-    HeapNew(&fi.h, MAX_MSG_HEAP);
-
-    HeapAdd(&fi.h, &fi.fa.name, fullname);
-    HeapAdd(&fi.h, &fi.fa.descript, descript);
-    HeapAdd(&fi.h, &fi.fa.acs, acs);
-    HeapAdd(&fi.h, &fi.fa.filesbbs, displayfile);
-
-    fi.fa.attribs = FA_DIVBEGIN;
-    fi.fa.division = division++;
-
-    FileAreaWrite(&fi, FALSE);
-    HeapDelete(&fi.h);
-}
-
-void ParseFileDivisionEnd(void)
-{
-    FAINFO fi;
-    char *p;
-
-    if (!do_farea)
-        return;
-
-    if (!*prefix)
-    {
-        printf("\n\aError!  FileDivisionEnd on line %d has no correspondig FileDivisionBegin!\n",
-               linenum);
-        Compiling(-1, NULL, NULL);
-        return;
-    }
-
-    /* Strip off the trailing dot */
 
     prefix[strlen(prefix) - 1] = 0;
 
-    /* Now set the prefix back to the prior area */
-
-    if ((p = strrchr(prefix, '.')) != NULL)
-        p[1] = 0;
-    else
-        *prefix = 0;
-
-    FileAreaWrite(NULL, FALSE);
-
-    memset(&fi, 0, sizeof fi);
-    fi.marea = FALSE;
-
-    HeapNew(&fi.h, MAX_MSG_HEAP);
-
-    fi.fa.attribs = FA_DIVEND;
-    fi.fa.division = --division;
-    HeapAdd(&fi.h, &fi.fa.acs, "");
-
-    FileAreaWrite(&fi, FALSE);
-    HeapDelete(&fi.h);
-}

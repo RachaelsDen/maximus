@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include "prog.h"
 #include "uni.h"
@@ -39,9 +23,6 @@ long _fast h_read(int fd, char huge *buf, long size)
 
     while (size > 0)
     {
-        /* What's he trying to do here, some kind of aligned read? I'll guess near * = 16 bit ptr...
-         * - wes unsigned long ulMax=65536L - (word)(unsigned)(char near *)buf;
-         */
         unsigned long ulMax = 65536L - ((long)buf & 0xFFFF);
         ulMax = min(ulMax, size);
         ulMax = min(ulMax, 32767L);
@@ -57,44 +38,6 @@ long _fast h_read(int fd, char huge *buf, long size)
         if (ret < 0)
             return (long)ret;
 
-        /* Add the number of bytes transferred */
-
-        buf += (long)ret;
-        rc += (long)ret;
-        size -= ulMax;
-
-        if (rc == 0)
-            break;
-    }
-
-    return rc;
-}
-
-long _fast h_write(int fd, char huge *buf, long size)
-{
-    int ret;
-    long rc = 0;
-
-    while (size > 0)
-    {
-        /* see h_read comment */
-        /* unsigned long ulMax=65536L - (word)(unsigned)(char near *)buf; */
-        unsigned long ulMax = 65536L - ((long)buf & 0xFFFF);
-        ulMax = min(ulMax, size);
-        ulMax = min(ulMax, 32767L);
-
-        if (!size)
-            return 0;
-
-        if (!ulMax)
-            return 0;
-
-        ret = write(fd, (char *)buf, (unsigned)ulMax);
-
-        if (ret < 0)
-            return (long)ret;
-
-        /* Add the number of bytes transferred */
 
         buf += (long)ret;
         rc += (long)ret;

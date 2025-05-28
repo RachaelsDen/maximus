@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: mh_graph.c,v 1.1.1.1 2002/10/01 17:52:32 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# name=Message Section: Grab msghdr (graphics mode version)
- */
 
 #define MAX_LANG_max_bor
 
@@ -68,8 +50,6 @@ int GetGraphicsHeader(XMSG *msg, PMAH pmah, char *mname, long mn, long highmsg)
 
     RedrawAll(pmah, msg, TRUE);
 
-    /* If we can't enter private messages, then move the cursor down to the   *
-     * "To:" line.                                                            */
 
     inc = TRUE;
 
@@ -89,43 +69,10 @@ int GetGraphicsHeader(XMSG *msg, PMAH pmah, char *mname, long mn, long highmsg)
         item = ITEM_ATTR;
     }
 
-    /* Loop around all of the functions until item==-1 (that sez we're done) */
-
-    while (item >= 0 && item < GRAPHICS_ENTRY_FUNCS)
-    {
-        if ((item == ITEM_ORIG || item == ITEM_DEST) && !(pmah->ma.attribs & MA_NET))
-        {
-            if (inc)
-                item++;
-            else
-                item--;
-        }
-
-        ret = (*MsgEntryFtab[item])(pmah, msg);
-    }
-
-    /* Redisplay this to eliminate any junk underneath if FSR is not in use */
 
     if (ret != -1 && (usr.bits2 & BITS2_CLS) && !(usr.bits & BITS_FSR))
         RedrawAll(pmah, msg, FALSE);
 
-    /* Clear the last line */
-
-    GotoLocText();
-    Puts(CLEOL);
-
-    return ret;
-}
-
-int near GetAttributes(PMAH pmah, XMSG *msg)
-{
-    dword bit;
-    int ret = 0, i;
-    byte ch;
-
-    /* If we can't accept anything other than the default in this area,     *
-     * skip this field IF and ONLY IF we can't enter any other attributes   *
-     * in a matrix-type area.                                               */
 
     if ((pmah->ma.attribs & (MA_PUB | MA_PVT)) != (MA_PUB | MA_PVT))
     {
@@ -147,119 +94,14 @@ int near GetAttributes(PMAH pmah, XMSG *msg)
     {
         GotoLocText();
 
-        /* If it's pub or pvt... */
-
-        if ((pmah->ma.attribs & (MA_PVT | MA_PUB)) == (MA_PVT | MA_PUB))
-        {
-            if ((pmah->ma.attribs & MA_ATTACH) && AllowAttribute(pmah, MSGKEY_LATTACH))
-                Puts(pvt_or_attach_or_help);
-            else
-                Puts(p_for_pvt_or_q_for_help);
-        }
-        else
-        {
-            if ((pmah->ma.attribs & MA_ATTACH) && AllowAttribute(pmah, MSGKEY_LATTACH))
-                Puts(enter_msg_attrs_attach);
-            else
-                Puts(enter_msg_attrs);
-        }
-    }
-
-    GotoLocAttr();
-    vbuf_flush();
-
-    while ((ch = (byte)toupper(Mdm_getcw())) != '\r')
-    {
-        switch (ch)
-        {
-        case 0:
-            switch (Mdm_getcw())
-            {
-            case K_DOWN:
-                item++;
-                inc = TRUE;
-                ret = 0;
-                goto DoRet;
-            }
-            break;
-
-        case '\x1b':
-            switch (Mdm_getcw())
-            {
-            case '\x1b':
-                item = ret = -1;
-                goto DoRet;
-
-            case '[':
-            case 'O':
-                switch (Mdm_getcw())
-                {
-                case 'B':
-                    item++;
-                    inc = TRUE;
-                    ret = 0;
-                    goto DoRet;
-                }
-                break;
-            }
-            break;
-
-        case K_CTRLX:
-        case K_TAB:
-            item++;
-            inc = TRUE;
-            ret = 0;
-            goto DoRet;
-
-        case '?':
-            Puts(CLS);
-            Display_File(DISPLAY_NONE, NULL, "%sattrib", PRM(misc_path));
-            RedrawAll(pmah, msg, FALSE);
-            GotoLocAttr();
-            vbuf_flush();
-            break;
-
-        case ' ': /* Assume pvt */
             ch = (byte)msgattr_keys[0];
 
         default:
 
-            /* Special status for Pvt flag - this relies on area attribute */
-
-            prm.msg_ask[0] =
-                (pmah->ma.attribs & (MA_PVT | MA_PUB)) != (MA_PVT | MA_PUB) ? (word)-1 : usr.priv;
-
-            for (i = 0; i < 16; i++)
-            {
-                bit = (1L << (dword)i);
-
-                if (((byte)msgattr_keys[i] == ch) && AllowAttribute(pmah, i))
-                {
-                    if (i == 0 || (pmah->ma.attribs & MA_NET))
-                    {
-                        msg->attr ^= bit;
-                        DisplayMessageAttributes(msg, pmah);
-
-                        /* If we are uploading a file using the local file attach
-                         * mechanism, ensure that the subject line is blank.
-                         */
 
                         if ((pmah->ma.attribs & MA_ATTACH) && (msg->attr & MSGFILE))
                             *msg->subj = 0;
 
-                        /* Redraw the Subj/File line if modifying the file bits */
-
-                        if (bit & (MSGFILE | MSGFRQ | MSGURQ))
-                            DisplayMessageSubj(msg, pmah);
-
-                        GotoLocAttr();
-                        vbuf_flush();
-                    }
-                    break;
-                }
-            }
-
-            /* Attach flag is a special case in local attach areas */
 
             if ((pmah->ma.attribs & MA_NET) == 0 && (ch == (byte)msgattr_keys[4]) &&
                 AllowAttribute(pmah, MSGKEY_LATTACH))
@@ -371,19 +213,6 @@ int near GetToField(PMAH pmah, XMSG *msg)
         goto DoRet;
     }
 
-    /* To stop those complaints about internet addresses :-) */
-
-    if (strpbrk(msg->to, "@!") == NULL || strchr(msg->to, ' '))
-        fancier_str(msg->to);
-
-    strcpy(last_name, msg->to);
-
-    if ((*netnode == '\0' || !eqstri(first_name, msg->to)) && (pmah->ma.attribs & MA_NET))
-    {
-        if (Get_FidoList_Name(msg, netnode, PRM(fidouser)))
-            MaxParseNN(netnode, d);
-
-        /* In case NAMES.MAX changed the 'to' field */
 
         if (!eqstri(last_name, msg->to))
             DisplayShowName(rbox_sho_tname, msg->to);
@@ -401,20 +230,14 @@ int near GetToField(PMAH pmah, XMSG *msg)
         {
             char temp[PATHLEN];
 
-            /* Try 'misc\userlist' first, since it might simply contain
-               help, menu, other information or even [menu_cmd userlist].. */
 
             sprintf(temp, "%suserlist", PRM(misc_path));
             if (Display_File(DISPLAY_NONE, NULL, temp) != 0 && !(prm.flags & FLAG_no_ulist))
             {
 
-                /* No userlist file is found, so if we are allowed to,
-                   we can jump right into the userlist */
 
                 Puts(CLS);
 
-                /* If user didn't abort userlist, then pause for an ENTER, *
-                 * so the screen clear doesn't wipe everything.            */
 
                 if (UserList() != -1)
                 {
@@ -431,99 +254,6 @@ int near GetToField(PMAH pmah, XMSG *msg)
             goto DoRet;
         }
 
-        /* Make sure user exists if a pvt. message in a local area! */
-        if (*msg->to && (pmah->ma.attribs & (MA_NET | MA_SHARED)) == 0 &&
-            (msg->attr & MSGPRIVATE) && !IsInUserList(msg->to, TRUE))
-        {
-            *msg->to = '\0';
-
-            GotoLocText();
-            Puts(userdoesntexist);
-            Press_ENTER();
-
-            RedrawAll(pmah, msg, FALSE);
-            item = ITEM_TO;
-        }
-    }
-
-DoRet:
-
-    DisplayShowName(rbox_sho_tname, msg->to);
-    GotoLocText();
-    Puts(fsr_msginfo_col);
-
-    return ret;
-}
-
-int near GetToAddr(PMAH pmah, XMSG *msg)
-{
-    NETADDR *d;
-    int ret = 0;
-
-    NW(pmah);
-
-    d = &msg->dest;
-
-    if (usr.help != EXPERT)
-    {
-        GotoLocText();
-        Puts(edmsg);
-    }
-
-    if (*netnode)
-        strcpy(netnode, Address(d));
-
-    Puts(fsr_addr_col);
-    GotoAddrTo();
-    if (GetItemString(netnode, 24))
-        return -1;
-
-    if (!*netnode)
-        strcpy(netnode, Address(&prm.address[0]));
-
-    MaxParseNN(netnode, d);
-
-    if (eqstri(netnode, "/"))
-    {
-        Puts(CLS);
-
-        if (NetList())
-            Press_ENTER();
-
-        *netnode = '\0';
-
-        RedrawAll(pmah, msg, FALSE);
-        item = ITEM_DEST;
-        ret = 0;
-    }
-    else if (*netnode && (netnode[strlen(netnode) - 1] == '/' && (*netnode + 1)) ||
-             netnode[strlen(netnode) - 1] == '#')
-    {
-        Puts(CLS);
-
-        if (!eqstri(netnode, "#"))
-            MaxParseNN(netnode, d);
-
-        if (NodeList(d->zone, d->net))
-            Press_ENTER();
-
-        *netnode = '\0';
-
-        RedrawAll(pmah, msg, FALSE);
-        item = ITEM_DEST;
-        ret = 0;
-    }
-    else
-    {
-        DisplayShowAddress(rbox_sho_taddr, d, pmah);
-        DisplayShowDest(d);
-    }
-
-    /*
-    GotoLocText();
-    Puts(CLEOL);
-    Puts(fsr_msginfo_col);
-    */
 
     return ret;
 }

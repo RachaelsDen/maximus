@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: sqpack.c,v 1.2 2003/06/05 03:13:40 wesgarland Exp $";
@@ -79,8 +63,6 @@ static word near kill_msg(sword usDays, union stamp_combo *pscDate)
 
     long_t = (long)t - 60L * 60L * 24L * (long)usDays;
 
-    /* Make sure that the date value is more than zero (and that it hasn't    *
-     * wrapped around)!                                                       */
 
     t = (long_t < 0 || long_t > t) ? 0 : long_t;
 
@@ -112,12 +94,6 @@ int pack_base(struct _sqbase *isqb, int infd, int outfd, struct _sqbase *osqb, S
 
     ofdpos = sizeof(struct _sqbase);
 
-    /* Start reading from the first message frame */
-
-    new_frame = isqb->begin_frame;
-    do_bs = isatty(fileno(stdout));
-
-    /* If there aren't any messages, then there's nothing to do. */
 
     if (new_frame == NULL_FRAME)
     {
@@ -133,8 +109,6 @@ int pack_base(struct _sqbase *isqb, int infd, int outfd, struct _sqbase *osqb, S
 
         frame = (SQHDR *)sqbuf;
 
-        /* Read in this frame from the original SQD file, and make sure that    *
-         * it's valid.                                                          */
 
         if (lseek(infd, new_frame, SEEK_SET) != new_frame ||
             read(infd, (char *)frame, sizeof(SQHDR)) != sizeof(SQHDR) || frame->id != SQHDRID ||
@@ -147,29 +121,6 @@ int pack_base(struct _sqbase *isqb, int infd, int outfd, struct _sqbase *osqb, S
 
         fKill = FALSE;
 
-        /* If we have to kill by number of days, read the msg hdr and date */
-
-        if (isqb->keep_days)
-        {
-            XMSG msg;
-
-            if (read(infd, (char *)&msg, sizeof(XMSG)) != sizeof(XMSG))
-            {
-                error();
-                break;
-            }
-
-            lseek(infd, -(long)sizeof(XMSG), SEEK_CUR);
-
-            if (kill_msg((sword)isqb->keep_days,
-                         (union stamp_combo *)(msg.date_arrived.date.yr ? &msg.date_arrived
-                                                                        : &msg.date_written)))
-            {
-                fKill = TRUE;
-            }
-        }
-
-        /* Static packing of the message base by number */
 
         if (isqb->max_msg &&
             (sdword)mctr < (sdword)isqb->num_msg - (sdword)isqb->max_msg + (sdword)isqb->skip_msg)
@@ -198,74 +149,23 @@ int pack_base(struct _sqbase *isqb, int infd, int outfd, struct _sqbase *osqb, S
             continue;
         }
 
-        /* Now adjust the pointers in this frame for the offsets in the new     *
-         * file.                                                                */
 
-        next_new_frame = frame->next_frame; /* save a copy of old next_frame */
-        frame->prev_frame = loutfofs;
-        loutfofs = ofdpos;
-
-        /* Make sure that the last message points to a NULL frame */
 
         if ((dword)(mctr + 1) == isqb->num_msg)
             frame->next_frame = NULL_FRAME;
         else
             frame->next_frame = ofdpos + sizeof(SQHDR) + frame->msg_length;
 
-        /* The new frame length will be just enough to hold the msg */
-
-        frame->frame_length = frame->msg_length;
-
-        idx[n_msg].ofs = ofdpos;
-
-        /* Position the pointer to just after the frame, for further reading */
 
         sqbp = sqbuf + sizeof(SQHDR);
 
         b_left = frame->msg_length;
 
-        /* While there are still bytes to read from this message... */
 
-        while (b_left > 0)
-        {
-            b_get = (ptrdiff_t)(SQBUF_SIZE - (ptrdiff_t)((char *)sqbp - (char *)sqbuf));
-            b_get = (ptrdiff_t)min((long)b_get, b_left);
 
-            if ((got = read(infd, sqbp, (unsigned)b_get)) <= 0)
-            {
-                error();
-                break;
-            }
-
-            if (got != (int)b_get)
-                b_left = 0;
-
-            /* Advance the pointer past all of the bytes that we read in */
-
-            sqbp += (size_t)b_get /* got */;
-            b_left -= (sdword)b_get /* got */;
-
-            /* Now calculate how many bytes to write */
-
-            b_get = (char *)sqbp - (char *)sqbuf;
-
-            if (write(outfd, sqbuf, (unsigned)b_get) != (signed)b_get)
-            {
-                printf("\nError on write!  (Out of disk space?)\n");
-                return TRUE;
-            }
-
-            /* Increment the file pointer for the output file */
 
             ofdpos += (long)b_get;
 
-            /* If we hit the end of the buffer, wrap to the beginning again */
-
-            if (b_get == SQBUF_SIZE)
-                sqbp = sqbuf;
-        }
-
-        /* If there was an error in the while() loop */
 
         if (b_left > 0)
             break;
@@ -273,42 +173,10 @@ int pack_base(struct _sqbase *isqb, int infd, int outfd, struct _sqbase *osqb, S
         lframeofs = new_frame;
         new_frame = next_new_frame;
 
-        /* Make sure that we don't process too many messages. */
-
-        if ((dword)++mctr > isqb->num_msg)
-        {
-            error();
-            break;
-        }
-
-        n_msg++;
-
-        if ((mctr % 10) == 0 && do_bs)
-        {
-            printf("\b\b\b\b\b%5u", mctr);
-            fflush(stdout);
-        }
-    } while (new_frame != NULL_FRAME);
-
-    if (new_frame == NULL_FRAME)
-        printf("%s%5u - ", do_bs ? "\b\b\b\b\b" : "", mctr);
-
-    osqb->num_msg = osqb->high_msg = n_msg;
-
-    osqb->last_frame = loutfofs;
-    osqb->end_frame = ofdpos;
-
-    /* If no messages left, set frame pointers accordingly */
 
     if (n_msg == 0)
         osqb->begin_frame = osqb->last_frame = NULL_FRAME;
 
-    /* Return TRUE on error */
-
-    return (new_frame != NULL_FRAME);
-}
-
-/* Pack the Squish index file */
 
 static int near pack_file(int sqd, int ifd, int newfd)
 {
@@ -321,17 +189,6 @@ static int near pack_file(int sqd, int ifd, int newfd)
 #endif
     int ret;
 
-    /* Read the sqbase from the original file */
-
-    lseek(sqd, 0L, SEEK_SET);
-
-    if (read(sqd, (char *)&isqb, sizeof(struct _sqbase)) != sizeof(struct _sqbase))
-    {
-        error();
-        return 1;
-    }
-
-    /* Copy the struct over to the new file, but change a few things... */
 
     osqb = isqb;
 
@@ -350,20 +207,6 @@ static int near pack_file(int sqd, int ifd, int newfd)
         return 1;
     }
 
-    /* Allocate enough memory to read in the index */
-
-#ifdef __FARDATA__
-    bytes = isqb.num_msg * (long)sizeof(SQIDX);
-#else
-    bytes = (size_t)sizeof(SQIDX) * (size_t)isqb.num_msg;
-#endif
-
-    if (bytes)
-    {
-        if ((idx = myfarmalloc(bytes)) == NULL)
-            NoMem();
-
-            /* Now read it in */
 
 #ifdef __FARDATA__
         if (h_read(ifd, (char *)idx, bytes) != bytes)
@@ -377,11 +220,6 @@ static int near pack_file(int sqd, int ifd, int newfd)
         }
     }
 
-    /* Perform the actual packing of the messages */
-
-    ret = pack_base(&isqb, sqd, newfd, &osqb, idx);
-
-    /* Rewrite the index */
 
     lseek(ifd, 0L, SEEK_SET);
 
@@ -398,13 +236,6 @@ static int near pack_file(int sqd, int ifd, int newfd)
             return 1;
         }
 
-        /* Truncate the file at the end of the index */
-
-        setfsize(ifd, (long)bytes);
-        myfarfree(idx);
-    }
-
-    /* Now try to rewrite the sqbase header for the new output file */
 
     lseek(newfd, 0L, SEEK_SET);
 
@@ -432,51 +263,12 @@ static int near pack_squish_file(char *path)
     sprintf(ifdname, "%s.sqi", path);
     sprintf(newname, "%s.~~~", path);
 
-    /* Try to open all three files */
-
-    if ((sqd = sopen(sqdname, O_RDONLY | O_BINARY, SH_DENYRW, S_IREAD | S_IWRITE)) == -1)
-    {
-        ErrOpening(sqdname);
-        return 1;
-    }
-
-    if ((ifd = sopen(ifdname, O_RDWR | O_BINARY, SH_DENYRW, S_IREAD | S_IWRITE)) == -1)
-    {
-        ErrOpening(ifdname);
-        close(sqd);
-        return 1;
-    }
-
-    lock(sqd, 0L, 1L);
-    lock(ifd, 0L, 1L);
-
-    if ((newfd = sopen(newname, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYRW,
-                       S_IREAD | S_IWRITE)) == -1)
-    {
-        ErrOpening(newname);
-        close(ifd);
-        close(sqd);
-        return 1;
-    }
-
-    /* Now pack from the .SQD file to the .~~~ file */
 
     ret = pack_file(sqd, ifd, newfd);
 
     unlock(ifd, 0L, 1L);
     unlock(sqd, 0L, 1L);
 
-    /* Close everything up */
-
-    close(newfd);
-    close(ifd);
-    close(sqd);
-
-    if (ret != 0)
-        unlink(newname);
-    else
-    {
-        /* Success! */
 
         oldsize = fsize(sqdname);
         newsize = fsize(newname);
@@ -498,22 +290,6 @@ static int near pack_squish_file(char *path)
     return ret;
 }
 
-/* Remove the extension from the name of the squish file to pack */
-
-static int near pack_extension(char *name)
-{
-    char *lp, *ld;
-
-    lp = strrstr(name, "/\\:");
-
-    if ((ld = strrchr(name, '.')) != NULL && (!lp || ld > lp))
-        *ld = '\0';
-
-    return (pack_squish_file(name));
-}
-
-/* Create a list of .SQD files to process, based on a wildcard given        *
- * on the command-line.                                                     */
 
 static int near process_sqd_wildcard(char *fspec)
 {
@@ -534,21 +310,11 @@ static int near process_sqd_wildcard(char *fspec)
 
     if ((pth = strrstr(fspec, "/\\:")) != NULL)
     {
-        /* Cut off everything after the last path delimiter, and ret this strng */
-
-        pth[1] = '\0';
-        pth = fspec;
-    }
-    else
-    {
-        /* return an empty string */
 
         pth = fspec;
         *pth = '\0';
     }
 
-    /* Create linked list of filenames, to ensure that we don't process an    *
-     * individual file more than once.                                        */
 
     totold = totnew = 0L;
 
@@ -577,36 +343,12 @@ static int near process_sqd_wildcard(char *fspec)
     return ret;
 }
 
-/* Process the specified file area */
-
-static word near process_this_area(char *name, char *argv[])
-{
-    char **p;
-
-    for (p = argv + 2; *p; p++)
-        if (eqstri(name, *p))
-            return TRUE;
-
-    return FALSE;
-}
-
-/* Process a Max 2.x area data file.  Returns TRUE if the file was
- * Max 2.x format, or FALSE otherwise.  If returns TRUE, *piRet
- * is the return value from pack_extension.
- */
 
 int process_max2_areas(int fd, int all, int *piRet, char *argv[])
 {
     static struct _area a;
     int ret = 0;
 
-    /* Start from beginning of file */
-
-    lseek(fd, 0L, SEEK_SET);
-
-    /* If we can't read the area header, or if it isn't a valid Max
-     * 2.x-format data file...
-     */
 
     if (read(fd, (char *)&a, sizeof a) != sizeof a || a.id != AREA_ID)
     {
@@ -625,9 +367,6 @@ int process_max2_areas(int fd, int all, int *piRet, char *argv[])
     return TRUE;
 }
 
-/* Process a Max3 area data file.  But first check to see if it is
- * Max2.x format, and if so, call the appropriate routine.
- */
 
 static int near process_area_dat(int argc, char *argv[])
 {
@@ -641,76 +380,6 @@ static int near process_area_dat(int argc, char *argv[])
     if (argc > 2)
         all = FALSE;
 
-    /* Test for Max 2.x format */
-
-    if ((fd = shopen(argv[1], O_RDONLY | O_BINARY)) != -1)
-    {
-        int fGotMax2;
-
-        fGotMax2 = process_max2_areas(fd, all, &ret, argv);
-        close(fd);
-
-        if (fGotMax2)
-            return ret;
-    }
-
-    if ((haf = AreaFileOpen(argv[1], TRUE)) == NULL ||
-        (haff = AreaFileFindOpen(haf, NULL, 0)) == NULL)
-    {
-        printf("Error opening area database `%s' for read!\n", argv[1]);
-        exit(1);
-    }
-
-    while (AreaFileFindNext(haff, &ma, FALSE) == 0)
-    {
-        if ((ma.ma.type & MSGTYPE_SQUISH) && (all || process_this_area(MAS(ma, name), argv)))
-        {
-            ret = pack_squish_file(MAS(ma, path)) || ret;
-        }
-    }
-
-    AreaFileFindClose(haff);
-    AreaFileClose(haf);
-
-    return ret;
-}
-
-static void near format(void)
-{
-    putss("Format 1:\n\n"
-
-          "  SQPACK <filespec>\n\n"
-
-          "        This instructs SQPACK to process all of the specified\n"
-          "        .SQD areas, as given by a wildcard.\n\n"
-
-          "        ie. SQPACK D:\\MSG\\*.SQD\n\n"
-
-          "Format 2:\n\n"
-
-          "  SQPACK <marea> [area1 area2 ... arean]\n\n"
-
-          "        This instructs SQPACK to read a Maximus-style area data file and to\n"
-          "        process the areas within.  For Max 2.x, specify the name and path of\n"
-          "        your AREA.DAT file.  For Max 3.x, specify the name and path (but no\n"
-          "        extension) of your MAREA database. By default, all areas are\n"
-          "        processed.  To process only selected areas, list the names of those\n"
-          "        areas on the command line, after the name of your area data file.\n");
-
-    exit(1);
-}
-
-static int near process_all_areas(int argc, char *argv[])
-{
-    char name[PATHLEN];
-    int ret;
-
-    if (argc < 2)
-        format();
-
-    strcpy(name, argv[1]);
-
-    /* If no extension is supplied, use .SQD by default */
 
     if (!strchr(name, '.'))
     {

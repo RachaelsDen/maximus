@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: joho.c,v 1.2 2003/06/04 23:23:43 wesgarland Exp $";
@@ -33,49 +17,18 @@ static char rcs_id[] = "$Id: joho.c,v 1.2 2003/06/04 23:23:43 wesgarland Exp $";
 #include <sys/stat.h>
 #include <sys/types.h>
 
-/* My reverse-engineered lookup engine for JoHo's nodelist files */
-
-int JoHoLookup(int fd, size_t block_size, size_t rec_size, void *find, void *found,
-               int (*compare)(void *, void *))
-{
-    struct _control c;
-    char *fdb;
-    word max, rec, lastrec;
-    int i, diff, gotit;
-    struct _gdx *g = NULL;
-    long lbsize = (long)block_size;
-
-    /* Read beginning control record */
 
     lseek(fd, 0L, SEEK_SET);
 
     if (read(fd, (char *)&c, sizeof(c)) != sizeof(c))
         return FALSE;
 
-    /* Allocate memory to hold one block */
-
-    if ((fdb = malloc(block_size)) == NULL)
-        return FALSE;
-
-    /* Now trace down the tree, starting at the master index */
 
     lastrec = -1;
     rec = c.hdr.master_idx;
     max = (word)(lseek(fd, 0L, SEEK_END) / lbsize);
     gotit = FALSE;
 
-    /* Do one index record at a time... */
-
-    while (!gotit && rec > 0 && rec < max && rec != lastrec &&
-           lseek(fd, rec * lbsize, SEEK_SET) == rec * lbsize &&
-           read(fd, fdb, block_size) == (signed)block_size)
-    {
-        struct _inf *inf = (struct _inf *)fdb;
-        unsigned last;
-
-        last = inf->index;
-
-        /* Scan all nodes in this block to find a match */
 
         for (i = 0; i < inf->nodes; i++)
         {
@@ -83,9 +36,6 @@ int JoHoLookup(int fd, size_t block_size, size_t rec_size, void *find, void *fou
 
             if ((diff = (*compare)(find, g)) <= 0)
             {
-                /* If it was a direct match AND this is a leaf node, we found it. */
-
-                if (diff == 0 /*&& !inf->index*/)
                     gotit = TRUE;
 
                 break;
@@ -94,10 +44,6 @@ int JoHoLookup(int fd, size_t block_size, size_t rec_size, void *find, void *fou
             last = g->block_num;
         }
 
-        /* If we haven't already found it, set the new "search record" to the   *
-         * entry before the last node which was <= our search key.  If it       *
-         * wasn't found, simply use the 32nd node in the table for anything     *
-         * that was above all entries listed in the table.                      */
 
         if (!gotit)
             rec = last;
@@ -105,17 +51,6 @@ int JoHoLookup(int fd, size_t block_size, size_t rec_size, void *find, void *fou
 
     free(fdb);
 
-    /* If we found it, make a copy of the new record */
-    if (gotit && g)
-    {
-        memmove(found, g, rec_size);
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-/* Create a JoHo nodelist structure from the raw nodelist information */
 
 int JoHoFetch(void *f, struct _johofile *jf, struct _johonode *jn)
 {
@@ -175,21 +110,6 @@ int JoHoFetch(void *f, struct _johofile *jf, struct _johonode *jn)
     return TRUE;
 }
 
-/* Open the JoHo nodelist files.  If ufd==NULL, no userlist will be used. */
-
-int JoHoOpen(char *path, struct _johofile *jf, int userlist)
-{
-    struct _control c;
-    char name[PATHLEN];
-    char ext[4];
-
-    jf->fdfd = -1;
-    jf->nfd = -1;
-    jf->pfd = -1;
-    jf->ppfd = -1;
-    jf->ufd = -1;
-
-    /* Open the nodelist binary file first */
 
 #ifndef UNIX
     sprintf(name, "%sNODELIST.FDX", path);
@@ -200,15 +120,6 @@ int JoHoOpen(char *path, struct _johofile *jf, int userlist)
     if ((jf->fdfd = shopen(name, O_RDONLY | O_BINARY | O_NOINHERIT)) == -1)
         return FALSE;
 
-    /* Read the control block up front */
-
-    if (read(jf->fdfd, (char *)&c, sizeof(c)) != sizeof(c))
-    {
-        close(jf->fdfd);
-        return FALSE;
-    }
-
-    /* Now use that info to open the primary nodelist */
 
     strncpy(ext, c.nl_ext, 3);
     ext[3] = '\0';
@@ -228,26 +139,6 @@ int JoHoOpen(char *path, struct _johofile *jf, int userlist)
         return FALSE;
     }
 
-    /* Open the userlist file, if requested */
-
-    if (userlist)
-    {
-#ifndef UNIX
-        sprintf(name, "%sUSERLIST.FDX", path);
-#else
-        sprintf(name, "%userlist.fdx", path);
-#endif
-
-        if ((jf->ufd = shopen(name, O_RDONLY | O_BINARY | O_NOINHERIT)) == -1)
-        {
-            close(jf->nfd);
-            close(jf->fdfd);
-            return FALSE;
-        }
-    }
-
-    /* Failing to open the private nodelist is not an error, since there may  *
-     * not be one!                                                            */
 
 #ifndef UNIX
     sprintf(name, "%sFDNET.PVT", path);
@@ -257,8 +148,6 @@ int JoHoOpen(char *path, struct _johofile *jf, int userlist)
 
     jf->pfd = shopen(name, O_RDONLY | O_BINARY | O_NOINHERIT);
 
-    /* Failing to open the point nodelist is not an error, since there may    *
-     * not be one!                                                            */
 
 #ifndef UNIX
     sprintf(name, "%sFDPOINT.PVT", path);

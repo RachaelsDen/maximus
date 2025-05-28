@@ -1,41 +1,11 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include "max_file.h"
 #include "mexall.h"
 
 #ifdef MEX
 
-/* Add a file to the download queue */
-
-word EXPENTRY intrin_tag_queue_file(void)
-{
-    MA ma;
-    word wFlags;
-    char *szFile;
-
-    MexArgBegin(&ma);
-
-    szFile = MexArgGetString(&ma, FALSE);
-    wFlags = MexArgGetWord(&ma);
-
-    /* Assume return value of FALSE unless all checks succeed */
 
     regs_2[0] = FALSE;
 
@@ -55,21 +25,6 @@ word EXPENTRY intrin_tag_queue_file(void)
     return MexArgEnd(&ma);
 }
 
-/* Remove one file from the download queue */
-
-word EXPENTRY intrin_tag_dequeue_file(void)
-{
-    MA ma;
-    word wPosn;
-
-    MexArgBegin(&ma);
-
-    wPosn = MexArgGetWord(&ma);
-    regs_2[0] = (RemoveFileEntry(wPosn)) ? TRUE : FALSE;
-    return MexArgEnd(&ma);
-}
-
-/* Return size of file tag download queue */
 
 word EXPENTRY intrin_tag_queue_size(void)
 {
@@ -82,22 +37,6 @@ word EXPENTRY intrin_tag_queue_size(void)
     return MexArgEnd(&ma);
 }
 
-/* Return the file in a particular position in the queue */
-
-word EXPENTRY intrin_tag_get_name(void)
-{
-    int fn;
-    IADDR ia;
-    word wLen;
-    word *pw;
-    char *str;
-    MA ma;
-
-    FENTRY fent;
-
-    MexArgBegin(&ma);
-
-    /* Get the queue position, the flags reference, and the name reference */
 
     fn = MexArgGetWord(&ma);
     pw = (word *)MexArgGetRef(&ma);
@@ -122,4 +61,3 @@ word EXPENTRY intrin_tag_get_name(void)
     return MexArgEnd(&ma);
 }
 
-#endif /* MEX */

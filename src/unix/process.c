@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include "process.h"
 #include "io.h"
 #include <errno.h>
@@ -22,43 +24,7 @@ int spawnvp(int mode, const char *Cfile, char *const argv[])
 
     file = fixPathDup(Cfile);
 
-    if (!Cfile || stat(file, &sb)) /* Provide errno e.g. EPERM, ENOENT to caller */
-        return -1;
 
-    if (mode != P_OVERLAY)
-        pid = fork();
-    else
-        pid = 0; /* fake being a child */
-
-    if (pid) /* Parent */
-    {
-        if ((mode == P_NOWAIT) || (mode == P_NOWAITO))
-        {
-            fixPathDupFree(Cfile, file);
-            return 0;
-        }
-
-        if (mode == P_WAIT)
-        {
-            int status;
-            pid_t dead_kid;
-
-            sleep(0);
-            fixPathDupFree(Cfile, file);
-
-            do
-            {
-                errno = 0;
-                dead_kid = waitpid(pid, &status, 0);
-                if (dead_kid == pid)
-                    break;
-            } while (errno != EINTR);
-
-            if (dead_kid != pid)
-                return -1;
-
-            if (WIFEXITED(status))
-                return 0; /* normal child exit */
 
             if (WIFSIGNALED(status))
                 fprintf(stderr, __FUNCTION__ ": Child (%s) exited due to signal %i!\n", Cfile,
@@ -70,16 +36,3 @@ int spawnvp(int mode, const char *Cfile, char *const argv[])
 
     if (mode == P_NOWAITO)
     {
-        /* Parent will not reap -- use double fork trick to avoid zombies */
-
-        pid = getpid();
-        signal(SIGCHLD, SIG_IGN);
-        (void)setpgid(pid, pid);
-        if (fork())
-            _exit(0);
-    }
-
-    execvp(file, argv);
-    fprintf(stderr, __FUNCTION__ ": could not spawn %s! (%s)\n", file, strerror(errno));
-    _exit(1);
-}

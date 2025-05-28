@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: accem.c,v 1.2 2003/06/05 03:18:58 wesgarland Exp $";
 #pragma on(unreferenced)
 
-/*# name=ACCEM -- decompiles .BBS files into .MEC files
- */
 
 #define ACCEM
 #define SILT
@@ -123,13 +105,6 @@ int _stdc main(int argc, char *argv[])
         }
     }
 
-    /* strupr(inname); */
-    fancy_fn(inname);
-
-    if (!strchr(outname, '.'))
-        strcat(outname, (p[1] == 'R') ? ".mer" : ".mec");
-
-    /* strupr(outname); */
     fancy_fn(outname);
 
     iqsort((char *)verbs, verb_table_size, sizeof(verbs[0]), trcmp);
@@ -166,118 +141,14 @@ int _stdc main(int argc, char *argv[])
                 if (offsets[x] == tl)
                     break;
 
-            if (x == num_offsets) /* If's a new label offset (not found in table) */
-                offsets[num_offsets++] = tl;
-        }
-    }
-
-    printf("Pass 2: Decompiling\n");
-
-    fseek(bbsfile, 0L, SEEK_SET);
-    fpos = 0L;
-
-    for (;;)
-    {
-        save_fp = fpos;
-
-        for (x = 0; x < num_offsets; x++)
-            if (fpos == offsets[x])
-            {
-                sprintf(temp, "[/L%d]", x);
-                llen += strlen(temp);
-                fputs(temp, mecfile);
-                break;
-            }
-
-        if ((ch = fgetc(bbsfile)) == EOF)
-            break;
-
-        if (llen >= MAX_LLEN)
-        {
-            if (split)
-                fprintf(mecfile, "[\n]");
-
-            llen = 1;
-        }
-
-        fpos++;
-
-        if (ch == '[')
-        {
-            fputs("[[", mecfile);
-            llen += 2;
-        }
-        else if (ch >= 32 || ch == '\t' || ch == '\r' || ch == '\n')
-        {
-            fputc(ch, mecfile);
-            llen++;
-
-            if (ch == '\r' || ch == '\n')
-                llen = 0;
-        }
-        else
-        {
-            *string = '\0';
-
-            switch (ch)
-            {
-            case 22:
-                fpos++;
-
-                if ((ch = fgetc(bbsfile)) == '\x01') /* Colour code */
                 {
                     Process_Colour_Code(bbsfile, mecfile);
                     break;
                 }
                 else
                     strcpy(string, "\x16");
-                /* else fall-through, a normal AVATAR command */
-
-            default:
-                for (iter = 0; iter < MAX_COMPILED; iter++)
-                {
-                    string[x = strlen(string)] = (char)ch;
-                    string[x + 1] = '\0';
-
-                    if ((verbnum = sstsearch(string, verbs, verb_table_size)) != -1)
-                    {
-                        if (verbs[verbnum].fptr)
-                        {
-                            inf.p = NULL;
-                            inf.outfile = &mecfile;
-                            inf.infile = bbsfile;
-                            inf.outname = NULL;
-                            inf.verbnum = verbnum;
-
-                            (*verbs[verbnum].fptr)(&inf);
-                        }
-                        else
-                        {
-                            fprintf(mecfile, "[%s]", verbs[verbnum].verb);
-                            llen += 2 + strlen(verbs[verbnum].verb);
-                        }
-                        break;
-                    }
-
-                    fpos++;
-
-                    if ((ch = fgetc(bbsfile)) == EOF)
-                        break;
-                }
-
-                if (iter != MAX_COMPILED)
-                    break;
-
-                /* Now skip over the bad char to try again */
                 fseek(bbsfile, fpos = save_fp + 1, SEEK_SET);
 
-                /* Special handling of priv levels */
-
-                if (*string == 0x10 && (ch = fgetc(bbsfile)) != EOF)
-                {
-                    char *p;
-
-                    /* ?below, ?equal, ?file, ?line, ?xclude  */
 
                     static char privch[] = "BQFLX";
 
@@ -291,51 +162,6 @@ int _stdc main(int argc, char *argv[])
                         llen += fprintf(mecfile, privtok[p - privch], tolower(fgetc(bbsfile)));
                         continue;
                     }
-                    /* Old style ?file ? */
-#ifdef OLD_PRIVFILE
-                    fpos++;
-                    llen += fprintf(mecfile, privtok[2], toupper(ch));
-                    continue;
-#ese
-                    ungetc(ch, bbsfile);
-#endif
-                }
-
-                llen += fprintf(mecfile, "[%d]", (unsigned char)*string);
-                continue;
-            }
-        }
-    }
-
-    printf("\nDone!\n");
-
-    fclose(mecfile);
-    fclose(bbsfile);
-
-    return 0;
-}
-
-int sstsearch(char *key, struct _table base[], unsigned int num)
-{
-    int x, lastx = -1, lasthi, lastlo;
-
-    char *s, *t;
-
-    lasthi = num;
-    lastlo = 0;
-
-    for (;;)
-    {
-        x = ((lasthi - lastlo) >> 1) + lastlo;
-
-        if (lastx == x)
-            return -1;
-
-        lastx = x;
-
-        for (s = key, t = base[x].translation; *s == *t; s++, t++)
-            if (!*s)
-                return (x); /* Found a match */
 
         if (*s > *t)
             lastlo = x;
@@ -349,175 +175,6 @@ void Process_Colour_Code(FILE *bbsfile, FILE *mecfile)
     int ch;
     char temp[PATHLEN];
 
-    /* Unescape any control codes with their high bit set. */
-
-    fpos++;
-
-    if ((ch = fgetc(bbsfile)) == DLE)
-    {
-        ch = fgetc(bbsfile) & 0x7f;
-        fpos++;
-    }
-
-    colour_to_string(ch, temp);
-    fprintf(mecfile, "[%s]", temp);
-    llen += 2 + strlen(temp);
-}
-
-int _stdc trcmp(void *v1, void *v2)
-{
-    return (strcmp(((struct _table *)v1)->translation, ((struct _table *)v2)->translation));
-}
-
-void Get_Number_String(FILE *bbsfile, char *string, int max_len)
-{
-    int ch, x;
-
-    *string = '\0';
-
-    while ((ch = fgetc(bbsfile)) >= '0' && ch <= '9')
-    {
-        if ((x = strlen(string)) == max_len)
-            break;
-
-        string[x] = (char)ch;
-        string[x + 1] = '\0';
-
-        fpos++;
-    }
-
-    ungetc(ch, bbsfile);
-}
-
-void P_Comment(struct _inf *inf) { NW(inf); }
-void P_Copy(struct _inf *inf) { NW(inf); }
-void P_Include(struct _inf *inf) { NW(inf); }
-void P_On(struct _inf *inf) { NW(inf); }
-void P_Save(struct _inf *inf) { NW(inf); }
-void P_Load(struct _inf *inf) { NW(inf); }
-void P_Fg(struct _inf *inf) { NW(inf); }
-void P_Bg(struct _inf *inf) { NW(inf); }
-void P_Steady(struct _inf *inf) { NW(inf); }
-void P_Dim(struct _inf *inf) { NW(inf); }
-void P_Bright(struct _inf *inf) { NW(inf); }
-void P_Priv(struct _inf *inf) { NW(inf); }
-void P_Label(struct _inf *inf) { NW(inf); }
-void P_Restore(struct _inf *inf) { NW(inf); }
-
-void P_Locate(struct _inf *inf)
-{
-    int ch;
-    char temp[PATHLEN];
-
-    fpos += 2;
-
-    ch = fgetc(inf->infile);
-
-    sprintf(temp, "[locate %2d %2d]", ch, fgetc(inf->infile));
-    fputs(temp, *inf->outfile);
-    llen += strlen(temp);
-}
-
-void P_Menu_Cmd(struct _inf *inf)
-{
-    int ch;
-    char temp[PATHLEN];
-    int i;
-
-    fpos += 2;
-
-    ch = fgetc(inf->infile) << 8;
-    ch |= fgetc(inf->infile);
-
-    for (i = 0; i < silt_table_size; i++)
-        if (silt_table[i].opt == ch)
-        {
-            strcpy(temp, silt_table[i].token);
-            break;
-        }
-
-    if (i == silt_table_size)
-        sprintf(temp, "%u", ch);
-
-    fprintf(*inf->outfile, "[menu_cmd %s]", temp);
-    llen += strlen(temp) + 11;
-}
-
-void P_Access(struct _inf *inf, char *tok)
-{
-    char temp[PATHLEN];
-    int i;
-
-    for (i = 0; i < (PATHLEN - 1) && (temp[i] = fgetc(inf->infile)) > 32; ++i)
-        ++fpos;
-    ++fpos;
-    temp[i] = '\0';
-    fprintf(*inf->outfile, "[%s %s]", tok, temp);
-    llen += strlen(temp) + strlen(tok) + 3;
-}
-
-void P_Acsfile(struct _inf *inf) { P_Access(inf, "acsfile"); }
-
-void P_Acs(struct _inf *inf) { P_Access(inf, "acs"); }
-
-void P_Setpriv(struct _inf *inf)
-{
-    fpos++;
-
-    fprintf(*inf->outfile, "[setpriv %c]", (char)toupper(fgetc(inf->infile)));
-    llen += 11;
-}
-
-void P_Setattr(struct _inf *inf)
-{
-    fpos++;
-
-    fprintf(*inf->outfile, "[msg_attr %c]", fgetc(inf->infile));
-    llen += 12;
-}
-
-void P_Iftime(struct _inf *inf)
-{
-    static char *time_verbs[] = {"GT", "LT", "EQ", "NE", "GE", "LE", NULL};
-
-    char temp[PATHLEN], *s;
-
-    int ch, x;
-
-    fpos++;
-    ch = fgetc(inf->infile) - 1;
-
-    for (x = 0, s = NULL; time_verbs[x]; x++)
-        if (toupper(ch) == x)
-        {
-            s = time_verbs[x];
-            break;
-        }
-
-    if (!s)
-        s = time_verbs[0];
-
-    fpos++;
-    ch = fgetc(inf->infile);
-
-    fpos++;
-
-    sprintf(temp, "[iftime %s %02d:%02d]", s, ch - 1, fgetc(inf->infile) - 1);
-    fputs(temp, *inf->outfile);
-    llen += strlen(temp);
-}
-
-void P_Repeat(struct _inf *inf)
-{
-    int ch, x, n;
-
-    fpos += 2;
-    ch = fgetc(inf->infile);
-    n = fgetc(inf->infile);
-
-    for (x = 0; x < n; x++)
-    {
-        if (ch == '[') /* Double up any left brackets */
         {
             fputc('[', *inf->outfile);
             llen++;
@@ -536,10 +193,6 @@ void P_Repeatseq(struct _inf *inf)
 
     sprintf(temp, "[repeatseq %d", ch = fgetc(inf->infile));
 
-    /* Increase fpos by number of chars, plus length, plus repeat times */
-    fpos += ch + 2;
-
-    /* Increase ch by one, to grab the #-of-repeats byte */
     ch++;
 
     while (ch--)

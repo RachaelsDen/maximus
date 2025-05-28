@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: max_fini.c,v 1.1.1.1 2002/10/01 17:51:38 sdudley Exp $";
 #pragma on(unreferenced)
 
-/*# tname=Termination code
- */
 
 #define MAX_LANG_max_init
 #define MAX_LANG_max_chat
@@ -53,49 +35,15 @@ static void near Local_Cleanup(void);
 static void near Write_User(void);
 static void near ChatOff(void);
 
-/* This routine is called by FinishUp(), which just acts as a gateway for  *
- * this overlaid function.                                                 *
- *                                                                         *
- * This cleans up everything, closes files, updates the user's             *
- * entry in USER.BBS and LASTUSER.BBS, puts the modem on-hook, restores    *
- * the current directory, and writes the echo tosslog.                     */
 
 void FinishUp2(int hangup)
 {
     long wasonfor;
     char temp[PATHLEN];
 
-    /* Make sure that we don't recursively call ourself */
-
-    if (finished)
-        return;
-
-    finished = TRUE;
-
-    wasonfor = timeonline();
-    caller_online = FALSE;
-
-    /* Turn off flow control so we don't hang! */
     Mdm_Flow(FLOW_OFF);
 
     if (hangup && rst_offset == -1L)
-        ChatOff(); /* Finish off any multi-line chat jazz */
-
-#if defined(OS_2) || defined(NT)
-    if (!local)
-    {
-        ComWatchDog(hcModem, FALSE, 0);
-        ComPurge(hcModem, COMM_PURGE_ALL);
-    }
-#endif
-
-    if (!local && carrier())
-        mdm_dump(DUMP_INPUT);
-
-    Restore_Directories3();
-    Restore_Directories2();
-
-    /* Exit the current message and file areas */
 
     while (PopMsgArea())
         ;
@@ -169,27 +117,6 @@ void FinishUp2(int hangup)
         }
     }
 
-    usr.video = GRAPH_ANSI; /* to make the "lputs(gray)" work */
-    Lputs(GRAY);
-
-    Write_Stats(&bstats);
-
-    if (hangup && rst_offset == -1L && in_node_chat)
-        ChatCleanUp();
-
-    if (rst_offset == -1L && !in_wfc)
-    {
-        sprintf(temp, activexx_bbs, original_path, task_num);
-        unlink(temp);
-    }
-
-    if (chatlog)
-        Close_Chatlog();
-
-    if (hangup && rst_offset == -1L)
-    {
-        logit(log_max_end, version, (word)(byte)erl);
-        /*    LogWrite("\n");*/
     }
 
     LogClose();
@@ -218,44 +145,6 @@ void FinishUp2(int hangup)
 
     if (original_prompt)
     {
-        /* extra parens for dmalloc() kludge - see max.c */
-        (free)(original_prompt);
-    }
-
-#ifdef MCP
-#ifdef MCP_VIDEO
-    mcp_out_flush();
-#endif
-
-    ChatCloseMCP();
-#endif
-
-    ShutDownVideo();
-    LanguageCleanup();
-
-    ClassDispose();
-    FreeAccess();
-    EventListFree();
-    OutputFreeStr();
-    InputFreeStr();
-    Free_File_Buffer();
-
-#ifdef DBG
-    printf("ô\n"
-           "³ Maximus down.\n"
-           "õ\n\n");
-#endif
-}
-
-static void near FreeAccess(void)
-{
-#ifndef ORACLE
-    extern PLIST *pl_privs;
-    free(pl_privs);
-#endif
-}
-
-/* Cleans up any of the sticky IPC*.BBS files that may be lying around */
 
 static void near ChatOff(void)
 {
@@ -277,56 +166,6 @@ void Got_A_Null_Pointer(char *type, char *where)
           *(long *)0x000c);
 #endif
 
-    /*  Restore_Directories();*/
-
-    logit(log_got_null_ptr);
-
-    Puts(found_nptr);
-
-    Delay(300);
-
-    LogClose();
-
-    if (fossil_initd && rst_offset == -1L)
-    {
-        if (!local && !in_wfc)
-        {
-            mdm_baud(Decimal_Baud_To_Mask(prm.max_baud));
-            mdm_cmd(PRM(m_busy));
-        }
-
-        mdm_deinit();
-
-        fossil_initd = FALSE;
-    }
-
-    brkuntrap();
-
-    _exit(16);
-}
-
-void ShutDownVideo(void)
-{
-    vbuf_flush();
-
-#ifdef TTYVIDEO
-    if (displaymode != VIDEO_IBM)
-        return;
-#endif
-
-    if (prm.flags & FLAG_statusline)
-        Draw_StatusLine(STATUS_REMOVE);
-
-    if (dspwin)
-    {
-        WinClose(dspwin);
-        dspwin_time = 0L;
-    }
-
-    Local_Cleanup();
-
-    /* Reset the standard output pointers, in case we try to output something *
-     * later.                                                                 */
 
     local_putc = (void(_stdc *)(int))fputchar;
     local_puts = (void(_stdc *)(char *))putss;
@@ -344,20 +183,6 @@ void ShutDownVideo(void)
     VidClose();
 }
 
-/* Close the pop-up priv window, if it exists */
-
-static void near Local_Cleanup(void)
-{
-    extern VWIN *privwin;
-
-    if (privwin)
-    {
-        WinClose(privwin);
-        privwin = NULL;
-    }
-}
-
-void Lost_Carrier(void) /* This is what we run if a user drops carrier */
 {
     if (finished || in_wfc)
         return;
@@ -380,20 +205,6 @@ void Lost_Carrier(void) /* This is what we run if a user drops carrier */
     quit(0);
 }
 
-/* Used when caller falls asleep */
-
-void PleaseRespond(void)
-{
-    if (finished)
-        return;
-
-    if (!shut_up)
-        Puts(pls_rsp);
-
-    vbuf_flush();
-}
-
-void Time5Left(void) /* Only 5 min. left */
 {
     if (finished)
         return;
@@ -408,22 +219,6 @@ void Time5Left(void) /* Only 5 min. left */
     }
 }
 
-void TimeAlmostUp(void) /* Time limit almost used up (2 mins) */
-{
-    if (finished)
-        return;
-
-    if (!sent_time_almostup && !shut_up)
-    {
-        sent_time_almostup = TRUE;
-        do_timecheck = FALSE;
-        Puts(almost_up);
-        do_timecheck = TRUE;
-        vbuf_flush();
-    }
-}
-
-void TimeLimit(void) /* User overrran time limit! */
 {
     if (finished)
         return;
@@ -461,20 +256,6 @@ void Xpired(int reason)
     {
         usr.delflag |= UFLAG_DEL;
 
-        /* If reason==REASON_TIME, then we're already hanging up anyway */
-
-        if (reason == REASON_DATE)
-            mdm_hangup();
-    }
-
-    if (xpflag & XFLAG_DEMOTE)
-    {
-        usr.priv = usr.xp_priv;
-        Find_Class_Number();
-    }
-}
-
-/* Clean up after a multi-line chat session */
 
 void ChatCleanUp(void)
 {
@@ -512,27 +293,11 @@ void ChatCleanUp(void)
     free(tasks);
 }
 
-#endif /* !ORACLE */
-
-void mdm_hangup(void) /* Do the raise DTR/drop DTR thingy */
 {
     long flush_tout;
 
     if (!local)
     {
-        /* Turn off flow control so we don't get stuck with a ^s! */
-        Mdm_Flow_Off();
-
-#ifdef OS_2
-        if (ComIsOnline(hcModem))
-            ComTxWait(hcModem, 10000L);
-
-        ComWatchDog(hcModem, FALSE, 0);
-        ComPurge(hcModem, COMM_PURGE_ALL);
-#endif
-
-        /* Set a time limit anyway, just in case FOSSIL is brain-dead and      *
-         * ignores instructions.                                               */
 
         flush_tout = timerset(1500);
 
@@ -554,12 +319,6 @@ void mdm_hangup(void) /* Do the raise DTR/drop DTR thingy */
 
 void medfini(void);
 
-int quit(int el) /* A substitute for exit, it exits with error code <erl> */
-{                /* only if erl > 0. (Typically used for an ERROR exit
-                    condition.)  If the errorlevel IS zero, then we check
-                    all of the flags to find out if the user wrote a matrix
-                    or echomail message, and then exit with the appropriate
-                    errorlevel.                                               */
 
     if (el)
         erl = (char)el;
@@ -571,20 +330,6 @@ int quit(int el) /* A substitute for exit, it exits with error code <erl> */
         erl = prm.edit_exit;
     else if (written_local && prm.local_exit)
         erl = prm.local_exit;
-    else if (prm.exit_val) /* If we have a specific el for after each caller */
-        erl = prm.exit_val;
-    else
-        erl = ERROR_RECYCLE;
-
-#ifdef OS_2
-    medfini();
-#endif
-
-    maximus_exit(erl);
-    return 0;
-}
-
-/* Write user number from the structure pointed to by `user' */
 
 #ifndef ORACLE
 static void near Write_User(void)
@@ -599,16 +344,3 @@ static void near Write_User(void)
         return;
     }
 
-    /* Compatibility with Max 2.00 */
-
-    user = usr;
-
-    user.max2priv = max2priv(user.priv);
-    Adjust_User_Record(&user);
-
-    if (!UserFileUpdate(huf, origusr.name, origusr.alias, &user))
-        logit(cantwrite, PRM(user_file));
-
-    UserFileClose(huf);
-}
-#endif /* !ORACLE */

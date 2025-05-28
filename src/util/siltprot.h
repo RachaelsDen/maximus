@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include "areadat.h"
 
@@ -48,32 +32,3 @@ void Add_Filename(char *s);
 char *fchar(char *str, char *delim, int wordno);
 int Add_To_Heap(char *s, int fancy);
 void Blank_Area(struct _area *area);
-/* byte MaxPrivToOpus(int maxpriv); */
-void Add_Specific_Path(char *frompath, char *topath, char *add_path);
-int makedir(char *d);
-int Parse_Language(FILE *ctlfile);
-void NoMem(void);
-int Parse_Colours(FILE *ctlfile);
-void Initialize_Colours(void);
-int Parse_Protocol(FILE *ctlfile, char *name);
-int ParseMsgArea(FILE *ctlfile, char *name);
-int ParseFileArea(FILE *ctlfile, char *name);
-int tsearch(char *key, struct _st base[], unsigned int num);
-void FileAreaClose(void);
-void MsgAreaClose(void);
-void ErrWrite(void);
-int VerbParse(void *pfi, struct _vbtab *verbs, char *line);
-void near FiltPath(void *v, char *words[], char *line);
-void near FiltOverride(void *v, char *words[], char *line);
-void near FiltMenuname(void *v, char *words[], char *line);
-int ParseFileArea(FILE *ctlfile, char *name);
-void ParseMsgDivisionBegin(char *name, char *acs, char *displayfile, char *descript);
-void ParseMsgDivisionEnd(void);
-void BadDivisionName(void);
-void ParseFileDivisionBegin(char *name, char *acs, char *displayfile, char *descript);
-void ParseFileDivisionEnd(void);
-void Generate20Areas(void);
-void assert_dir(char *path);
-void Write_Access();
-int ParseAccess(FILE *ctlfile, char *name);
-int max2priv(word usLevel);

@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: copymsg.c,v 1.3 2003/06/11 14:03:07 wesgarland Exp $";
@@ -123,21 +107,6 @@ int copymsg(FILE *outfile, char *fname)
             _ctime(&msg->date_arrived));
     fprintf(outfile, "Subj: %s\r\n", msg->subj);
 
-    /* format message : */
-    for (i = sizeof(struct _omsg); i < size && !ferror(outfile); i++)
-    {
-        if (buf[i] == '\r')
-        {
-            lastword[j] = 0;
-            if (*lastword != 1 && strncmp(lastword, "SEEN-BY:", sizeof("SEEN-BY:") - 1))
-            {
-                fputs(lastword, outfile);
-                fputs("\r\n", outfile);
-            }
-            else
-            {
-                for (; i < size && buf[i] != '\r'; i++)
-                    ; /* skip to end of line */
             }
             col = 0;
             j = 0;
@@ -152,24 +121,6 @@ int copymsg(FILE *outfile, char *fname)
                 if (first)
                 {
                     first =
-                        FALSE; /* make sure there is at least one blank line after the subject. */
-                    fputs("\r\n", outfile);
-                }
-                if (*lastword != 1 && strncmp(lastword, "SEEN-BY:", sizeof("SEEN-BY:") - 1))
-                {
-                    fputs(lastword, outfile);
-                }
-                else
-                {
-                    for (; i < size && buf[i] != '\r'; i++)
-                        ;  /* skip to end of line */
-                    j = 0; /*PLF Fri  09-15-1989  21:35:43 */
-                }
-                col += j;
-                j = 0;
-            }
-            else if (col + j > 78)
-            { /* wrap to next line */
                 fputs("\r\n", outfile);
                 col = 0;
             }
@@ -178,18 +129,3 @@ int copymsg(FILE *outfile, char *fname)
     if (ferror(outfile))
     {
         printf("error %s", _strerror(NULL));
-        exit(1); /*PLF Wed  10-02-1991  02:37:19 */
-    }
-    free(buf);
-    return (!ferror(outfile));
-}
-
-#if 0
-int cdecl main(int argc, char **argv)
-{
-    int i;
-    FILE *outf = fopen("out", "ab");
-    for(i=1; i<argc; i++)
-        copymsg(outf, argv[i]);
-}
-#endif

@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: max_wfc.c,v 1.3 2003/06/06 01:18:58 wesgarland Exp $";
 #pragma on(unreferenced)
 
-/*# name=Waiting-for-caller routines
- */
 
 #define MAX_LANG_max_wfc
 #define MAX_INCL_COMMS
@@ -45,8 +27,6 @@ static char rcs_id[] = "$Id: max_wfc.c,v 1.3 2003/06/06 01:18:58 wesgarland Exp 
 #include <sys/types.h>
 #include <time.h>
 
-static long startbaud;      /* baud rate specified on cmdline */
-static long init_tmr = -1L; /* Time until next modem initialization */
 
 static void near WFCMaxBaud(void)
 {
@@ -84,80 +64,6 @@ void Wait_For_Caller(void)
         ComTxWait(hcModem, 1000);
         goto letsgo;
     }
-#endif /* COMMAPI_VER > 1 */
-
-    if (kexit || do_next_event)
-    {
-        if (kexit)
-            logit(log_wfc_exit_keyb);
-
-        if (do_next_event)
-            logit(log_wfc_exit_erl, next_event.erl);
-
-        Update_Status(wfc_hanging_up);
-    }
-
-    if (local || kexit || do_next_event)
-    {
-        WFCMaxBaud();
-        mdm_cmd(PRM(m_busy));
-    }
-
-letsgo:
-    WFC_Uninit();
-
-#ifdef TTYVIDEO
-    if (displaymode == VIDEO_IBM)
-#endif
-        WinSetAttr(win, CGRAY);
-
-    if (kexit)
-    {
-        local = TRUE;
-        quit(ERROR_KEXIT);
-    }
-    else if (do_next_event)
-    {
-        quit(next_event.erl);
-    }
-
-    in_wfc = FALSE;
-    do_timecheck = TRUE;
-
-    timestart = timeon = time(NULL);
-    timeoff = timeon + (1440 * 60L);
-
-    if (!local)
-    {
-        max_time = (next_event_time - time(NULL)) / 60L;
-        getoff = timestart + (max_time * 60L);
-    }
-}
-
-static void near WFC_Init(void)
-{
-    Get_Dos_Date(&today);
-
-#ifdef TTYVIDEO
-    if (displaymode == VIDEO_IBM)
-#endif
-    {
-        WinCls(win, CGRAY | _BLACK);
-        WinSync(win, FALSE);
-
-        win_stat = WinOpen(3, 0, 7, 39, BORDER_DOUBLE, col.wfc_stat, col.wfc_stat_bor,
-                           WIN_NOCSYNC | WIN_NODRAW);
-
-        win_modem = WinOpen(3, 40, 7, 37, BORDER_DOUBLE, col.wfc_modem, col.wfc_modem_bor,
-                            WIN_NOCSYNC | WIN_NODRAW);
-
-        win_keys = WinOpen(19, 0, 4, 77, BORDER_DOUBLE, col.wfc_keys, col.wfc_keys_bor,
-                           WIN_NOCSYNC | WIN_NODRAW);
-
-        win_activ = WinOpen(11, 0, 7, 77, BORDER_DOUBLE, col.wfc_activ, col.wfc_activ_bor,
-                            WIN_NOCSYNC | WIN_NODRAW);
-
-        /* Put the Max copyright logo "on top" */
 
         WinToTop(dspwin);
 
@@ -241,13 +147,6 @@ static char *near Get_Modem_Response(void)
         {
 #ifndef __MSDOS__
             if (!loc_kbhit())
-                ComRxWait(hcModem, 1000L); /* block for 1 second or until char avail*/
-#endif
-
-            if (!mdm_avail())
-            {
-                /* As long as the string is empty, keep resetting the five-second   *
-                 * timer.                                                           */
 
                 if (rsptr == resp)
                     tm1 = timerset(RESP_TIMEOUT);
@@ -266,68 +165,16 @@ static char *near Get_Modem_Response(void)
             }
         }
 
-        /* Cap string */
-
-        *rsptr = '\0';
-
-        /* Suppress any 'OK' messages */
 
         if (eqstri(resp, "ok"))
             *resp = '\0';
 
-        /* Reset the modem initialization timer so that we don't
-         * try to reinit in the middle of a ring!
-         */
 
         init_tmr = timerset(INIT_TIME);
 
-        /* If we got a response... */
-
-        if (*resp)
-        {
-#ifdef TTYVIDEO
-            if (displaymode == VIDEO_IBM)
-            {
-#endif
-                WinPutc(win_modem, '\r');
-                WinPutc(win_modem, '\n');
-                WinPutc(win_modem, ' ');
-                WinPuts(win_modem, resp);
-                WinSync(win_modem, FALSE);
-#ifdef TTYVIDEO
-            }
-            else
-                logit("#%s", cfancy_str(resp));
-#endif
-        }
-    }
-
-    return resp;
-}
-
-static int near Process_Modem_Response(char *rsp)
-{
-    int gotbaud = FALSE;
-    int gotarq = FALSE;
-    char *s;
-
-    if (eqstri(rsp, PRM(m_ring)))
-    {
-        if (*PRM(m_answer))
-            mdm_cmd(PRM(m_answer));
-    }
-    else if (eqstrni(rsp, PRM(m_connect), strlen(PRM(m_connect))))
-    {
-        baud = 0L;
-        *arq_info = '\0';
-
-        /* Now parse all of the junk out of the connect string */
 
         for (s = rsp + strlen(PRM(m_connect)); *s;)
         {
-            if (*s == ' ') /* Do nothing */
-                s++;
-            else if (*s == 'V' && !gotarq) /* DigiDial "CONNECT V120 57600" messages */
             {
                 char *space = strchr(s, ' ');
 
@@ -383,20 +230,6 @@ static int near Process_Modem_Response(char *rsp)
             baud = 1200L;
         }
 
-        /* Set the right baud rate on that com port */
-
-        mdm_baud(current_baud = Decimal_Baud_To_Mask((unsigned int)baud));
-        local = FALSE;
-
-        logit(log_wfc_connect, baud, *arq_info ? " (" : blank_str, arq_info,
-              *arq_info ? ")" : blank_str);
-
-        Update_Status(wfc_connected);
-
-        /* If we get a pipe, VMP or telnet connection, it should be
-         * instantaneous.  However, due to an SIO 1.4x bug, we need
-         * to give the line a bit of time to settle.
-         */
 
         if (eqstri(arq_info, "pipe") || stristr(arq_info, "/vmp") || stristr(arq_info, "/tel"))
         {
@@ -406,31 +239,12 @@ static int near Process_Modem_Response(char *rsp)
         {
             Mdm_Flow(FLOW_OFF);
 
-            /* Wait five secs or until we get two <cr>s or <esc>s */
-
-            Clear_MNP_Garbage();
-
-            mdm_dump(DUMP_ALL);
-            Mdm_Flow(FLOW_ON);
-        }
-
-        if (!carrier())
-        {
-            logit(log_byebye);
-
-            /* Reinitialize the modem */
 
             WFC_Init_Modem();
             Update_Status(wfc_waiting);
 
             baud = 0L;
             *arq_info = '\0';
-            /*      local=TRUE;*/
-            return 0;
-        }
-
-#ifdef OS_2
-        ComWatchDog(hcModem, TRUE, 5); /* enable,  5 sec timeout */
 #endif
 
         return 1;
@@ -531,23 +345,6 @@ static int near WFC_IdleInternal(void)
             init_tmr = timerset(INIT_TIME);
     }
 
-    /* If it's time to reinitialize the modem, do so now. */
-
-    if (timeup(init_tmr))
-    {
-        WFC_Init_Modem();
-        Update_Status(wfc_waiting);
-        init_tmr = timerset(INIT_TIME);
-    }
-
-    Check_For_Message(NULL, NULL);
-    Giveaway_Slice();
-    return 0;
-}
-
-static void near WFC_Init_Modem(void)
-{
-    /* Fix the modem buffers */
 
     Mdm_Flow(FLOW_OFF);
     Mdm_Flow(FLOW_ON);
@@ -569,9 +366,6 @@ static void near WFC_Init_Modem(void)
     mdm_dtr(DTR_UP);
 }
 
-/* Wait for five seconds, or until we receive either two consecutive        *
- * <return>s or two consecutive <esc>s.  Purge modem input buffer when      *
- * done.                                                                    */
 
 static void near Clear_MNP_Garbage(void)
 {
@@ -579,45 +373,6 @@ static void near Clear_MNP_Garbage(void)
     int state = 0;
     int ch;
 
-    /* Wait for five seconds, or until we get two <cr>s or two <esc>s */
-
-    while (!timeup(done))
-    {
-        if ((ch = mdm_getc()) == -1)
-            Giveaway_Slice();
-        else
-            switch (state)
-            {
-            case 2:
-                if (ch == '\r')
-                    return;
-                else
-                    state = 0;
-                break;
-
-            case 1:
-                if (ch == '\x1b')
-                    return;
-                else
-                    state = 0;
-                break;
-
-            case 0:
-            default:
-                if (ch == '\x1b')
-                    state = 1;
-                else if (ch == '\r')
-                    state = 2;
-                else
-                    state = 0;
-                break;
-            }
-    }
-}
-
-void WFC_LogMsg(char *s)
-{
-    /* Strip off the '\n' added by the log routines */
 
     if (*s)
         s[strlen(s) - 1] = '\0';
@@ -648,23 +403,9 @@ static void near Get_Next_Event(void)
 
     today = TRUE;
 
-    /* Default to an event in a day */
-
-    memset(&next_event, '\0', sizeof(struct _event));
-    next_event_time = time(NULL) + (1440L * 60L);
-
-    /* Search for another event for today */
 
     if (!GetEvent(EFLAG_ERLVL, EFLAG_DONE, &next_event, FALSE))
     {
-        /* OK, none there.  Search for one tomorrow */
-
-        today = FALSE;
-
-        if (!GetEvent(EFLAG_ERLVL, 0, &next_event, FALSE))
-        {
-            /* No events at all, so just set a max limit of one day, and          *
-             * get out right here.                                                */
 
             memset(&next_event, '\0', sizeof(struct _event));
             next_event_time = time(NULL) + (1440L * 60L);
@@ -672,34 +413,15 @@ static void near Get_Next_Event(void)
         }
     }
 
-    /* Get the current time, both in stamp_combo and 'long' format */
-
-    lo_now = time(NULL);
-    memmove(&tm_now, localtime(&lo_now), sizeof(struct tm));
-    TmDate_to_DosDate(&tm_now, &sc_now);
-
-    /* Correct for possible conversion probs in the mktime() function */
 
     lo_now = mktime(&tm_now);
 
-    /* Convert the event time to a DOS datestamp */
-    Event_To_Dos_Date(&next_event.start, &sc_evtstart, &sc_now);
-
-    /* Convert that DOS datestamp to a 'tm' structure */
     DosDate_to_TmDate(&sc_evtstart, &tm_evtstart);
 
-    /* ...and convert that to a long integer. */
-    lo_evtstart = mktime(&tm_evtstart);
-
-    next_event_time = lo_evtstart;
-
-    /* If this event is tomorrow, add the extra time */
 
     if (!today)
         next_event_time += (1440L * 60L);
 
-    /* If this event was supposed to happen earlier today, make sure that it  *
-     * starts now...                                                          */
 
     if (next_event_time < lo_now)
         next_event_time = lo_now;
@@ -824,14 +546,3 @@ static void near Update_Lastuser(void)
     {
         if (read(lu, (char *)&user, sizeof(struct _usr)) == sizeof(struct _usr))
         {
-            /* Make sure that WFC window isn't scrolled by a long name */
-            user.name[20] = '\0';
-
-            WinPutstr(win_stat, 4, 16, user.name);
-        }
-
-        close(lu);
-    }
-
-    WinSync(win_stat, FALSE);
-}

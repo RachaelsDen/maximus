@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: sem_func.c,v 1.2 2003/06/05 01:10:36 wesgarland Exp $";
 #pragma on(unreferenced)
 
-/*# name=Function definition/declaration semantic routines
- */
 
 #include "mex.h"
 #include "prog.h"
@@ -33,64 +15,12 @@ static PATCH *fr_patch;
 
 static char *MungeTypeName(TYPEDESC *t);
 
-/* Called at beginning of function, right after processing argument         *
- * list.                                                                    */
 
 ATTRIBUTES *function_begin(TYPEDESC *t, IDTYPE *id)
 {
     ATTRIBUTES *f;
     byte present;
 
-    /* Set the AR offset to zero, since we're starting a new function */
-
-    offset = maxoffset = 0;
-
-#ifdef FUNCDEBUG
-    debug("Function %s - offset=%d", id, offset);
-#endif
-
-    if ((f = st_enter(symtab, id, &present)) == NULL)
-        NoMem();
-
-    if (present && f->class != ClassFunc)
-    {
-        error(MEXERR_REDECLOFFUNC, id);
-        return NULL;
-    }
-
-    if (!present)
-    {
-        f->class = ClassFunc;
-        f->typedesc = NULL;
-        f->c.f.ar_size = 0;
-        f->c.f.param = NULL;
-        f->c.f.ret_type = t;
-        f->c.f.declared = FALSE;
-    }
-
-    if (!f->c.f.declared)
-        f->c.f.quad = this_quad;
-
-    return f;
-}
-
-/*
-
- high mem
-        +-------------------------+   <--- SP before STARTCALL quad
-        | arg1          (word)  6 |
- SS     +-------------------------+
-grows | | arg2          (word)  4 |
-from  | +-------------------------+
- top  | | return_quad   (word)  2 |
- to   | +-------------------------+
-bottom| | saved bp reg  (word)  0 |
-      | +-------------------------+   <--- SP (now BP) after FUNCJUMP quad
-      V | local1        (word) -2 |
-        +-------------------------+
-        | local2        (word) -4 |
- low mem+-------------------------+   <--- SP after declaring localvars in AR
-*/
 
 void function_args(ATTRIBUTES *func, FUNCARGS *a)
 {
@@ -137,8 +67,6 @@ void function_args(ATTRIBUTES *func, FUNCARGS *a)
 
         attr->ref = a->ref;
 
-        /* If a prototype was given, compare these arguments with what we       *
-         * had before!                                                          */
 
         if (have_prototype)
         {
@@ -159,8 +87,6 @@ void function_args(ATTRIBUTES *func, FUNCARGS *a)
             }
         }
 
-        /* Only use pass-by-ref (indirect) addressing if the variable is NOT    *
-         * an integral type.                                                    */
 
         attr->c.addr.offset = ar_ofs;
 
@@ -212,11 +138,6 @@ void function_end(ATTRIBUTES *f, int body, VMADDR end_quad)
         debug("Function %s needs AR of %d bytes", f->name, maxoffset);
 #endif
 
-        /* Backpatch all of the 'return' statements to jump to this quad */
-
-        BackPatch(fr_patch, end_quad);
-
-        /* Free the chain of patch quads */
 
         for (p = fr_patch; p; next = p->next, free(p), p = next)
             ;
@@ -227,17 +148,6 @@ void function_end(ATTRIBUTES *f, int body, VMADDR end_quad)
     }
 }
 
-/* This code handles the return of an explicit value from a function */
-
-void GenFuncRet(DATAOBJ *o, ATTRIBUTES *f)
-{
-    DATAOBJ *fret, *obj;
-    PATCH *p;
-
-    obj = o;
-
-    /* If we need to return a value, ensure that it's placed in the right     *
-     * register.                                                              */
 
     if (!obj)
     {
@@ -246,8 +156,6 @@ void GenFuncRet(DATAOBJ *o, ATTRIBUTES *f)
     }
     else
     {
-        /* Attempt to coerce the return value into the required type, if it's   *
-         * not already the same.                                                */
 
         if (!StructEquiv(o->type, f->c.f.ret_type))
         {
@@ -275,24 +183,9 @@ void GenFuncRet(DATAOBJ *o, ATTRIBUTES *f)
         MaybeFreeTemporary(obj, TRUE);
     }
 
-    /* Backpatch the jump to make it jump to the end of the function */
-
-    p = smalloc(sizeof(PATCH));
-    p->quad = this_quad;
-
-    /* Now generate the jump to the end of the function block */
 
     Generate(QOP_JMP, NULL, NULL, NULL);
 
-    /* Add to the linked list of patch offsets */
-
-    p->next = fr_patch;
-    fr_patch = p;
-}
-
-/* Begin a function call.  Generate the quad which begins the call, and
- * get our funccall record ready for use.
- */
 
 FUNCCALL StartFuncCall(IDTYPE *id)
 {
@@ -318,23 +211,6 @@ FUNCCALL StartFuncCall(IDTYPE *id)
     return f;
 }
 
-/* Munge a function name for use with a vararg call */
-
-static char *MungeTypeName(TYPEDESC *t)
-{
-    static char temp[120];
-    char *p;
-
-    TypeName(t, temp);
-
-    for (p = temp; *p; p++)
-        if (*p == '.' || *p == '*' || *p == '.' || *p == '[' || *p == ']' || *p == ' ')
-            *p = '_';
-
-    return temp;
-}
-
-/* Generate the name of a variable-argument function */
 
 static ATTRIBUTES *near GenVarArgName(FUNCCALL *f, DATAOBJ *this, char *name)
 {
@@ -346,27 +222,10 @@ static ATTRIBUTES *near GenVarArgName(FUNCCALL *f, DATAOBJ *this, char *name)
         return NULL;
     }
 
-    /* Munge a new function name based on the type of this object */
-
-    sprintf(name, "__%s%s", f->func->name, strupr(MungeTypeName(this->type)));
-
-    attr.name = name;
-
-    /* Make sure that this function has been declared, to be on the     *
-     * safe side.                                                       */
 
     if ((found = st_find(symtab, name, FALSE)) == NULL)
     {
 #ifdef WES_HACK
-        /* I don't really understand why UNIX MEX is munging
-         * print(var, "hello") as __print.. this is wierd - wes
-         *
-         * Never mind, I read the user docs and know now.  This
-         * function translates print(...) into multiple __print%s
-         * statements, one for each argument, depending on its
-         * type. This tells me that something is probably wrong
-         * in the symbol table somewhere.
-         */
         if (name[0] == '_' && name[1] == '_' && (found = st_find(symtab, name + 2, FALSE)))
         {
             name += 2;
@@ -383,8 +242,6 @@ static ATTRIBUTES *near GenVarArgName(FUNCCALL *f, DATAOBJ *this, char *name)
     return found;
 }
 
-/* End a function call.  Push all of the arguments on the stack using the   *
- * appropriate method.                                                      */
 
 DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
 {
@@ -395,11 +252,6 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
     if (f->func == NULL || f->func->name == NULL)
         return NULL;
 
-    /* Use a variable-argument calling convention for ellipsis functions */
-
-    varargs = (f->arg && f->arg->typedesc == &EllipsisType);
-
-    /* If we're not dealing with an ellipsis, check the number of arguments */
 
     if (!varargs)
     {
@@ -409,15 +261,9 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
             this->argtype = f->arg->typedesc;
             this->ref = f->arg->ref;
 
-            /* If it's a pass-by-reference argument, and we have a valid
-             * type descriptor....
-             */
 
             if (this->ref && this->type)
             {
-                /* Spit out an error if the argument is a literal, or if it
-                 * is a temporary register.
-                 */
 
                 if (this->objform == ObjformValue ||
                     (this->objform == ObjformAddress && this->form.addr.segment == SEG_TEMP &&
@@ -443,8 +289,6 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
 
     GenPushQuads();
 
-    /* Now push the args in reverse order, so that they fit with our          *
-     * stack structure.                                                       */
 
     for (this = args, last = NULL; this;)
     {
@@ -452,19 +296,9 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
         {
             last = this;
 
-            /* Obj is the value that we're passing to the func.  Because of type  *
-             * coercion for the function call, this may not be the actual argument*
-             * passed, but rather it could be a temporary.  For now, assume that  *
-             * it's the argument itself.                                          */
 
             obj = this;
 
-            /* If we're handling variable arguments, we need to decide whether    *
-             * to pass the variable by reference or by value.  To do this,        *
-             * retrieve the function's attribute record, and check the 'ref'      *
-             * value of the first argument.  If this indicates that we should     *
-             * pass-by-ref, set that flag in the argument we're about to          *
-             * push.                                                              */
 
             if (varargs)
             {
@@ -476,23 +310,11 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
                     this->ref = TRUE;
             }
 
-            /* Copy in the pass-by-reference information from the function's      *
-             * declaration.                                                       */
 
             if (!varargs && (!StructEquiv(this->type, this->argtype) && this->argtype != &VoidType))
             {
                 DATAOBJ *oldthis;
 
-                /* Make sure that we don't coerce a pass-by-ref parameter. */
-
-                if (this->ref)
-                {
-                    bad_conversion(this->type, this->argtype);
-                    obj = this;
-                }
-                else
-                {
-                    /* Try to coerce the types for the func argument */
 
                     oldthis = this;
                     obj = oldobj = NewDataObj();
@@ -500,27 +322,11 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
 
                     CoerceTypes(&this, T_ASSIGN, &obj);
 
-                    /* If it changed, then something was coerced */
-
-                    if (obj == oldobj)
-                    {
-                        obj = this;
-                        MaybeFreeTemporary(oldthis, TRUE);
-                    }
-                }
-            }
-
-            /* Handle pass-by-reference normally */
 
             if (obj->type)
             {
                 if (this->ref || PassByRef(obj->type))
                 {
-                    /* The second flag is a kludge to let the VM generation routines    *
-                     * know whether or not the 'indirect' flag should be set.  The      *
-                     * vararg routine for print() needs to work with both               *
-                     * lvalue and rvalue strings, so this tells the VM when to          *
-                     * set the indirect flag.                                           */
 
                     DATAOBJ *dataObjPtr =
                         (varargs && this->ref && this->type == &StringType) ? (DATAOBJ *)1 : NULL;
@@ -537,45 +343,19 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
                     DATAOBJ *tdo = NULL;
                     word is_str = FALSE;
 
-                    /* If we're passing a string by value, allocate a temp reg          *
-                     * to hold the proc's copy of the string.                           */
 
-                    if (this->type == &StringType /*&& this->objform==ObjformAddress*/)
-                    {
-                        tstr = GetTemporary(&AddrType);
-
-                        tdo = NewDataObj();
-                        tdo->type = this->type;
-                        tdo->objform = ObjformAddress;
-                        tdo->form.addr = tstr;
-
-                        Generate(QOP_SCOPY, this, tdo, NULL);
-
-                        MaybeFreeTemporary(this, TRUE);
-
-                        /* Now make sure that the call passes the COPY of the arg */
 
                         obj = tdo;
 
                         is_str = TRUE;
                     }
 
-                    /* Now pass it by value */
-
-                    Generate(QOP_ARG_VAL, obj, NULL, NULL);
-
-                    /* If it was a string, free the temp reg we used */
 
                     if (is_str)
                         MaybeFreeTemporary(tdo, FALSE);
                 }
             }
 
-            /* If this was a temporary register, free it. */
-
-            MaybeFreeTemporary(this, TRUE);
-
-            /************************************************************************/
             if (varargs)
             {
                 Generate(QOP_FUNCJUMP, (DATAOBJ *)paVarArg, NULL, NULL);
@@ -587,14 +367,6 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
                     GenPushQuads();
                 }
             }
-            /************************************************************************/
-            this = varargs ? this->next_arg : args;
-
-            continue;
-        }
-
-        /* We only get here when !varargs (which is when walking the            *
-         * parameter list in reverse order).                                    */
 
         if (this == last)
             break;
@@ -602,16 +374,12 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
         this = this->next_arg;
     }
 
-    /* Generate the final call, as long as it wasn't already taken care       *
-     * of by the vararg stuff, earlier above.                                 */
 
     if (!varargs)
         Generate(QOP_FUNCJUMP, (DATAOBJ *)f->func, NULL, NULL);
 
     GenPopQuads();
 
-    /* Generate an object to hold the return value of the function call,      *
-     * using the register that the caller placed the value in.                */
 
     ret = NewDataObj();
     ret->type = f->func->c.f.ret_type;
@@ -624,8 +392,6 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
     }
     else
     {
-        /* If this function isn't one that returns 'void', then it's okay to      *
-         * create a temporary to hold the return value.                           */
 
         ret->objform = ObjformAddress;
         ret->form.addr.segment = SEG_TEMP;
@@ -633,8 +399,6 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
         ret->form.addr.indirect = FALSE;
         ret->form.addr.typedesc = f->func->c.f.ret_type;
 
-        /* However, since this temporary is used by ALL function returns, we    *
-         * must move the value out of the x000 register as soon as possible.    */
 
         res = NewDataObj();
         res->type = ret->type;
@@ -643,27 +407,11 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
 
         Generate(QOP_ASSIGN, ret, res, NULL);
 
-        /* It's now okay to return the value of the new register, since it's    *
-         * safe from any overwrites.                                            */
 
         return res;
     }
 }
 
-/* Validate our argument list to check for unvalidated arguments */
-
-void FuncValidateArgs(ATTRIBUTES *f)
-{
-    ATTRIBUTES *a;
-
-    for (a = f->c.f.param; a; a = a->next_decl)
-        if (a->class != ClassValidate)
-            bug("Unvalidated parameter");
-        else
-            a->class = ClassArg;
-}
-
-/* Generate a function start tupe, plus check for unval'd args */
 
 void GenFuncStartQuad(ATTRIBUTES *f)
 {
@@ -679,8 +427,6 @@ struct _poplist
 
 static struct _poplist *poplist = NULL;
 
-/* Generate code to push all of the temporary registers that are            *
- * currently in use.                                                        */
 
 void GenPushQuads(void)
 {
@@ -696,20 +442,3 @@ void GenPushQuads(void)
 
             pl = smalloc(sizeof(struct _poplist));
 
-            /* Add this to the linked list of addresses to pop */
-
-            pl->a = tl->addr;
-            pl->next = poplist;
-            poplist = pl;
-        }
-}
-
-void GenPopQuads(void)
-{
-    struct _poplist *p, *plnext;
-
-    for (p = poplist; p; plnext = p->next, free(p), p = plnext)
-        Generate(QOP_POP, (DATAOBJ *)&p->a, NULL, NULL);
-
-    poplist = NULL;
-}

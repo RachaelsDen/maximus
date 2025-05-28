@@ -1,0 +1,509 @@
+[1msrc/slib/1stchar.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/acomp.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/address.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/adj_user.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/align.c:71:9: [31merror:[39m Common realloc mistake: 'alignedStaticRAM' nulled but not freed upon failure [memleakOnRealloc][0m
+        alignedStaticRAM = realloc(alignedStaticRAM, size);
+        ^
+[1msrc/slib/align.c:39:12: [31mwarning:[39m Either the condition '!aligned' is redundant or there is possible null pointer dereference: aligned. [nullPointerRedundantCheck][0m
+    memcpy(aligned, unaligned, size);
+           ^
+[1msrc/slib/align.c:37:9: [2mnote:[0m Assuming that condition '!aligned' is not redundant
+    if (!aligned)
+        ^
+[1msrc/slib/align.c:39:12: [2mnote:[0m Null pointer dereference
+    memcpy(aligned, unaligned, size);
+           ^
+[1msrc/slib/aname.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/any2dec.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/arc_cmd.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/arc_def.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/areaapi.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/avatar.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/bfile.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/bind.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/bprintf.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/brktrap.c:474:32: [31mstyle:[39m Unused variable: fix_me_later [unusedVariable][0m
+void _fast brktrap(void) { int fix_me_later; }
+                               ^
+[1msrc/slib/brktrap.c:476:34: [31mstyle:[39m Unused variable: write_me_later [unusedVariable][0m
+void _stdc brkuntrap(void) { int write_me_later; }
+                                 ^
+[1msrc/slib/c2s.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/canon.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/cencode.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/coreleft.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/crc16.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/crc32.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/crcfile.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/crep.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/crit.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/cshopen.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/cstrupr.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/cvtdate.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/date2bin.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/ddos.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dmalloc.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dosdate.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dsmalloc.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dv.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dv_attr.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dv_cls.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dv_getxy.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dv_goxy.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dv_info.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dv_puts.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/dv_scrl.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/encode.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/fd2n.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/fdate.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/fexist.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/ffind.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/ffname.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/flush.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/fncystr.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/fnsplit.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/gedate.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/get_fdt.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/getdisk.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/getmax.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/getword.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/gwordq.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/hmalloc.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/hmemmove.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/hprintf.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/hread.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/ic_misc.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/ieee2lng.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/ieee2msb.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/iqsort.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/isdevice.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/isleap.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/lcopy.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/lng2ieee.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/makedir.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/md5.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/memstr.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/mktime.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/msb2ieee.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/ncheck.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/noise.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/nopen.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/os2file.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/parsenn.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/pmdebug.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/pmdm_dos.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/pmdmal.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/priv.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/prmapi.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/putss.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/qksort.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/qslist.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/savedir.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/sbs.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/set_fdt.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/setdisk.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/setfsize.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/sfopen.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/shfopen.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/skiplist.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/smalloc.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/smserial.c:48:5: [31mwarning:[39m Redundant assignment of 'usTermCode' to itself. [selfAssignment][0m
+    NW(usTermCode);
+    ^
+[1msrc/slib/smserial.c:48:5: [31mstyle:[39m Variable 'usTermCode' is assigned a value that is never used. [unreadVariable][0m
+    NW(usTermCode);
+    ^
+[1msrc/slib/soundex.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/strbuf.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/strcmpm.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/strftim.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/stristr.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/strnncpy.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/strocpy.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/strrcat.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/strrstr.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/strstrl.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/strstrm.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/strstrx.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/tdelay.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/timer.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/trail.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/tune.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/uclock.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/uniqren.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/userapi.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/vio.c:592:37: [31m[35mstyle: inconclusive:[39m Function 'VidGotoXY' argument 3 names different: declaration 'do_sync' definition 'sync'. [funcArgNamesDifferent][0m
+int VidGotoXY(int Col, int Row, int sync)
+                                    ^
+[1msrc/slib/dv.h:93:43: [2mnote:[0m Function 'VidGotoXY' argument 3 names different: declaration 'do_sync' definition 'sync'.
+int _fast VidGotoXY(int Col, int Row, int do_sync);
+                                          ^
+[1msrc/slib/vio.c:592:37: [2mnote:[0m Function 'VidGotoXY' argument 3 names different: declaration 'do_sync' definition 'sync'.
+int VidGotoXY(int Col, int Row, int sync)
+                                    ^
+[1msrc/slib/vio.c:637:18: [31mwarning:[39m Function 'VidGetch' argument order different: declaration 'Col, Row' definition 'Row, Col' [funcArgOrderDifferent][0m
+int VidGetch(int Row, int Col) { return stdscr ? (mvinch(Col, Row) & A_CHARTEXT) : 0; }
+                 ^
+[1msrc/slib/dv.h:104:24: [2mnote:[0m Function 'VidGetch' argument order different: declaration 'Col, Row' definition 'Row, Col'
+int cdecl VidGetch(int Col, int Row);
+                       ^
+[1msrc/slib/vio.c:637:18: [2mnote:[0m Function 'VidGetch' argument order different: declaration 'Col, Row' definition 'Row, Col'
+int VidGetch(int Row, int Col) { return stdscr ? (mvinch(Col, Row) & A_CHARTEXT) : 0; }
+                 ^
+[1msrc/slib/vio.c:639:19: [31mwarning:[39m Function 'VidPutch' argument order different: declaration 'Col, Row, Char, Attr' definition 'Row, Col, Char, Attr' [funcArgOrderDifferent][0m
+void VidPutch(int Row, int Col, char Char, char Attr)
+                  ^
+[1msrc/slib/dv.h:103:25: [2mnote:[0m Function 'VidPutch' argument order different: declaration 'Col, Row, Char, Attr' definition 'Row, Col, Char, Attr'
+void cdecl VidPutch(int Col, int Row, char Char, char Attr);
+                        ^
+[1msrc/slib/vio.c:639:19: [2mnote:[0m Function 'VidPutch' argument order different: declaration 'Col, Row, Char, Attr' definition 'Row, Col, Char, Attr'
+void VidPutch(int Row, int Col, char Char, char Attr)
+                  ^
+[1msrc/slib/vio.c:750:36: [31m[35mstyle: inconclusive:[39m Function 'VidSyncDVWithForce' argument 1 names different: declaration 'Force' definition 'fForce'. [funcArgNamesDifferent][0m
+void pascal VidSyncDVWithForce(int fForce)
+                                   ^
+[1msrc/slib/dv.h:113:36: [2mnote:[0m Function 'VidSyncDVWithForce' argument 1 names different: declaration 'Force' definition 'fForce'.
+void pascal VidSyncDVWithForce(int Force);
+                                   ^
+[1msrc/slib/vio.c:750:36: [2mnote:[0m Function 'VidSyncDVWithForce' argument 1 names different: declaration 'Force' definition 'fForce'.
+void pascal VidSyncDVWithForce(int fForce)
+                                   ^
+[1msrc/slib/vio.c:641:68: [31mstyle:[39m Clarify calculation precedence for '&' and '?'. [clarifyCalculation][0m
+    chtype ch = (unsigned char)Char | (Attr & FOREGROUND_INTENSITY ? A_NORMAL : A_DIM);
+                                                                   ^
+[1msrc/slib/vio.c:703:54: [31mstyle:[39m Clarify calculation precedence for '&' and '?'. [clarifyCalculation][0m
+        chbuf[i] = ch | (attr & FOREGROUND_INTENSITY ? A_NORMAL : A_DIM);
+                                                     ^
+[1msrc/slib/win.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/win_pick.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/winnt.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/xprintf.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/xputs.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/zeller.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/zfree.c:0:0: [31minformation:[39m This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration][0m
+
+^
+[1msrc/slib/align.c:29:0: [31mstyle:[39m The function '_aligndup' is never used. [unusedFunction][0m
+void *_aligndup(const void *unaligned, size_t alignment, size_t size)
+^
+[1msrc/slib/align.c:44:0: [31mstyle:[39m The function '_unaligndup_free' is never used. [unusedFunction][0m
+void _unaligndup_free(void *unaligned, void *aligned, size_t size)
+^
+[1msrc/slib/align.c:54:0: [31mstyle:[39m The function '_alignStatic' is never used. [unusedFunction][0m
+void *_alignStatic(const void *unaligned, size_t size)
+^
+[1msrc/slib/align.c:82:0: [31mstyle:[39m The function '_unalign' is never used. [unusedFunction][0m
+void _unalign(void *unaligned, void *aligned, size_t size)
+^
+[1msrc/slib/arcmatch.c:25:0: [31mstyle:[39m The function 'MatchArcType' is never used. [unusedFunction][0m
+int _fast MatchArcType(int fd, struct _arcinfo *ai)
+^
+[1msrc/slib/brktrap.c:451:0: [31mstyle:[39m The function 'brktrap' is never used. [unusedFunction][0m
+void _fast brktrap(void)
+^
+[1msrc/slib/brktrap.c:462:0: [31mstyle:[39m The function 'brkuntrap' is never used. [unusedFunction][0m
+void _stdc brkuntrap(void)
+^
+[1msrc/slib/os2key.c:246:0: [31mstyle:[39m The function 'khit' is never used. [unusedFunction][0m
+int khit(void) { return (kpeek() != -1); }
+^
+[1msrc/slib/qalloc.c:48:0: [31mstyle:[39m The function 'qrealloc' is never used. [unusedFunction][0m
+void *qrealloc(void *__ptr, size_t __size)
+^
+[1msrc/slib/qalloc.c:62:0: [31mstyle:[39m The function 'qstrdup' is never used. [unusedFunction][0m
+char *qstrdup(const char *__string)
+^
+[1msrc/slib/smserial.c:71:0: [31mstyle:[39m The function 'BbsSemSerialize' is never used. [unusedFunction][0m
+void EXPENTRY BbsSemSerialize(char *pszSemName, char *pszSemEnv)
+^
+[1msrc/slib/unix_misc.c:9:0: [31mstyle:[39m The function 'lock' is never used. [unusedFunction][0m
+int lock(int fd, long offset, long len)
+^
+[1msrc/slib/unix_misc.c:21:0: [31mstyle:[39m The function 'unlock' is never used. [unusedFunction][0m
+int unlock(int fd, long offset, long len)
+^
+[1msrc/slib/vio.c:551:0: [31mstyle:[39m The function 'VidOpen' is never used. [unusedFunction][0m
+word VidOpen(int has_snow, int desqview, int dec_rows)
+^
+[1msrc/slib/vio.c:592:0: [31mstyle:[39m The function 'VidGotoXY' is never used. [unusedFunction][0m
+int VidGotoXY(int Col, int Row, int sync)
+^
+[1msrc/slib/vio.c:601:0: [31mstyle:[39m The function 'VidNumRows' is never used. [unusedFunction][0m
+int VidNumRows(void) { return Vnumrows; }
+^
+[1msrc/slib/vio.c:603:0: [31mstyle:[39m The function 'VidNumCols' is never used. [unusedFunction][0m
+int VidNumCols(void) { return Vnumcols; }
+^
+[1msrc/slib/vio.c:605:0: [31mstyle:[39m The function 'VidGetAttr' is never used. [unusedFunction][0m
+char VidGetAttr(void) { return Vcurattr; }
+^
+[1msrc/slib/vio.c:607:0: [31mstyle:[39m The function 'VidBios' is never used. [unusedFunction][0m
+void VidBios(int use_bios) { return; }
+^
+[1msrc/slib/vio.c:609:0: [31mstyle:[39m The function 'VidCls' is never used. [unusedFunction][0m
+void VidCls(char Attribute)
+^
+[1msrc/slib/vio.c:619:0: [31mstyle:[39m The function 'VidGetXY' is never used. [unusedFunction][0m
+void _fast VidGetXY(int *Col, int *Row)
+^
+[1msrc/slib/vio.c:625:0: [31mstyle:[39m The function 'VidWhereX' is never used. [unusedFunction][0m
+int VidWhereX(void) { return curCol + 1; }
+^
+[1msrc/slib/vio.c:627:0: [31mstyle:[39m The function 'VidWhereY' is never used. [unusedFunction][0m
+int VidWhereY(void) { return curRow + 1; }
+^
+[1msrc/slib/vio.c:629:0: [31mstyle:[39m The function 'VidHideCursor' is never used. [unusedFunction][0m
+void VidHideCursor(void)
+^
+[1msrc/slib/vio.c:637:0: [31mstyle:[39m The function 'VidGetch' is never used. [unusedFunction][0m
+int VidGetch(int Row, int Col) { return stdscr ? (mvinch(Col, Row) & A_CHARTEXT) : 0; }
+^
+[1msrc/slib/vio.c:639:0: [31mstyle:[39m The function 'VidPutch' is never used. [unusedFunction][0m
+void VidPutch(int Row, int Col, char Char, char Attr)
+^
+[1msrc/slib/vio.c:661:0: [31mstyle:[39m The function '_WinBlitz' is never used. [unusedFunction][0m
+void pascal _WinBlitz(word start_col,      /* offset from left side of screen.*/
+^
+[1msrc/slib/vio.c:750:0: [31mstyle:[39m The function 'VidSyncDVWithForce' is never used. [unusedFunction][0m
+void pascal VidSyncDVWithForce(int fForce)
+^
+[1msrc/slib/vio.c:761:0: [31mstyle:[39m The function 'VidSyncDV' is never used. [unusedFunction][0m
+void pascal VidSyncDV(void)
+^
+[1mnofile:0:0: [31minformation:[39m Cppcheck cannot find all the include files (use --check-config for details) [missingInclude][0m
+

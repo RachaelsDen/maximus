@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #ifndef __WIN_H_DEFINED
 #define __WIN_H_DEFINED
@@ -25,12 +9,6 @@
 
 #define VWIN_ID 0x4e495756L
 
-#define WIN_INHERIT 0x01 /* Inherit text which is currently "below" win  */
-#define WIN_SHADOW 0x02  /* Window has a shadow                          */
-#define WIN_NOCSYNC 0x04 /* Don't sync cursor when opening window        */
-#define WIN_CENTRE 0x08  /* Automatically centre window on screen        */
-#define WIN_CENTER 0x08  /* Automatically centre window on screen        */
-#define WIN_NODRAW 0x10  /* Don't draw the opened window; wait for sync. */
 
 #define SHADOW_NONE 0xff
 
@@ -44,14 +22,6 @@
 #define TITLE_MIDDLE 1
 #define TITLE_RIGHT 2
 
-#define WFLAG_NOCUR 0x01 /* Cursor hidden in this window */
-
-typedef struct _vwin
-{
-    struct _vwin *next;
-
-    long id;
-    long ctr; /* Counter for this window number */
 
     byte far **rowtable;
     byte far **orig_rt;
@@ -128,14 +98,6 @@ typedef struct _vpicklist
 #define AttrOf(cell) ((byte)(cell >> 16))
 
 typedef unsigned long WNCELL;
-#define CELLSHIFT 2 /* log2(sizeof(WNCELL) */
-#else
-#define Cell(attr, ch) ((word)(byte)ch | ((word)(byte)attr << 8));
-#define CharOf(cell) ((byte)cell)
-#define AttrOf(cell) ((byte)(cell >> 8))
-
-typedef unsigned short WNCELL;
-#define CELLSHIFT 1 /* log2(sizeof(WNCELL) */
 #endif
 
 #define WinOfs(win, row, col) ((WNCELL far *)(win->rowtable[(row)] + ((col) << CELLSHIFT)))

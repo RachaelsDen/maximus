@@ -1,28 +1,10 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: m_change.c,v 1.2 2003/06/04 23:46:21 wesgarland Exp $";
 #pragma on(unreferenced)
 
-/*# name=Message Section: C)hange command
- */
 
 #include "max_msg.h"
 #include "node.h"
@@ -64,20 +46,6 @@ int Msg_Change(void)
         goto Done;
     }
 
-    /* Determine the length of this message's control information */
-
-    if ((ctrl_len = MsgGetCtrlLen(msgh)) != 0)
-    {
-        if ((ctrl_buf = malloc(ctrl_len)) == NULL)
-        {
-            logit(mem_none);
-            ctrl_len = 0;
-        }
-        else
-        {
-            MsgReadMsg(msgh, NULL, 0L, 0L, NULL, ctrl_len, ctrl_buf);
-
-            /* Remove any MSGID or INTL lines since they need to be regenerated */
 
             RemoveFromCtrl(ctrl_buf, "MSGID:");
             RemoveFromCtrl(ctrl_buf, "INTL");
@@ -85,20 +53,9 @@ int Msg_Change(void)
         }
     }
 
-    /* Now check the high-water mark, to see if the msg has been scanned  *
-     * yet.                                                               */
 
     hwm = MsgGetHighWater(sq);
 
-    /* Also check the REC'D bit, and the SENT bit */
-
-    if (((mah.ma.attribs & MA_NET) && (msg.attr & MSGSENT)) ||
-        (msg.attr & (MSGREAD | MSGSCANNED)) || lmsg <= hwm)
-    {
-        RipClear();
-        Display_File(0, NULL, "%sCHG_SENT", PRM(misc_path));
-
-        /* Only allow the SysOp to edit a message which has been sent/rec'd */
 
         if (!mailflag(CFLAGM_ATTRANY) || GetyNAnswer(change_any, 0) != YES)
         {
@@ -107,17 +64,10 @@ int Msg_Change(void)
         }
     }
 
-    /* If the sysop is changing a message below the HWM, fix it so it can be  *
-     * rescanned.                                                             */
 
     if (lmsg <= hwm)
         MsgSetHighWater(sq, lmsg - 1);
 
-    /* Charge user for changing msg, but only if msg has already been sent */
-
-    charge_user = !!(msg.attr & MSGSENT);
-
-    /* Strip off MSGREAD and MSGSENT bits, and add MSGLOCAL. */
 
     msg.attr &= ~(MSGREAD | MSGSENT | MSGSCANNED);
     msg.attr |= MSGLOCAL;
@@ -158,9 +108,6 @@ int Msg_Change(void)
     else
         aborted = SaveMsg(&msg, NULL, FALSE, lmsg, TRUE, &mah, usr.msg, sq, ctrl_buf, NULL, FALSE);
 
-    /* Only credit the user if the original message didn't have       *
-     * the MSGSENT bit set, only if the message was aborted, and      *
-     * only if this is a matrix area.                                 */
 
     if (!charge_user && !aborted && (mah.ma.attribs & MA_NET))
     {

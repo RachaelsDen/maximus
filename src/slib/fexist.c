@@ -1,24 +1,6 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*# name=File-exist and directory-searching routines
- */
+
 
 #include <ctype.h>
 #include <stdio.h>
@@ -37,18 +19,6 @@
 #include "ffind.h"
 #include "prog.h"
 
-/*
-main()
-{
-  printf("asdfe=%d\n",direxist("c:\\asdfe"));
-  printf("blank=%d\n",direxist("c:\\blank"));
-  printf("tc=%d\n",direxist("c:\\tc"));
-  printf("c:\\=%d\n",direxist("c:\\"));
-  printf("d:\\=%d\n",direxist("d:\\"));
-  printf("e:\\=%d\n",direxist("e:\\"));
-  printf("f:\\=%d\n",direxist("f:\\"));
-}
-*/
 
 int _fast fexist(char *filename)
 {
@@ -137,52 +107,6 @@ int _fast direxist(char *directory)
 
     Add_Trailing(tempstr, '\\');
 
-    /* Root directory of any drive always exists! */
-
-    if ((isalpha(tempstr[0]) && tempstr[1] == ':' &&
-         ((tempstr[2] == '\0') ||
-          (tempstr[2] == '\\' || tempstr[2] == '/') && tempstr[3] == '\0')) ||
-        eqstri(tempstr, "\\"))
-    {
-        ret = TRUE;
-    }
-    else
-    {
-        Strip_Trailing(tempstr, '\\');
-
-        ff = FindOpen(tempstr, ATTR_SUBDIR | ATTR_HIDDEN | ATTR_READONLY);
-
-        ret = (ff != NULL && (ff->usAttr & ATTR_SUBDIR));
-
-        if (ff)
-            FindClose(ff);
-    }
-
-    free(tempstr);
-    return ret;
-}
-#else
-#include "uni.h"
-
-int _fast direxist(char *directory)
-{
-    int ret;
-    char *tempstr;
-    size_t l;
-
-#ifndef UNIX
-    if (NULL == (tempstr = (char *)strdup(directory)))
-        return FALSE;
-#else
-    if (!directory)
-        return FALSE;
-
-    tempstr = fixPathDup(directory);
-    if ((tempstr == directory) || (tempstr == (directory + 2)))
-        tempstr = strdup(directory);
-#endif
-
-        /* Root directory of any drive always exists! */
 
 #ifdef UNIX
     if (eqstr(tempstr, "/"))
@@ -198,11 +122,3 @@ int _fast direxist(char *directory)
 
     l = strlen(tempstr);
     if (tempstr[l - 1] == '\\' || tempstr[l - 1] == '/')
-        tempstr[l - 1] = 0; /* remove trailing backslash */
-
-    ret = !access(tempstr, 0);
-
-    free(tempstr);
-    return ret;
-}
-#endif

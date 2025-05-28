@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: vm_opflo.c,v 1.2 2003/06/05 01:10:36 wesgarland Exp $";
@@ -31,15 +15,6 @@ int op_jmp(INST *inst, struct _args *arg)
     VMADDR oldip = vaIp;
 #endif
 
-    /* If it's an unconditional jump, just do so. */
-
-    if (inst->opcode == QOP_JMP)
-        vaIp = inst->res.jump_label;
-    else
-        switch (inst->opform)
-        {
-        case FormByte:
-            /* Jump if op==QOP_JZ and b1==0, or if op==QOP_JNZ and b1 != 0. */
 
             if ((inst->opcode == QOP_JZ) == (arg->b1 == 0))
                 vaIp = inst->res.jump_label;

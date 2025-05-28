@@ -1,10 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifdef DeclareCommand
-/* Possible Telnet Commands
-**
-** Note: format strings should be
-**       - int, float, string types
-**       - usable by either scanf or printf
-*/
 
 DeclareCommand(SE, 240, "End of subnegotiation parameters") DeclareCommand(
     NOP, 241, "No operation") DeclareCommand(DM, 242, "Data mark") DeclareCommand(BRK, 243, "Break")
@@ -75,4 +71,3 @@ static struct telnet_option_info_t
 #undef DeclareOption
 };
 
-#endif /* top-level include */

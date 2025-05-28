@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: m_full.c,v 1.2 2003/06/04 23:31:28 wesgarland Exp $";
@@ -92,11 +76,6 @@ void DisplayMessageAttributes(XMSG *msg, MAH *pmah)
     char temp[PATHLEN];
     long amask;
 
-    /* Display the message attributes - everything EXCEPT for local */
-
-    amask = ~0 & ~MSGLOCAL;
-
-    /* ... and strip off KILL if in an echo area, too. */
 
     if (pmah->ma.attribs & MA_SHARED)
         amask &= ~MSGKILL;
@@ -109,22 +88,6 @@ static char *near Show_Attributes(long attr, char *str)
     int i;
     long acomp;
 
-    /* Now catenate the message atttributes... */
-
-    for (i = 0, acomp = 1L, *str = '\0'; i < 16; acomp <<= 1, i++)
-        if (attr & acomp)
-        {
-            strcat(str, s_ret(n_attribs0 + i));
-            strcat(str, " ");
-        }
-
-    Strip_Trailing(str, ' ');
-    return str;
-}
-
-/****************************************************************************
-                             The TO/FROM fields field
- ****************************************************************************/
 
 static void near DisplayMessageFrom(XMSG *msg)
 {
@@ -156,19 +119,3 @@ void DisplayShowAddress(char *sho_addr, NETADDR *n, MAH *pmah)
 
 void DisplayMessageSubj(XMSG *msg, PMAH pmah)
 {
-    /* Show just "files attached" if it is a composite local file attach */
-
-    if (!mailflag(CFLAGM_ATTRANY) && (pmah->ma.attribs & MA_NET) != 0 &&
-        (msg->attr & MSGFILE) != 0 && AllowAttribute(pmah, MSGKEY_LATTACH))
-        Puts(rbox_files_att);
-    else
-    {
-        char *subjline;
-        if ((pmah->ma.attribs & MA_NET) && (msg->attr & (MSGFILE | MSGFRQ | MSGURQ)))
-            subjline = reader_box_file;
-        else
-            subjline = reader_box_subj;
-        Puts(subjline);
-        Printf(rbox_sho_subj, Strip_Ansi(msg->subj, NULL, 0L));
-    }
-}

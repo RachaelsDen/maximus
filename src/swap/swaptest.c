@@ -1,21 +1,5 @@
-/*
- * Maximus Version 3.02
- * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <dos.h>
 #include <errno.h>
@@ -26,14 +10,6 @@
 
 #include "swap.h"
 
-/*
- *    This program is an example of how to use swap() to swap out the
- *    current program, execute another in its place, then restore the
- *    original program.  It should work with Turbo C (all versions),
- *    Turbo C++ 1.0, and Microsoft C 5.10.  It should work fine for the
- *    Small and Medium models of Microsoft C 6.00 (see SWAP.DOC)
- *
- */
 
 int swap_return;
 unsigned char exec_return;
@@ -53,16 +29,6 @@ main(int argc, char *argv[])
         printf("No ");
     printf("EMS 4.0 driver detected.\n");
 
-    /*
-     * Now allocate another DOS block for this program, to demonstrate
-     *  new capability of SWAP 3.00 to swap all DOS blocks owned by a program
-     *
-     * Use _dos_allocmem() for Microsoft C 5.10 and 6.00,
-     * use allocmem() for Turbo C++ 1.0 and Turbo C 2.0.
-     * Both functions use same parameters.
-     * SWAP.ASM must be assembled WITHOUT /DNoFrag for this to work.
-     * Allocate a DOS block of 1024 paragraphs (16K bytes).
-     */
 
 #if 1
     {
