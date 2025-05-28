@@ -1,0 +1,11 @@
+CC=/usr/bin/gcc
+CXX=/usr/bin/g++
+MAKE=/usr/bin/gmake
+AR=/usr/bin/ar
+RANLIB=/usr/bin/ranlib
+YACC=/usr/bin/bison
+SED=/usr/bin/sed
+RM=/usr/bin/rm
+MV=/usr/bin/mv
+INSTALL=/usr/bin/install
+UNAME=/usr/bin/uname

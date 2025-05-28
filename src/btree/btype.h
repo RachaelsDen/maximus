@@ -82,4 +82,4 @@ typedef int(_stdc OS2FAR *keycomp_t)(void OS2FAR *a1, void OS2FAR *a2);
 #else
 typedef int(OS2FAR *_stdc keycomp_t)(void OS2FAR *a1, void OS2FAR *a2);
 #endif
-
+#endif /* __BTYPE_H_DEFINED */

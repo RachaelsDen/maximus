@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-
-
-
 #ifndef __COMPILER_UNIX_H_DEFINED
 #define __COMPILER_UNIX_H_DEFINED
 

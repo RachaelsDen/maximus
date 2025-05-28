@@ -74,7 +74,7 @@
 #define SLOPPY_ALIGNMENT_OKAY 0 /* default: slow but safe */
 #endif
 
-#if defined(_GNUC_)
+#if defined(__GNUC__)
 #define returnCast(a) (typeof(a))
 #define alignof(type)	offsetof(struct { char c; type member; }, member                           \
     }
@@ -127,3 +127,4 @@ static union
 #define _MAX_ALIGNMENT sizeof(long) /* just a guess, but often right */
 #endif
 #endif
+#endif /* _COMPILER_ALIGN_H */
