@@ -1,9 +1,26 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#ifndef __DBASEC_H_DEFINED
+#define __DBASEC_H_DEFINED
 
+#include "btreec.h"
+
+/* We can't define the real type for DBASE and/or PALIST in here, so settle  *
+ * for one-byte placeholders.                                               */
 
 typedef char DBASE;
 
+/* An array of these structs is used to describe the entire database */
+
+typedef struct
+{
+    char OS2FAR *szKey; /* Name of this key               */
+    unsigned uiOfs;     /* Offset of this field           */
+    unsigned uiSize;    /* Size of this field             */
+    keycomp_t kf;       /* Comparison function.           */
+                        /* if kf==NULL, this field is     */
+                        /* not an index.  All index fields*/
+                        /* must be at front of record!    */
     keycomp_t kf_base;
 } FIELD;
 
@@ -32,3 +49,4 @@ SEQFIND BAPIENTRY DbFindSeqOpen(DBASE OS2FAR *pdb, void OS2FAR *pvRec);
 void OS2FAR *BAPIENTRY DbFindSeqNext(DBASE OS2FAR *pdb, SEQFIND sf);
 int BAPIENTRY DbFindSeqClose(DBASE OS2FAR *pdb, SEQFIND sf);
 
+#endif /* __DBASEC_H_DEFINED */

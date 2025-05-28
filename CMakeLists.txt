@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(MaximusCBCS VERSION 3.03 LANGUAGES C CXX)
+project(maximus VERSION 3.2.0 LANGUAGES C)
 
 # Use C++17 (or C++14/C11 if needed)
 set(CMAKE_CXX_STANDARD 17)
@@ -21,6 +21,12 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src/slib
     ${PROJECT_SOURCE_DIR}/src/unix/include
 )
+configure_file(
+    ${CMAKE_SOURCE_DIR}/cmake/version.h.in
+    ${CMAKE_BINARY_DIR}/generated/version.h
+    @ONLY
+)
+include_directories(${CMAKE_BINARY_DIR}/generated)
 
 # Collect all source files (can refine later)
 file(GLOB_RECURSE SRC_FILES
