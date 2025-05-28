@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef __LITTLE_ENDIAN__
+#include "compiler_details.h"
+#ifndef PROJECT_LITTLE_ENDIAN
 
 #include "putword.h"
 

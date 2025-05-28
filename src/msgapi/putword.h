@@ -9,10 +9,11 @@ extern "C"
 {
 #endif
 
+#include "compiler_details.h"
 #include "typedefs.h"
 
 
-#ifdef __LITTLE_ENDIAN__
+#ifdef PROJECT_LITTLE_ENDIAN
 
 #define put_dword(ptr, val) (*(dword *)(ptr) = (val))
 #define put_word(ptr, val) (*(word *)(ptr) = (val))

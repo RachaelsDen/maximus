@@ -5,6 +5,9 @@
 /cmake_install.cmake
 /Makefile
 
+# codecheck / cppcache log
+cppcheck.log
+
 # Compiled object files
 *.o
 *.obj

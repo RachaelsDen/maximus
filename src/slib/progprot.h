@@ -1,8 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-
-
 cpp_begin()
 
+    /*lint ++flb */
+
+    void pascal far flush_handle2(int fd);
+void _fast flush_handle(FILE *fp);
+int _fast Save_Dir(char *orig_disk, char *orig_path[], char *path);
+void _fast Restore_Dir(char *orig_disk, char *orig_path[]);
+char *_fast Area_Name(int area);
+int _fast Set_Area_Name(char *aname);
+/* char * _fast Priv_Level(int priv); */
 int _fast fexist(char *filename);
 long _fast fsize(char *filename);
 int _fast lcopy(char *fromfile, char *tofile);
@@ -52,6 +59,83 @@ void _fast ddos_funcs_disable(void);
 void _fast brktrap(void);
 #endif
 void _fast brktrapos2(void *err, int fDoTrap);
+void _stdc brkuntrap(void); /* cdecl because of atexit() */
+void _fast qksort(int a[], size_t n);
+int _fast direxist(char *directory);
+
+int _fast get_fdt(int handle, union stamp_combo *filestamp);
+int _fast set_fdt(int handle, union stamp_combo *filestamp);
+
+int _fast get_disk(void);
+int _fast set_disk(int drive);
+int pascal far ddos_sleep(void);
+int pascal far desq_sleep(void);
+int pascal far pcmos_sleep(void);
+int _fast zeller(int m, int d, int y);
+void _fast iqsort(char *base, unsigned int nel, unsigned int inwidth,
+                  int(_stdc *comp)(void *, void *));
+void _fast colour_to_string(int col, char *s);
+int _fast make_dir(char *dir);
+FILE *_fast shfopen(char *name, char *fpmode, int fdmode);
+unsigned int cdecl Get_CPU_Type(void);
+int _fast do_tune(FILE *tunefile, int(_stdc *chkfunc)(void), int dv);
+int _fast play_tune(char *filespec, char *name, int(_stdc *chkfunc)(void), int dv);
+void _fast tdelay(int msecs);
+void _fast dv_noise(int freq, int duration);
+void _fast noise(int freq, int duration);
+void _fast ASCII_Date_To_Binary(char *msgdate, union stamp_combo *d_written);
+union stamp_combo *_fast Get_Dos_Date(union stamp_combo *st);
+struct tm *_fast DosDate_to_TmDate(union stamp_combo *dosdate, struct tm *tmdate);
+union stamp_combo *_fast TmDate_to_DosDate(struct tm *tmdate, union stamp_combo *dosdate);
+
+char *_fast Strip_Trailing(char *str, char strip);
+char *_fast Add_Trailing(char *str, char add);
+void _fast Parse_NetNode(char *netnode, word *zone, word *net, word *node, word *point);
+void _fast ParseNN(char *netnode, word *zone, word *net, word *node, word *point, word all);
+void _fast c_encode(char *str, char *iarray, int len, int key);
+void _fast c_decode(char *iarray, char *str, int key);
+char *_fast sc_time(union stamp_combo *sc, char *string);
+unsigned long _fast ieee_to_long(unsigned long f);
+unsigned long _fast long_to_ieee(unsigned long l);
+int _fast ieee_to_msbin(void *source, void *dest);
+int _fast msbin_to_ieee(void *source, void *dest);
+int _stdc AreaNameComp(byte *a1, byte *a2);
+void *_fast smalloc(unsigned int size);
+char *_fast sstrdup(char *s);
+char *_fast strocpy(char *d, char *s);
+int pascal kgetch(void);
+int pascal kpeek(void);
+int pascal khit(void);
+int _fast cshopen(const char *path, int access);
+dword _fast crc32fn(word ch, dword crc);
+dword *_fast mkcrc32tab(void);
+word _fast crc16fn(word ch, word crc);
+word *_fast mkcrc16tab(void);
+char *_fast strrstr(char *str, char *delim);
+FILE *_fast sfopen(char *name, char *fpmode, int fdmode, int access);
+int _fast FileDate(char *name, union stamp_combo *sc);
+void *_fast qsortl(void *list, void *(_stdc *getnext)(void *), void(_stdc *setnext)(void *, void *),
+                   int(_stdc *compare)(void *, void *));
+int _fast GEdate(union stamp_combo *s1, union stamp_combo *s2);
+int _fast EQdate(union stamp_combo *s1, union stamp_combo *s2);
+void _fast install_24(void);
+void _stdc uninstall_24(void);
+sword _fast uniqrename(char *from, char *toorig, char *final,
+                       int(_fast *pfnMove)(char *fromfile, char *tofile));
+word pascal getcpu(void);
+word pascal getfpu(void);
+int _fast SetFileDate(char *name, union stamp_combo *sc);
+int _fast setfsize(int fd, long size);
+word _fast ischin(byte *buf);
+char *_fast cstrupr(char *s);
+char *_fast cstrlwr(char *s);
+char *_stdc cfancy_str(char *str);
+void pascal serialize(char *SemName);
+char *_fast strnncpy(char *to, char *from, int n);
+char *_fast canon(char *orig, char *dest);
+#ifndef __cplusplus
+void _fast NoMem(void);
+#endif /* __cplusplus */
 unsigned _fast is_device(int fd);
 unsigned _fast is_devicename(char *filename);
 void _stdc Vidfcur(void);
@@ -75,3 +159,6 @@ sword far pascal shareloaded(void);
 #define shareloaded() TRUE
 #endif
 
+/*lint --flb */
+
+cpp_end()

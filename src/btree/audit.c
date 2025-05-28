@@ -9,6 +9,8 @@ static char rcs_id[] = "$Id: audit.c,v 1.1.1.1 2002/10/01 17:49:19 sdudley Exp $
 #include <stdio.h>
 #include <string.h>
 
+#define AUDIT_TEST_FILE "audit.trk"
+
 int c_main(void)
 {
     TRK_MSG_NDX test1 = {"9306301200120000", "ADMN", {"MUFFIN", 9999L}, TS_NEW, TP_NORMAL};
@@ -28,7 +30,7 @@ int c_main(void)
     TRK_MSG_NDX new;
 
     PALIST *ppl;
-    TRK t = TrkOpen();
+    TRK t = TrkOpen(AUDIT_TEST_FILE, 1);
 
     new = test1;
 
