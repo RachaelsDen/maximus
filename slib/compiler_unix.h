@@ -41,6 +41,11 @@
 #define _POSIX_SOURCE
 #endif
 
+/* Enable POSIX extensions like strdup() */
+#ifndef _XOPEN_SOURCE
+#define _XOPEN_SOURCE 500
+#endif
+
 #include "compat.h"
 #include <limits.h>
 #include <stdlib.h>

@@ -21,6 +21,7 @@
 #define CVTUSR_H_INCLUDED
 
 #include "typedefs.h"  /* For word and byte types */
+#include "max_u.h"     /* For struct _usr */
 
 #define MAX_id 0x2158414dL /* "MAX!" */
 #define OPUS 0x5355504fL

@@ -20,6 +20,11 @@
 #ifndef __S_HEAP_H_INCLUDED
 #define __S_HEAP_H_INCLUDED
 
+#include "typedefs.h"  /* For word type, used in zstr */
+
+/* Forward declaration for zstr type (defined in max.h as typedef word zstr) */
+typedef word zstr;
+
 typedef struct
 {
     int size;
