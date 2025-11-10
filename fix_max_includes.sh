@@ -3,7 +3,11 @@
 # Script to add required MAX_* defines and protod.h to all .c files in max directory
 # that are missing them
 
-cd /home/kgoodwin/maximus/max
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Change to max directory (relative to script location)
+cd "$SCRIPT_DIR/max"
 
 for file in *.c; do
     # Skip if file doesn't exist
