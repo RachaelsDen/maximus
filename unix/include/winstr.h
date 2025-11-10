@@ -1,5 +1,5 @@
-#ifndef _WES_WINSTR_H
-#define _WES_WINSTR_H
+#ifndef WINSTR_H_INCLUDED
+#define WINSTR_H_INCLUDED
 
 #ifdef __cplusplus
 extern "C"
@@ -17,4 +17,4 @@ extern "C"
 }
 #endif
 
-#endif
+#endif /* WINSTR_H_INCLUDED */

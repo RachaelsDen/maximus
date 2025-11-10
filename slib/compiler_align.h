@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef _COMPILER_ALIGN_H
-#define _COMPILER_ALIGN_H
+#ifndef COMPILER_ALIGN_H_INCLUDED
+#define COMPILER_ALIGN_H_INCLUDED
 
 #include <stddef.h>  /* For size_t */
 
@@ -148,4 +148,4 @@ static union
 #endif
 #endif
 
-#endif /* _COMPILER_ALIGN_H */
+#endif /* COMPILER_ALIGN_H_INCLUDED */

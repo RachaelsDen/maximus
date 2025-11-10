@@ -26,8 +26,8 @@
 /* Non-DOS systems...  Just do a "#define __FARCODE__",                     *
  * "#define __FARDATA__" and "#define __LARGE__" in place of this file.     */
 
-#ifndef __COMPILER_UNIX_H_DEFINED
-#define __COMPILER_UNIX_H_DEFINED
+#ifndef COMPILER_UNIX_H_INCLUDED
+#define COMPILER_UNIX_H_INCLUDED
 
 /* Hacks to build under unix by Wes -- need to patch up later
  * if we want to support other platforms
@@ -88,4 +88,4 @@
 */
 
 #define mkdir(a) mkdir(a, 0777)
-#endif /* ! __COMPILER_UNIX_H_DEFINED */
+#endif /* COMPILER_UNIX_H_INCLUDED */

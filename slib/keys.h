@@ -20,8 +20,8 @@
 /*# name=Keyboard keys definition
  */
 
-#ifndef _KEYS_H
-#define _KEYS_H
+#ifndef KEYS_H_INCLUDED
+#define KEYS_H_INCLUDED
 
 #define K_ESC 27
 
@@ -257,4 +257,4 @@
 
 #define K_VTDEL 127
 
-#endif /* _KEYS_H */
+#endif /* KEYS_H_INCLUDED */

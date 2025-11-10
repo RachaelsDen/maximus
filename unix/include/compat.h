@@ -1,9 +1,9 @@
-#ifndef _WES_COMPAT_H
-#define _WES_COMPAT_H
+#ifndef COMPAT_H_INCLUDED
+#define COMPAT_H_INCLUDED
 #include "dosproc.h"
 #include "dossem.h"
 #include "io.h"
 #include "viocurses.h"
 #include "winstr.h"
 #define _export
-#endif
+#endif /* COMPAT_H_INCLUDED */

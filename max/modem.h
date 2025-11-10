@@ -20,8 +20,8 @@
 /*# name=FOSSIL #define's and declarations
  */
 
-#ifndef _MODEM_H_INCLUDED
-#define _MODEM_H_INCLUDED
+#ifndef MODEM_H_INCLUDED
+#define MODEM_H_INCLUDED
 
 #ifndef TRUE
 #define TRUE 1
@@ -260,4 +260,4 @@ word real_carrier(void);
 #define STATUS_ROOMAVAIL 0x2000  /* Room available in output buffer */
 #define STATUS_OUTEMPTY 0x4000   /* Output buffer is empty */
 
-#endif
+#endif /* MODEM_H_INCLUDED */

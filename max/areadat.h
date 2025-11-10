@@ -56,8 +56,8 @@
 
 #endif
 
-#ifndef _AREADAT_H
-#define _AREADAT_H
+#ifndef AREADAT_H_INCLUDED
+#define AREADAT_H_INCLUDED
 
 #define SYSMAIL 0x0001   /* is a mail area                                */
 #define NOPUBLIC 0x0004  /* OPUS: Disallow public messages                */
@@ -195,4 +195,4 @@ struct _102aidx
     dword rsvd;
 } __attribute__((packed, aligned(2)));
 
-#endif /* _AREADAT_H */
+#endif /* AREADAT_H_INCLUDED */

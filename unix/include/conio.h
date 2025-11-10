@@ -1,8 +1,8 @@
-#ifndef _WES_CONIO_H
-#define _WES_CONIO_H
+#ifndef CONIO_H_INCLUDED
+#define CONIO_H_INCLUDED
 inline void clrscr(void);
 
 /* # define getch() getchar()  */
 
 #include "io.h"
-#endif
+#endif /* CONIO_H_INCLUDED */

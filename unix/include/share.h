@@ -1,5 +1,5 @@
-#ifndef _WES_SHARE_H
-#define _WES_SHARE_H
+#ifndef SHARE_H_INCLUDED
+#define SHARE_H_INCLUDED
 
 #include <io.h>
 #include <sys/file.h>
@@ -26,4 +26,4 @@ int flock(int fd, int lockmode);
 #define SH_COMPAT SH_DENYWR
 #define SH_DENYNO SH_DENYNONE
 
-#endif
+#endif /* SHARE_H_INCLUDED */

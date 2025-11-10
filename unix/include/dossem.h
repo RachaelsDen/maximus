@@ -1,5 +1,5 @@
-#ifndef _WES_DOSSEM_H
-#define _WES_DOSSEM_H
+#ifndef DOSSEM_H_INCLUDED
+#define DOSSEM_H_INCLUDED
 struct _hsem;
 typedef struct _hsem *HSEM;
 typedef struct _hsem *HSYSSEM;
@@ -43,4 +43,4 @@ int DosCloseSem(HSEM SemHandle);
 int DosSemWait(HSEM SemHandle, int how);
 int DosCreateMutexSem(const char *SemName, PHMTX hmtx_p, int AttributeFlags, int InitialState);
 int DosRequestMutexSem(HMTX hmtx, int how);
-#endif
+#endif /* DOSSEM_H_INCLUDED */

@@ -1,5 +1,5 @@
-#ifndef _PROCESS_H
-#define _PROCESS_H
+#ifndef PROCESS_H_INCLUDED
+#define PROCESS_H_INCLUDED
 
 #define P_WAIT 1
 #define P_NOWAIT 2
@@ -8,4 +8,4 @@
 
 int spawnvp(int mode, const char *file, char *const argv[]);
 
-#endif
+#endif /* PROCESS_H_INCLUDED */

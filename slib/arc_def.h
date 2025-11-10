@@ -20,7 +20,7 @@
 #ifndef __ARCDEF_H_DEFINED
 #define __ARCDEF_H_DEFINED
 
-#ifndef _MAX_H_DEFINED
+#ifndef MAX_H_DEFINED
 #include "max.h"
 #endif
 

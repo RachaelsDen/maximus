@@ -20,8 +20,8 @@
 /*# name=Main Maximus header file
  */
 
-#ifndef __MAX_H_DEFINED
-#define __MAX_H_DEFINED
+#ifndef MAX_H_DEFINED
+#define MAX_H_DEFINED
 
 /***************************************************************************
  *    Conditional flags for the entire program, and portability stuff      *
@@ -1381,4 +1381,4 @@ struct _pktprefix
 
 #endif
 
-#endif /* __MAX_H_DEFINED */
+#endif /* MAX_H_DEFINED */
