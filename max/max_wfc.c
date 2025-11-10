@@ -27,6 +27,12 @@ static char rcs_id[] = "$Id: max_wfc.c,v 1.3 2003/06/06 01:18:58 wesgarland Exp 
 #define MAX_LANG_max_wfc
 #define MAX_INCL_COMMS
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "max_wfc.h"
 #include "alc.h"
 #include "events.h"
@@ -34,6 +40,7 @@ static char rcs_id[] = "$Id: max_wfc.c,v 1.3 2003/06/06 01:18:58 wesgarland Exp 
 #include "mm.h"
 #include "modem.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>

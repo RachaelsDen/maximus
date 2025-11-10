@@ -27,9 +27,16 @@ static char rcs_id[] = "$Id: ued_disp.c,v 1.1.1.1 2002/10/01 17:53:20 sdudley Ex
 #define MAX_LANG_max_ued
 #define MAX_INCL_COMMS
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "ued_disp.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include "ued.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,27 +46,27 @@ static int near MKD(void);
 
 /*                1               2               3               4
    123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
-1  User ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Last call                   ÄÄÄÄÄÄÄÄÄÄÄÄ¿
-2   ³ Name      123456789012345678 Alias      1234567890123456789012345         ³
-3   ³ City      Kingston           VoicePhone 123456789012345 Sex  Female       ³
-4   À Password  1234567890123456   DataPhone  (613)634-3058   Bday 74-03-24     Ù
-5  A)ccess ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿    S)ettings ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-6   ³ Priv level AsstSysop   Credit    65500   ³     ³ Width      80            ³
-7   ³ Keys       12345678901 Debit     7952    ³     ³ Length     25            ³
-8   ³ Group Num  0           Used Pts  12345678³     ³ Nulls      0             ³
-9   ³ Alloc Pts  1234567890  ShowUlist YES     ³     ³ Msg Area   MAX.MUFFIN    ³
-a   À Nerd       NO                            Ù     ³ File Area  12345678901234³
-b  I)nformation ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿ ³ Video Mode AVATAR        ³
-c   ³ DL (all) 800K / 52222    Cur. time  12345    ³ ³ Help       REGULAR       ³
-d   ³ Today DL 0K / 0          Added time 12345    ³ ³ !Language  English       ³
-e   ³ Uploads  1234567K / 2233 # calls    7723     ³ ³ Protocol   Zmodem        ³
-f   ³ PostMsgs 1234            ReadMsgs   22       ³ À Compress   1234567890123 Ù
-10  À 1stCall  03/22/94        !PwdDate   03/22/94 Ù
-11 F)lags ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿ E)xpiry ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-12  ³ Hotkeys YES  IBM Chars    YES  ScrnClr   YES ³  ³ Expire by 1234567890    ³
-13  ³ MaxEd   YES  Pause (More) YES  AvailChat  NO ³  ³ Action    12345678901234³
-14  ³ Tabs    YES  CalledBefore YES  FSR       YES ³  À Date      NONE          Ù
-15  À RIP      NO                                  Ù
+1  User ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Last call                   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+2   ï¿½ Name      123456789012345678 Alias      1234567890123456789012345         ï¿½
+3   ï¿½ City      Kingston           VoicePhone 123456789012345 Sex  Female       ï¿½
+4   ï¿½ Password  1234567890123456   DataPhone  (613)634-3058   Bday 74-03-24     ï¿½
+5  A)ccess ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿    S)ettings ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+6   ï¿½ Priv level AsstSysop   Credit    65500   ï¿½     ï¿½ Width      80            ï¿½
+7   ï¿½ Keys       12345678901 Debit     7952    ï¿½     ï¿½ Length     25            ï¿½
+8   ï¿½ Group Num  0           Used Pts  12345678ï¿½     ï¿½ Nulls      0             ï¿½
+9   ï¿½ Alloc Pts  1234567890  ShowUlist YES     ï¿½     ï¿½ Msg Area   MAX.MUFFIN    ï¿½
+a   ï¿½ Nerd       NO                            ï¿½     ï¿½ File Area  12345678901234ï¿½
+b  I)nformation ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ ï¿½ Video Mode AVATAR        ï¿½
+c   ï¿½ DL (all) 800K / 52222    Cur. time  12345    ï¿½ ï¿½ Help       REGULAR       ï¿½
+d   ï¿½ Today DL 0K / 0          Added time 12345    ï¿½ ï¿½ !Language  English       ï¿½
+e   ï¿½ Uploads  1234567K / 2233 # calls    7723     ï¿½ ï¿½ Protocol   Zmodem        ï¿½
+f   ï¿½ PostMsgs 1234            ReadMsgs   22       ï¿½ ï¿½ Compress   1234567890123 ï¿½
+10  ï¿½ 1stCall  03/22/94        !PwdDate   03/22/94 ï¿½
+11 F)lags ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ E)xpiry ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+12  ï¿½ Hotkeys YES  IBM Chars    YES  ScrnClr   YES ï¿½  ï¿½ Expire by 1234567890    ï¿½
+13  ï¿½ MaxEd   YES  Pause (More) YES  AvailChat  NO ï¿½  ï¿½ Action    12345678901234ï¿½
+14  ï¿½ Tabs    YES  CalledBefore YES  FSR       YES ï¿½  ï¿½ Date      NONE          ï¿½
+15  ï¿½ RIP      NO                                  ï¿½
 16
 17  Select: Aasdf)
 18          Foo)
@@ -183,7 +190,7 @@ void DisplayUser(void)
     if (MKD())
         goto Dump;
 #ifdef CANENCRYPT
-    Printf(ued_spwd, Show_Pwd((user.bits & BITS_ENCRYPT) ? brackets_encrypted : user.pwd, pwd,
+    Printf(ued_spwd, Show_Pwd((user.bits & BITS_ENCRYPT) ? brackets_encrypted : (char *)user.pwd, pwd,
                               (char)(disp_pwd ? 0 : '.')));
 #else
     Printf(ued_spwd, Show_Pwd(user.pwd, pwd, (char)(disp_pwd ? 0 : '.')));

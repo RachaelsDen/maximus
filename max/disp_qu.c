@@ -24,9 +24,15 @@ static char rcs_id[] = "$Id: disp_qu.c,v 1.1.1.1 2002/10/01 17:50:52 sdudley Exp
 /*# name=.BBS-file display routines (Questionnaire commands)
  */
 
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "display.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For Chg_Language, Inputf, Puts, Convert_Star_To_Task, etc. */
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>

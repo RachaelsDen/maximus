@@ -22,6 +22,12 @@ static char rcs_id[] = "$Id: t_disp.c,v 1.1.1.1 2002/10/01 17:53:13 sdudley Exp 
 #pragma on(unreferenced)
 
 #define MAX_LANG_m_area
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "trackp.h"
 
 #ifdef MAX_TRACKER

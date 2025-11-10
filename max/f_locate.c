@@ -24,12 +24,19 @@ static char rcs_id[] = "$Id: f_locate.c,v 1.1.1.1 2002/10/01 17:51:06 sdudley Ex
 /*# name=File area routines: L)ocate function
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "alc.h"
 #include "display.h"
 #include "fb.h"
 #include "max_file.h"
 #include "max_menu.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>

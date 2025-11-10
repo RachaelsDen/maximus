@@ -23,6 +23,12 @@ static char rcs_id[] = "$Id: t_misc.c,v 1.1.1.1 2002/10/01 17:53:14 sdudley Exp 
 
 /*#define TRACK_PERSISTENT*/ /* Only open tracking database once only */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "trackp.h"
 #include <stdarg.h>
 

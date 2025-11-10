@@ -28,6 +28,12 @@ static char rcs_id[] = "$Id: f_up.c,v 1.2 2003/06/04 23:20:16 wesgarland Exp $";
 #define MAX_LANG_max_chat
 #define MAX_INCL_COMMS
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>
@@ -47,6 +53,7 @@ static char rcs_id[] = "$Id: f_up.c,v 1.2 2003/06/04 23:20:16 wesgarland Exp $";
 #include "ffind.h"
 #include "max_file.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #ifdef BINK_PROTOCOLS
 #include "prototyp.h"
 #endif

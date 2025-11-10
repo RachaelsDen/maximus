@@ -21,9 +21,16 @@
  * User class API
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "max_oldu.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>

@@ -27,9 +27,16 @@ static char rcs_id[] = "$Id: maxed.c,v 1.1.1.1 2002/10/01 17:51:23 sdudley Exp $
 #define INIT_MAXED
 #define MAX_INCL_COMMS
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "maxed.h"
 #include "keys.h"
 #include "m_reply.h"
+#include "protod.h"  /* For function declarations */
 
 static word near Process_Scan_Code(struct _replyp *pr);
 static word near Process_Cursor_Key(void);

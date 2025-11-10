@@ -24,11 +24,18 @@ static char rcs_id[] = "$Id: me_misc.c,v 1.2 2003/06/05 23:26:49 wesgarland Exp 
 /*# name=Message section: message entry routines (miscellaneous)
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "m_for.h"
 #include "max_edit.h"
 #include "max_msg.h"
 #include "node.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include "trackm.h"
 #include <ctype.h>
 #include <fcntl.h>

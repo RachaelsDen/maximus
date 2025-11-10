@@ -24,10 +24,11 @@ static char rcs_id[] = "$Id: ued_cmds.c,v 1.1.1.1 2002/10/01 17:53:20 sdudley Ex
 /*# name=Internal user editor (miscellaneous commands)
  */
 
-#define MAX_INCL_VARS    /* Include global variable declarations from max_v.h */
-#define MAX_INCL_LANGLTH /* Include english.lth language strings */
-#define MAX_LANG_global  /* Global language strings */
-#define MAX_LANG_sysop   /* Sysop language strings */
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 #define MAX_LANG_max_ued
 #define MAX_LANG_max_chng
 #define MAX_LANG_max_init

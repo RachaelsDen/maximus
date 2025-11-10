@@ -21,9 +21,16 @@
 static char rcs_id[] = "$Id: m_util.c,v 1.2 2003/06/04 23:46:21 wesgarland Exp $";
 #pragma on(unreferenced)
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "dr.h"
 #include "max_msg.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <io.h>
 #include <stdio.h>
 #include <stdlib.h>

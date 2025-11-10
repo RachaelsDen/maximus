@@ -27,11 +27,18 @@ static char rcs_id[] = "$Id: m_read.c,v 1.1.1.1 2002/10/01 17:52:48 sdudley Exp 
 #define MAX_INCL_COMMS
 #define MAX_LANG_m_browse
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "m_full.h"
 #include "m_readp.h"
 #include "max_msg.h"
 #include "node.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include "trackm.h"
 #include <ctype.h>
 #include <fcntl.h>

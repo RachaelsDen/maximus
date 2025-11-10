@@ -29,8 +29,15 @@ static char rcs_id[] = "$Id: language.c,v 1.3 2003/06/11 14:52:19 wesgarland Exp
 
 #define INITIALIZE_LANGUAGE
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 
 void Chg_Language(void) {}
 

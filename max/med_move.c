@@ -24,6 +24,12 @@ static char rcs_id[] = "$Id: med_move.c,v 1.1.1.1 2002/10/01 17:52:20 sdudley Ex
 /*# name=MaxEd editor: Routines for moving cursor around the screen
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "maxed.h"
 
 static void near Up_a_Line(word *cx, word *cy);

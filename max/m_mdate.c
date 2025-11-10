@@ -24,8 +24,15 @@ static char rcs_id[] = "$Id: m_mdate.c,v 1.1.1.1 2002/10/01 17:52:46 sdudley Exp
 /*# name=Binary-to-ASCII message date routine.
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "max_msg.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <fcntl.h>
 #include <io.h>
 #include <mem.h>

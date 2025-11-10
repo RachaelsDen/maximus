@@ -20,6 +20,10 @@
 #ifndef __DISPLAY_H_DEFINED
 #define __DISPLAY_H_DEFINED
 
+#include <stdio.h>     /* For FILE */
+#include "prog.h"      /* For word, byte, PATHLEN */
+#include "max.h"       /* For MAX_FBBS_ENTRY */
+
 /* Quick macro to get the next character from the .BBS file */
 
 #define DispGetChar() (d->bufp < d->highp ? (word)*d->bufp++ : (word)_DispGetChar(d, 1))
