@@ -262,7 +262,7 @@ static sword near Zip_Read_Directory(int zipfile, long zip_pos, int offset)
     Puts(ziphdr2);
 
     /*     "12345678 Implode 1234567 86.0% 11-18-89 18:59 12345678 --w* ASDF.DOC"
-           "ÄÄÄÄÄÄÄÄ         ÄÄÄÄÄÄÄ ÄÄÄÄÄ                              ÄÄÄÄ\n"
+           "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½         ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½                              ï¿½ï¿½ï¿½ï¿½\n"
     */
 
     for (;;)
@@ -544,7 +544,7 @@ static sword near Read_LzhArc(int type, int lzhfile)
                 /* Grab the right date format */
                 file_date = lh0->date;
 
-#ifdef LITTLE_ENDIAN
+#ifdef MAXIMUS_LITTLE_ENDIAN
 
                 /* Swap the byte order of the file's date */
                 file_date.ldate = ((file_date.ldate >> 16) | (file_date.ldate << 16));
@@ -709,7 +709,7 @@ static sword near Read_LzhArc(int type, int lzhfile)
 
             file_date = arj->mod_date;
 
-#ifdef LITTLE_ENDIAN /* iAPx86 */
+#ifdef MAXIMUS_LITTLE_ENDIAN /* iAPx86 */
 
             /* Reverse byte order */
 

@@ -21,9 +21,9 @@
 #undef __LITTLE_ENDIAN__
 #undef __BIG_ENDIAN__
 
-#if defined(BIG_ENDIAN)
+#if defined(MAXIMUS_BIG_ENDIAN)
 #define __BIG_ENDIAN__
-#elif defined(LITTLE_ENDIAN)
+#elif defined(MAXIMUS_LITTLE_ENDIAN)
 #define __LITTLE_ENDIAN__
 #endif
 
