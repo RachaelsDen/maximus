@@ -20,6 +20,9 @@
 #ifndef __API_BROW_H_DEFINED
 #define __API_BROW_H_DEFINED
 
+#include "prog.h"    /* For word, dword types */
+#include "msgapi.h"  /* For HAREA, HMSG, XMSG types */
+
 #define BROWSE_ACUR 0x0001 /* Scan current area only                     */
 #define BROWSE_ATAG 0x0002 /* Scan only marked areas                     */
 #define BROWSE_AALL 0x0004 /* Scan ALL areas                             */

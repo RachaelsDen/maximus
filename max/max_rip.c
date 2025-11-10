@@ -24,11 +24,18 @@ static char rcs_id[] = "$Id: max_rip.c,v 1.2 2003/06/04 23:46:22 wesgarland Exp 
 /*# name=RIP support routines
  */
 
+#define _GNU_SOURCE       /* For strdup */
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_INCL_COMMS
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "max_file.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For logit, Printf, cant_open, Puts, Press_ENTER, etc. */
 #include "strbuf.h"
 #include <fcntl.h>
 #include <io.h>

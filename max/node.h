@@ -20,6 +20,9 @@
 #ifndef __NODE_H_DEFINED
 #define __NODE_H_DEFINED
 
+#include "prog.h"    /* For word type */
+#include "msgapi.h"  /* For NETADDR type */
+
 typedef NETADDR *NETADDRP;
 
 typedef struct

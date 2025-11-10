@@ -27,9 +27,17 @@ static char rcs_id[] = "$Id: max_locl.c,v 1.2 2003/06/04 23:37:33 wesgarland Exp
 #define MAX_LANG_max_log
 #define MAX_INCL_COMMS
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
+
 #include "keys.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>

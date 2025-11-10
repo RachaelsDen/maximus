@@ -17,6 +17,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef SCANBLD_H_INCLUDED
+#define SCANBLD_H_INCLUDED
+
+#include "typedefs.h"  /* For word type */
+
 #define SFLAG_ECHO 0x0001
 #define SFLAG_CONF 0x0002
 #define SFLAG_NET 0x0004
@@ -42,3 +47,5 @@ typedef struct
     word attr;   /* Message attribute */
     char to[36]; /* Message "To:" field */
 } SBREC;
+
+#endif /* SCANBLD_H_INCLUDED */

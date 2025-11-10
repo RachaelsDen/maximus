@@ -24,11 +24,20 @@ static char rcs_id[] = "$Id: f_tag.c,v 1.1.1.1 2002/10/01 17:51:10 sdudley Exp $
 /*# name=File area routines: T)ag functions
  */
 
+#define _GNU_SOURCE       /* For strdup */
 #define MAX_LANG_max_main
+
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_f_area   /* File area language strings */
 
 #include "alc.h"
 #include "max_file.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>

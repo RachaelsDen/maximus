@@ -434,13 +434,13 @@ static int near pack_squish_file(char *path)
 
     /* Try to open all three files */
 
-    if ((sqd = sopen(sqdname, O_RDONLY | O_BINARY, SH_DENYRW, S_IREAD | S_IWRITE)) == -1)
+    if ((sqd = sopen(sqdname, O_RDONLY | O_BINARY, SH_DENYRW, S_IRUSR | S_IWUSR)) == -1)
     {
         ErrOpening(sqdname);
         return 1;
     }
 
-    if ((ifd = sopen(ifdname, O_RDWR | O_BINARY, SH_DENYRW, S_IREAD | S_IWRITE)) == -1)
+    if ((ifd = sopen(ifdname, O_RDWR | O_BINARY, SH_DENYRW, S_IRUSR | S_IWUSR)) == -1)
     {
         ErrOpening(ifdname);
         close(sqd);
@@ -451,7 +451,7 @@ static int near pack_squish_file(char *path)
     lock(ifd, 0L, 1L);
 
     if ((newfd = sopen(newname, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYRW,
-                       S_IREAD | S_IWRITE)) == -1)
+                       S_IRUSR | S_IWUSR)) == -1)
     {
         ErrOpening(newname);
         close(ifd);

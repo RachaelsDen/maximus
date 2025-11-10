@@ -21,6 +21,7 @@
  */
 
 #include "typedefs.h"
+#include "stamp.h"  /* For union stamp_combo */
 
 /****************************************************************************/
 /*************************** .ARJ information *******************************/
@@ -778,12 +779,12 @@ References:
 
 /*
 
-д MUFFIN (1:249/106.1) дддддддддддддддддддддддддддддддддддддддддддддддд MUFFIN д
+О©╫ MUFFIN (1:249/106.1) О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ MUFFIN О©╫
  Msg  : 215 of 230                  Rcv
  From : Bert Gregory                1:142/470               28 Sep 92  16:23:58
  To   : Scott Dudley                                        30 Sep 92  23:36:08
  Subj : SQZ1082E
-дддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫
 
 Scott, I am trying to add SQZ to maximus for users to be able to
 view SQZ archives
@@ -796,11 +797,11 @@ DOSversion:     3.3 and onwards,
                 2.0 to 3.2 will work as long as you use UPPERCASE in all
                 filenames and don't use SFX/SFXjr.
 
-Memory:         For packing;    В400 kB, but more than 330 kB
-                Decoding;       В96 kB
+Memory:         For packing;    О©╫400 kB, but more than 330 kB
+                Decoding;       О©╫96 kB
 
                 These figures does not include SQZ itself which requires
-                В50 kB and filenames which call for their length + 5 bytes
+                О©╫50 kB and filenames which call for their length + 5 bytes
                 in overhead (450/380 : 150).
 
                 These figures can be shrinked at cost of speed.

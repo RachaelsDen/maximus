@@ -37,7 +37,7 @@
 #include "tagapi.h"
 
 #ifndef ORACLE
-extrn HAREA sq;
+extern HAREA sq;
 #endif
 
 /*extrn char echo_written_in[(MAX_AREAS/CHAR_BITS)+1];*/
@@ -45,22 +45,22 @@ extrn HAREA sq;
  * max.), which tells whether or not the user  *
  * entered an echo message in that area...     */
 
-extrn int msgeof; /* If we're at the end of the current msg. */
+extern int msgeof; /* If we're at the end of the current msg. */
 
-extrn dword last_msg; /* The last msg. we read in this area */
+extern dword last_msg; /* The last msg. we read in this area */
 
-extrn char direction; /* Direction in which to read msgs (next/prev) */
+extern char direction; /* Direction in which to read msgs (next/prev) */
 
 #define ORIG_MSGID_LEN 160
-extrn char orig_msgid[LEN(ORIG_MSGID_LEN)]; /* MSGID of message we're replying to. */
+extern char orig_msgid[LEN(ORIG_MSGID_LEN)]; /* MSGID of message we're replying to. */
 
 #define MAX_NETNODE 50
-extrn char netnode[LEN(MAX_NETNODE)]; /* String version of destination addr. */
+extern char netnode[LEN(MAX_NETNODE)]; /* String version of destination addr. */
 
-extrn char isareply;  /* If the current msg. is a reply to another */
-extrn char isachange; /* If we're changing a msg */
+extern char isareply;  /* If the current msg. is a reply to another */
+extern char isachange; /* If we're changing a msg */
 
-extrn struct _mtagmem mtm;     /* Tagged message areas */
+extern struct _mtagmem mtm;     /* Tagged message areas */
 /*extrn struct _tagdata tma;*/ /* Tagged message areas */
 
 /* These definitions provide ordinal offsets for the msg_attrxxx definitions

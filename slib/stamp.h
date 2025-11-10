@@ -30,14 +30,14 @@
 /** DOS-style datestamp */
 struct _timestamp
 {
-#if defined(LITTLE_ENDIAN)
+#if defined(MAXIMUS_LITTLE_ENDIAN)
     STAMP_BITFIELD da : 5;
     STAMP_BITFIELD mo : 4;
     STAMP_BITFIELD yr : 7;
     STAMP_BITFIELD ss : 5;
     STAMP_BITFIELD mm : 6;
     STAMP_BITFIELD hh : 5;
-#elif defined(BIG_ENDIAN)
+#elif defined(MAXIMUS_BIG_ENDIAN)
     STAMP_BITFIELD ss : 5;
     STAMP_BITFIELD mm : 6;
     STAMP_BITFIELD hh : 5;
@@ -45,7 +45,7 @@ struct _timestamp
     STAMP_BITFIELD mo : 4;
     STAMP_BITFIELD yr : 7;
 #else
-#error Neither BIG_ENDIAN nor LITTLE_ENDIAN are defined!
+#error Neither MAXIMUS_BIG_ENDIAN nor MAXIMUS_LITTLE_ENDIAN are defined!
 #endif
 } PACKED;
 
@@ -57,14 +57,14 @@ union _stampu
 
 struct _dos_st
 {
-#if defined(LITTLE_ENDIAN)
+#if defined(MAXIMUS_LITTLE_ENDIAN)
     HALF_STAMP_BITFIELD date PACKED;
     HALF_STAMP_BITFIELD time PACKED;
-#elif defined(BIG_ENDIAN)
+#elif defined(MAXIMUS_BIG_ENDIAN)
     HALF_STAMP_BITFIELD time PACKED;
     HALF_STAMP_BITFIELD date PACKED;
 #else
-#error Neither BIG_ENDIAN nor LITTLE_ENDIAN are defined!
+#error Neither MAXIMUS_BIG_ENDIAN nor MAXIMUS_LITTLE_ENDIAN are defined!
 #endif
 } PACKED;
 

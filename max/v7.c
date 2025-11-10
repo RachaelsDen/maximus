@@ -25,9 +25,16 @@ static char rcs_id[] = "$Id: v7.c,v 1.2 2003/06/04 23:46:22 wesgarland Exp $";
     credit=(C) Copyright 1987-91, Bit Bucket Software, a Delaware Corporation
 */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "v7.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include "v7p.h"
 #include <fcntl.h>
 #include <io.h>
@@ -175,7 +182,7 @@ static long near btree(char *filename, void *desired,
     int stream;
 
     if ((stream = sopen(filename, O_RDONLY | O_BINARY | O_NOINHERIT, SH_DENYNO,
-                        S_IREAD | S_IWRITE)) == -1)
+                        S_IRUSR | S_IWUSR)) == -1)
         return (-1L); /* no file, no work to do */
 
     if ((nodeidx = malloc(sizeof(struct _ndx))) == NULL ||
@@ -339,7 +346,7 @@ static int near get_ver7_info(unsigned long pos, NETADDRP faddr, struct _newnode
     strcat(temp, ".dat");                /* then the extension */
 #endif
 
-    if ((stream = sopen(temp, O_RDONLY | O_BINARY | O_NOINHERIT, SH_DENYNO, S_IREAD | S_IWRITE)) ==
+    if ((stream = sopen(temp, O_RDONLY | O_BINARY | O_NOINHERIT, SH_DENYNO, S_IRUSR | S_IWUSR)) ==
         -1)
     {
         return 0;

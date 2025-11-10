@@ -17,6 +17,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __M_FULL_H_DEFINED
+#define __M_FULL_H_DEFINED
+
+#include "prog.h"      /* For word type */
+#include "msgapi.h"    /* For XMSG, NETADDR types */
+#include "max_area.h"  /* For PMAH type */
+#include "stamp.h"     /* For union stamp_combo */
+
 #define GotoLocText() Puts(reader_pos_text)
 
 void DisplayMessageHeader(XMSG *msg, word *msgoffset, long msgnum, long highmsg, PMAH pmah);
@@ -26,3 +34,5 @@ void DisplayShowName(char *sho_name, char *who);
 void DisplayShowDate(char *sho_date, union stamp_combo *sc);
 void DisplayShowAddress(char *sho_addr, NETADDR *n, PMAH pmah);
 void DisplayMessageSubj(XMSG *msg, PMAH pmah);
+
+#endif /* __M_FULL_H_DEFINED */

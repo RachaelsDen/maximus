@@ -17,6 +17,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __EXEC_H_DEFINED
+#define __EXEC_H_DEFINED
+
+#include "msgapi.h"  /* For XMSG type */
+
+/* Forward declarations */
+struct _opt;
+
 int Exec_Xtern(int type, struct _opt *thisopt, char *arg, char **result, char *mname);
 int Exec_Main(int type, char **result);
 int Exec_Msg(int type, char **result, int key, char *arg, char *menuname);
@@ -24,3 +32,5 @@ int Exec_File(int type, char **result, char *menuname);
 int Exec_Change(int type, char **result);
 int Exec_Edit(int type, char **result, XMSG *msg, unsigned *puiFlag);
 int Exec_Chat(int type, char **result);
+
+#endif /* __EXEC_H_DEFINED */

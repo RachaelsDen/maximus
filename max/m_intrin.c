@@ -26,9 +26,17 @@ static char rcs_id[] = "$Id: m_intrin.c,v 1.2 2003/06/11 14:03:06 wesgarland Exp
 
 #define MAX_LANG_max_bor
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_m_area   /* Message area language strings */
+
 #include "max_edit.h"
 #include "max_msg.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include "trackm.h"
 #include <ctype.h>
 #include <fcntl.h>

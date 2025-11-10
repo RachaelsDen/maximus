@@ -17,6 +17,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "ffind.h"
 #include "mexall.h"
 #include <fcntl.h>
@@ -98,7 +104,7 @@ word EXPENTRY intrin_open(void)
         if (wMode & IOPEN_BINARY)
             mode |= O_BINARY;
 
-        mode = sopen(s, mode, SH_DENYNO, S_IREAD | S_IWRITE);
+        mode = sopen(s, mode, SH_DENYNO, S_IRUSR | S_IWUSR);
         free(s);
 
         if (mode != -1)

@@ -23,18 +23,18 @@
 #include "areaapi.h"
 
 #ifndef ORACLE
-extrn HAF haf; /* Handle for farea.dat */
-extrn HAF ham; /* Handle for marea.dat */
+extern HAF haf; /* Handle for farea.dat */
+extern HAF ham; /* Handle for marea.dat */
 #endif
 
-extrn MAH mah; /* Current message area */
-extrn FAH fah; /* Current file area */
+extern MAH mah; /* Current message area */
+extern FAH fah; /* Current file area */
 
 #if 0
-extrn struct _area area;    /* AREA.DAT entry for this area                */
-extrn int barricade_priv;   /* Priv. for this level via barricade */
-extrn char areatag[LEN(30)];/* The short name (leaf directory) for this area*/
-extrn char entry;           /* If we just entered a message area */
+extern struct _area area;    /* AREA.DAT entry for this area                */
+extern int barricade_priv;   /* Priv. for this level via barricade */
+extern char areatag[LEN(30)];/* The short name (leaf directory) for this area*/
+extern char entry;           /* If we just entered a message area */
 #endif
 
 #endif /* __MAX_AREA_H_DEFINED */

@@ -690,7 +690,7 @@ void pascal _WinBlitz(word start_col,      /* offset from left side of screen.*/
 
     for (i = 0; i < num_col; i++)
     {
-#ifdef BIG_ENDIAN
+#ifdef MAXIMUS_BIG_ENDIAN
         attr = start[i * 2];
         ch = start[(i * 2) + 1];
 #else

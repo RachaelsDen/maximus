@@ -20,6 +20,8 @@
 #ifndef __LANGUAGE_H_DEFINED
 #define __LANGUAGE_H_DEFINED
 
+#include "prog.h"  /* For word, sword, byte, sdword types */
+
 #ifdef MAX_INCL_LANGUAGE
 
 /*
@@ -96,8 +98,15 @@ struct _lang
 
 #define InHeap(sn, h) (sn >= (h)->start_num && sn < (h)->start_num + (h)->ndefs)
 
-cpp_begin() char *s_ret(word strn);
-cpp_end()
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+char *s_ret(word strn);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* MAX_INCL_LANGUAGE */
 

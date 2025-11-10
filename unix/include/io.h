@@ -1,5 +1,5 @@
-#ifndef _WES_IO_H
-#define _WES_IO_H
+#ifndef IO_H_INCLUDED
+#define IO_H_INCLUDED
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/file.h>
@@ -36,4 +36,4 @@ void fixPathMove(char *filename);
 int sopen(const char *filename, int openMode, int shacc, ...);
 long tell(int fd);
 int fputchar(int c);
-#endif
+#endif /* IO_H_INCLUDED */

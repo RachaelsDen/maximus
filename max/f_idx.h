@@ -24,6 +24,9 @@
 #include "fb.h"
 #endif
 
+/* Forward declaration - PFAH is pointer to struct defined in newarea.h */
+typedef struct _fahandle *PFAH;
+
 struct _idxf
 {
     FIDX fidx;

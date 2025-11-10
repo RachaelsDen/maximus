@@ -1,3 +1,4 @@
+#include "max_msg.h"  /* For XMSG type */
 /*
  * Maximus Version 3.02
  * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.

@@ -20,8 +20,8 @@
 /*# name=Maximus prototype declarations
  */
 
-#ifndef __PROTO_DEF_
-#define __PROTO_DEF_
+#ifndef PROTO_H_INCLUDED
+#define PROTO_H_INCLUDED
 
 #ifdef MAX_INCL_PROTO /* If we need to include prototypes */
 
@@ -34,7 +34,7 @@
 #include "msgapi.h"
 #include "typedefs.h"
 
-#ifndef _BINK_H_DEFINED
+#ifndef BINK_H_DEFINED
 #include "protod.h"
 #endif
 
@@ -56,4 +56,4 @@ cpp_end()
 
 #endif /* MAX_INCL_PROTO */
 
-#endif /* !_BINK_H_DEFINED */
+#endif /* PROTO_H_INCLUDED */

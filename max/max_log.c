@@ -28,13 +28,23 @@ static char rcs_id[] = "$Id: max_log.c,v 1.1.1.1 2002/10/01 17:51:47 sdudley Exp
 #define MAX_LANG_max_chat
 #define MAX_LANG_max_main
 #define MAX_INCL_COMMS
+#define MAX_INCL_VER      /* Include version information */
+
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "alc.h"
 #include "display.h"
 #include "ffind.h"
 #include "max_msg.h"
+#include "max_vr.h"  /* For version variables */
 #include "md5.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include "trackm.h"
 #include "ued.h"
 #include "userapi.h"
@@ -1095,7 +1105,7 @@ static void near Write_Active(void)
 
     sprintf(fname, activexx_bbs, original_path, task_num);
 
-    if ((file = sopen(fname, O_CREAT | O_WRONLY | O_BINARY, SH_DENYWR, S_IREAD | S_IWRITE)) == -1)
+    if ((file = sopen(fname, O_CREAT | O_WRONLY | O_BINARY, SH_DENYWR, S_IRUSR | S_IWUSR)) == -1)
         cant_open(fname);
     else
         close(file);

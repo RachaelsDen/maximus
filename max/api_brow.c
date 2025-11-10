@@ -23,6 +23,12 @@ static char rcs_id[] = "$Id: api_brow.c,v 1.2 2003/06/04 23:09:26 wesgarland Exp
 
 #define NO_MSGH_DEF
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "alc.h"
 #include "api_brop.h"
 #include "api_sq.h"
@@ -32,6 +38,7 @@ static char rcs_id[] = "$Id: api_brow.c,v 1.2 2003/06/04 23:09:26 wesgarland Exp
 #include "msgapi.h"
 #include "old_msg.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include "scanbld.h"
 #include <fcntl.h>
 #include <io.h>

@@ -23,6 +23,13 @@ static char rcs_id[] = "$Id: mex.c,v 1.1.1.1 2002/10/01 17:52:23 sdudley Exp $";
 
 #define MEX_VM
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
+
 #include "mex.h"
 #include "max_file.h"
 #include "max_msg.h"
@@ -30,6 +37,7 @@ static char rcs_id[] = "$Id: mex.c,v 1.1.1.1 2002/10/01 17:52:23 sdudley Exp $";
 #include "mm.h"
 #include "modem.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include "userapi.h"
 #include <io.h>
 #include <stdarg.h>

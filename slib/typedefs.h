@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef _TYPEDEFS_H
-#define _TYPEDEFS_H
+#ifndef TYPEDEFS_H_INCLUDED
+#define TYPEDEFS_H_INCLUDED
 /**  @file typedefs.h Portable type definitions.
  *
  *  In theory, these are the only type-related defines
@@ -109,4 +109,4 @@ typedef signed long slong;
 typedef unsigned int bit;
 
 #include "hntypes.h"
-#endif /* _TYPEDEFS_H */
+#endif /* TYPEDEFS_H_INCLUDED */

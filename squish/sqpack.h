@@ -17,6 +17,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __SQPACK_H_DEFINED
+#define __SQPACK_H_DEFINED
+
+#include "compiler.h"  /* For _fast macro */
+
 #define SQBUF_SIZE 16384
 
 struct _alist
@@ -29,3 +34,4 @@ static char sqbuf[SQBUF_SIZE];
 static long totold, totnew;
 
 void _fast NoMem(void);
+#endif /* __SQPACK_H_DEFINED */

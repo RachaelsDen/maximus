@@ -1,10 +1,10 @@
-#ifndef _WES_DOSPROC_H
+#ifndef DOSPROC_H_INCLUDED
+#define DOSPROC_H_INCLUDED
 #include <stdlib.h>
 /* Including stdlib so that exit() is guaranteed to by defined AFTER
  * the first inclusion of stdlib.h; stdlib.h itself will prevent
  * its multiple inclusion.
  */
-#define _WES_DOSPROC_H
 #define EXIT_THREAD 0
 #define EXIT_PROCESS 1
 
@@ -33,4 +33,4 @@ typedef unsigned long (*PFN)(unsigned short);
 
 unsigned long DosScanEnv(const char *pszName, char **ppszValue);
 void DosSleep(unsigned long usec);
-#endif
+#endif /* DOSPROC_H_INCLUDED */

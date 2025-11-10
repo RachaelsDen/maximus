@@ -21,17 +21,27 @@
 static char rcs_id[] = "$Id: m_updsf.c,v 1.1.1.1 2002/10/01 17:52:51 sdudley Exp $";
 #pragma on(unreferenced)
 
-#error This file is no longer used by Maximus
+/* NOTE: This file is no longer used but kept for reference */
+/* #error This file is no longer used by Maximus */
 
 /*# name=Module to update SCANFILE.DAT after reading a message
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_m_area   /* Message area language strings */
+
 #include "max_msg.h"
 #include "old_msg.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <fcntl.h>
 #include <io.h>
 #include <mem.h>
+#include <share.h>   /* For SH_DENYNONE */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

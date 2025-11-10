@@ -155,7 +155,7 @@ static long near btree(char *filename, void *desired,
     int stream;
 
     if ((stream = sopen(filename, O_RDONLY | O_BINARY | O_NOINHERIT, SH_DENYNO,
-                        S_IREAD | S_IWRITE)) == -1)
+                        S_IRUSR | S_IWUSR)) == -1)
     {
         return (-1L); /* no file, no work to do */
     }
@@ -370,7 +370,7 @@ static void near BounceMessage(struct _feat_netmsg far *pfn)
     strcpy(msg.to, pfn->pMsg->from);
     sprintf(msg.subj, "NetMail bounced by %s", Address(&msg.orig));
 
-    Get_Dos_Date(&msg.date_written);
+    Get_Dos_Date((union stamp_combo *)&msg.date_written);
     msg.date_arrived = msg.date_written;
     msg.attr = MSGLOCAL | MSGPRIVATE;
 

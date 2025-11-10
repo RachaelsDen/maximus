@@ -24,12 +24,20 @@ static char rcs_id[] = "$Id: f_con.c,v 1.2 2003/06/04 23:46:21 wesgarland Exp $"
 /*# name=File area routines: C)ontents functions
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_f_area   /* File area language strings */
+
 #include "f_con.h"
 #include "alc.h"
 #include "arc.h"
 #include "ffind.h"
 #include "max_file.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>
@@ -255,7 +263,7 @@ static sword near Zip_Read_Directory(int zipfile, long zip_pos, int offset)
     Puts(ziphdr2);
 
     /*     "12345678 Implode 1234567 86.0% 11-18-89 18:59 12345678 --w* ASDF.DOC"
-           "ÄÄÄÄÄÄÄÄ         ÄÄÄÄÄÄÄ ÄÄÄÄÄ                              ÄÄÄÄ\n"
+           "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½         ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½                              ï¿½ï¿½ï¿½ï¿½\n"
     */
 
     for (;;)
@@ -537,7 +545,7 @@ static sword near Read_LzhArc(int type, int lzhfile)
                 /* Grab the right date format */
                 file_date = lh0->date;
 
-#ifdef LITTLE_ENDIAN
+#ifdef MAXIMUS_LITTLE_ENDIAN
 
                 /* Swap the byte order of the file's date */
                 file_date.ldate = ((file_date.ldate >> 16) | (file_date.ldate << 16));
@@ -702,7 +710,7 @@ static sword near Read_LzhArc(int type, int lzhfile)
 
             file_date = arj->mod_date;
 
-#ifdef LITTLE_ENDIAN /* iAPx86 */
+#ifdef MAXIMUS_LITTLE_ENDIAN /* iAPx86 */
 
             /* Reverse byte order */
 

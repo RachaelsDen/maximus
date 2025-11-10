@@ -24,6 +24,14 @@ static char rcs_id[] = "$Id: f_xfer.c,v 1.1.1.1 2002/10/01 17:51:12 sdudley Exp 
 /*# name=File area routines: Required functions for both ULing and DLing
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
+#define MAX_LANG_f_area   /* File area language strings */
+
 #include "alc.h"
 #include <ctype.h>
 #include <fcntl.h>
@@ -38,6 +46,7 @@ static char rcs_id[] = "$Id: f_xfer.c,v 1.1.1.1 2002/10/01 17:51:12 sdudley Exp 
 #include "fb.h"
 #include "max_file.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 
 int File_Get_Protocol(sword *protocol, int chng, int need_nonexit)
 {

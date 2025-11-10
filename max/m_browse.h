@@ -17,6 +17,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __M_BROWSE_H_DEFINED
+#define __M_BROWSE_H_DEFINED
+
+#include "prog.h"      /* For word, dword types */
+#include "max_msg.h"   /* For BROWSE type */
+
 /* Linked list structure for updating lastread pointers after a QWK         *
  * download.                                                                */
 
@@ -65,3 +71,5 @@ int Browse_Scan_Areas(BROWSE *b);
 void Browse_Switch_Back(void);
 void Init_Search(SEARCH *s);
 int Match_All(BROWSE *b);
+
+#endif /* __M_BROWSE_H_DEFINED */

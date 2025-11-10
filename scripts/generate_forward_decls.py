@@ -10,7 +10,9 @@ from pathlib import Path
 def extract_static_functions(filepath):
     """Extract static function signatures from a C file"""
 
-    with open(filepath, 'r', encoding='latin-1', errors='ignore') as f:
+    # Use 'replace' to handle encoding errors without silently dropping data
+    # This preserves file structure while replacing problematic bytes with U+FFFD
+    with open(filepath, 'r', encoding='latin-1', errors='replace') as f:
         content = f.read()
 
     # Pattern to match static function definitions

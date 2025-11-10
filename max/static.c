@@ -23,6 +23,12 @@ static char rcs_id[] = "$Id: static.c,v 1.2 2003/06/04 23:46:22 wesgarland Exp $
 
 #define MAX_INITIALIZE
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "compat.h"
 #include "max_area.h"
 #include "max_con.h"

@@ -24,9 +24,17 @@ static char rcs_id[] = "$Id: m_create.c,v 1.1.1.1 2002/10/01 17:52:39 sdudley Ex
 /*# name=Message Section: Miscellaneous message creation functions
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_m_area   /* Message area language strings */
+
 #include "max_edit.h"
 #include "max_msg.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

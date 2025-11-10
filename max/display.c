@@ -24,7 +24,12 @@ static char rcs_id[] = "$Id: display.c,v 1.2 2003/06/06 01:18:58 wesgarland Exp 
 /*# name=.BBS-file display routines
  */
 
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_INCL_COMMS
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 #define MAX_LANG_f_area
 
 #include "display.h"
@@ -34,6 +39,7 @@ static char rcs_id[] = "$Id: display.c,v 1.2 2003/06/06 01:18:58 wesgarland Exp 
 #include "max_msg.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For logit, Got_A_Null_Pointer, Mex, Convert_Star_To_Task, etc. */
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>

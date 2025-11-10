@@ -20,6 +20,14 @@
 /*# name=MECCA include file
  */
 
+#ifndef MECCA_H_INCLUDED
+#define MECCA_H_INCLUDED
+
+#include <stdio.h>   /* For FILE type */
+#include <stddef.h>  /* For NULL */
+#include "stamp.h"   /* For union stamp_combo */
+#include "typedefs.h" /* For word type */
+
 #define DLE 16
 #define PATHDELIM ".\\/"
 #define TOKENDELIM ",; \t\n" /* Position of , at start is significant */
@@ -162,4 +170,6 @@ extern int verb_table_size;
 extern int num_gt, num_lt, num_eq, num_ne, num_ge, num_le, num_above, num_below, num_equal,
     num_unequal, num_notequal, num_ae, num_be;
 
-#endif
+#endif /* !MECCA_INIT */
+
+#endif /* MECCA_H_INCLUDED */

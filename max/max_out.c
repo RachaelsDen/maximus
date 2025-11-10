@@ -24,8 +24,15 @@ static char rcs_id[] = "$Id: max_out.c,v 1.2 2003/06/06 01:18:58 wesgarland Exp 
 /*# name=Modem/local output routines
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <conio.h>
 #include <stdarg.h>
 #include <stdio.h>

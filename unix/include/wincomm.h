@@ -1,4 +1,5 @@
-#ifndef _WINCOMM_H
+#ifndef WINCOMM_H_INCLUDED
+#define WINCOMM_H_INCLUDED
 #include <termios.h>
 #include "typedefs.h"  /* For BYTE, WORD, DWORD */
 
@@ -114,4 +115,4 @@ BOOL SetupComm(OSCOMMHANDLE hFile, DWORD dwInQueue, DWORD dwOutQueue);
 BOOL SetCommBreak(OSCOMMHANDLE hFile);
 BOOL ClearCommBreak(OSCOMMHANDLE hFile);
 
-#endif /* _WINCOMM_H */
+#endif /* WINCOMM_H_INCLUDED */

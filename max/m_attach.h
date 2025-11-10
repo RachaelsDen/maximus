@@ -17,6 +17,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __M_ATTACH_H_DEFINED
+#define __M_ATTACH_H_DEFINED
+
+#include "compiler.h"  /* For near keyword */
+#include "prog.h"      /* For dword type */
+#include "msgapi.h"    /* For HAREA, XMSG, UMSGID types */
+#include "arc_def.h"   /* For struct _arcinfo */
+
+/* Forward declaration for PMAH */
+typedef struct _mahandle *PMAH;
+
 static int near Make_Attach_Directory(void);
 static int near Receive_Attach(void);
 static struct _arcinfo *near attach_archiver();
@@ -25,3 +36,5 @@ static int near Send_Attach(int fDelok);
 static int near Decompress_Attach(char *szName);
 static void near Update_Attach_Db(PMAH pmah, HAREA marea, XMSG *msg, UMSGID uid, char *szFileName,
                                   dword ulFlags);
+
+#endif /* __M_ATTACH_H_DEFINED */

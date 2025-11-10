@@ -17,6 +17,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef CVTUSR_H_INCLUDED
+#define CVTUSR_H_INCLUDED
+
+#include "typedefs.h"  /* For word and byte types */
+
 #define MAX_id 0x2158414dL /* "MAX!" */
 #define OPUS 0x5355504fL
 
@@ -37,7 +42,10 @@ long CRC(char *s);
 char *BASIC_String(char *s, int len);
 void Blank_User(struct _usr *usr);
 void Convert_RBBS(char *name);
+void Convert_Max200(void);
 void Reverse_Max200(void);
+void Convert_Lread(void);
+void Reverse_Max300(void);
 
 byte MaxToOpusPriv(int mpriv);
 int OpusToMaxPriv(byte opriv);
@@ -359,3 +367,5 @@ struct _rbbsu
     char ul_total_num[2];
     char time_elapsed[2];
 };
+
+#endif /* CVTUSR_H_INCLUDED */

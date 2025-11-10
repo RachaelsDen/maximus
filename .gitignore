@@ -50,3 +50,51 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Maximus BBS compiled binaries
+# Util programs
+util/maid
+util/mecca
+util/accem
+util/ansi2bbs
+util/ansi2mec
+util/scanbld
+util/cvtusr
+util/editcall
+util/mr
+util/fixlr
+util/setlr
+util/fb
+util/silt
+
+# Squish programs
+squish/squish
+squish/sqfix
+squish/sqpack
+squish/sqconv
+squish/sqinfo
+squish/sqset
+squish/sstat
+squish/sqreidx
+
+# Max BBS executable
+max/max
+
+# Shared libraries
+*.so
+*.so.*
+slib/libmax.so
+slib/libsmserial.so
+msgapi/libmsgapi.so
+unix/libcompat.so
+squish/libkillrcat.so
+squish/libmsgtrack.so
+
+# Build artifacts
+depend.mk
+vars_local.mk
+util/mecca_vb.h
+
+# Symlinked source files
+util/l_attach.c
+util/max2priv.c

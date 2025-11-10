@@ -24,10 +24,18 @@ static char rcs_id[] = "$id";
 /*# name=File area routines: upload/download fileslist management
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_f_area   /* File area language strings */
+
 #include "alc.h"
 #include "ffind.h"
 #include "max_file.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include "strbuf.h"
 #include <ctype.h>
 #include <fcntl.h>

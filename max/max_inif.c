@@ -27,9 +27,17 @@ static char rcs_id[] = "$Id: max_inif.c,v 1.1.1.1 2002/10/01 17:51:41 sdudley Ex
 #define MAX_LANG_max_init
 #define MAX_INCL_COMMS
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
+
 #include "ffind.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <fcntl.h>
 #include <io.h>
 #include <share.h>
@@ -106,7 +114,7 @@ void Write_Stats(struct _bbs_stats *bstats)
     sprintf(temp, bbs_stats, PRM(sys_path), task_num);
 
     if ((bfile = sopen(temp, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYNONE,
-                       S_IREAD | S_IWRITE)) == -1)
+                       S_IRUSR | S_IWUSR)) == -1)
     {
         cant_open(temp);
         return;

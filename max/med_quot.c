@@ -24,8 +24,17 @@ static char rcs_id[] = "$Id: med_quot.c,v 1.1.1.1 2002/10/01 17:52:20 sdudley Ex
 /*# name=MaxEd editor: Routines for quoting and copying
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_max_bor  /* Max BBS border/editor strings */
+#define MAX_LANG_m_area   /* Message area strings */
+
 #include "m_reply.h"
 #include "maxed.h"
+#include "protod.h"  /* For function declarations */
 
 static int near Quote_Read(void);
 

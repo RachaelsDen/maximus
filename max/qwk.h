@@ -20,6 +20,9 @@
 #ifndef __QWK_H_DEFINED
 #define __QWK_H_DEFINED
 
+#include "prog.h"  /* For byte, word types */
+#include "max_msg.h"  /* For BROWSE type and MAX_ALEN */
+
 /* Structure for MESSAGES.DAT:
 
  "Produced by Qmail...Copyright (c) 1987 by Sparkware.  All Rights Reserved."

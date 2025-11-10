@@ -26,9 +26,17 @@ static char rcs_id[] = "$Id: m_node.c,v 1.1.1.1 2002/10/01 17:52:46 sdudley Exp 
 
 #define MAX_LANG_max_chng
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_m_area   /* Message area language strings */
+
 #include "max_msg.h"
 #include "node.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <fcntl.h>
 #include <io.h>
 #include <share.h>

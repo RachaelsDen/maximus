@@ -24,9 +24,15 @@ static char rcs_id[] = "$Id: disp_dat.c,v 1.2 2003/06/04 23:12:08 wesgarland Exp
 /*# name=.BBS-file display routines (ctrl-F data codes)
  */
 
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "display.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For Trim_Line, Printf, Puts, Ordinal, etc. */
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>

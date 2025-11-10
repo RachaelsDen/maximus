@@ -20,6 +20,7 @@
 #ifndef __MB_QWK_H_DEFINED
 #define __MB_QWK_H_DEFINED
 
+#include "max_msg.h"  /* For BROWSE type */
 #include "qwk.h"
 
 static struct _len_ch

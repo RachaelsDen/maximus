@@ -24,7 +24,14 @@ static char rcs_id[] = "$Id: med_add.c,v 1.1.1.1 2002/10/01 17:52:19 sdudley Exp
 /*# name=MaxEd editor: Routines for adding characters and lines to message
  */
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+
 #include "maxed.h"
+#include "protod.h"  /* For function declarations */
 
 static int near Insert_Line_Before_CR(int cx);
 static void near Insert_At(word cx, word cy, char ch, word inc);

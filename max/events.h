@@ -20,6 +20,8 @@
 #ifndef __EVENTS_H_DEFINED
 #define __EVENTS_H_DEFINED
 
+#include "prog.h"  /* For byte, word types */
+
 #define EFLAG_DONE 0x01
 #define EFLAG_YELL 0x02
 #define EFLAG_ERLVL 0x04

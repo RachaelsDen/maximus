@@ -29,6 +29,11 @@
 /*                                                                          */
 /*--------------------------------------------------------------------------*/
 
+#ifndef __V7_H_DEFINED
+#define __V7_H_DEFINED
+
+#include "prog.h"  /* For byte, word, sword, sdword types */
+
 struct _ndx
 {
     union
@@ -108,3 +113,4 @@ struct _vers7
     byte pack_len;
     byte BaudRate; /* baud rate divided by 300 */
 };
+#endif /* __V7_H_DEFINED */

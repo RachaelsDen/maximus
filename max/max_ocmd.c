@@ -26,12 +26,20 @@ static char rcs_id[] = "$Id: max_ocmd.c,v 1.1.1.1 2002/10/01 17:51:55 sdudley Ex
 
 #define MAX_INCL_COMMS
 
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
+
 #include "dr.h"
 #include "max_area.h"
 #include "max_file.h"
 #include "max_msg.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>

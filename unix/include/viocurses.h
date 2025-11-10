@@ -1,5 +1,5 @@
-#ifndef _VIOCURSES_H
-#define _VIOCURSES_H
+#ifndef VIOCURSES_H_INCLUDED
+#define VIOCURSES_H_INCLUDED
 
 #include <stddef.h>  /* For size_t */
 
@@ -17,4 +17,4 @@ int VioWrtTTY(const char *string, size_t length, void *handle);
 #define BACKGROUND_RED 0x0040
 #define BACKGROUND_INTENSITY 0x0080
 
-#endif
+#endif /* VIOCURSES_H_INCLUDED */
