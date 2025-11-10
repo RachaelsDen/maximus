@@ -38,7 +38,7 @@ SO_DIRS		:= unix slib msgapi btree prot mex comdll
 LDFLAGS		+= $(foreach DIR, $(SO_DIRS), -L$(SRC)/$(DIR))
 INCLUDES	:= -I. $(foreach DIR, $(H_DIRS), -I$(SRC)/$(DIR))
 CXXFLAGS	:= $(CFLAGS)
-LOADLIBES	= $(EXTRA_LOADLIBES) -lmax -lcompat -lcurses
+LOADLIBES	= $(EXTRA_LOADLIBES) -lmax $(EXTRA_LOADLIBES) -lcompat -lcurses
 
 include		$(SRC)/vars_$(PLATFORM).mk
 

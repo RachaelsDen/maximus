@@ -88,4 +88,13 @@
 */
 
 #define mkdir(a) mkdir(a, 0777)
+
+/* Legacy BSD file permission constants for POSIX compatibility */
+#ifndef S_IREAD
+#define S_IREAD S_IRUSR
+#endif
+#ifndef S_IWRITE
+#define S_IWRITE S_IWUSR
+#endif
+
 #endif /* COMPILER_UNIX_H_INCLUDED */
