@@ -33,6 +33,7 @@ static char rcs_id[] = "$Id: med_scrn.c,v 1.1.1.1 2002/10/01 17:52:21 sdudley Ex
 #define MAX_LANG_global   /* Global language strings */
 
 #include "maxed.h"
+#include "protod.h"  /* For function declarations */
 
 void Redraw_Text(void)
 {

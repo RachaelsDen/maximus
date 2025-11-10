@@ -72,6 +72,7 @@ med_extern HMSG qmh MIS(NULL);
 
 med_extern long *quote_pos;
 
+#include "m_reply.h"  /* For struct _replyp definition (needed by maxedp.h) */
 #include "maxedp.h"
 
 #endif /* __MAXED_H_DEFINED */

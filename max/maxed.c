@@ -35,7 +35,6 @@ static char rcs_id[] = "$Id: maxed.c,v 1.1.1.1 2002/10/01 17:51:23 sdudley Exp $
 
 #include "maxed.h"
 #include "keys.h"
-#include "m_reply.h"
 #include "protod.h"  /* For function declarations */
 
 static word near Process_Scan_Code(struct _replyp *pr);

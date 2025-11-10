@@ -22,6 +22,10 @@
 
 /* This file is #included by m_reply.c and others... */
 
+#include "prog.h"       /* For byte type */
+#include "max_area.h"   /* For HAREA, MAH, MAX_ALEN types */
+#include "msgapi.h"     /* For UMSGID type */
+
 struct _replyp
 {
     HAREA fromsq;

@@ -32,6 +32,7 @@ static char rcs_id[] = "$Id: med_del.c,v 1.1.1.1 2002/10/01 17:52:19 sdudley Exp
 #define MAX_LANG_global   /* Global language strings */
 
 #include "maxed.h"
+#include "protod.h"  /* For function declarations */
 
 void BackSpace(void)
 {
