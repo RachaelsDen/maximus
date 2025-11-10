@@ -19,8 +19,8 @@
 
 /* $Id: dbasec.h,v 1.1.1.1 2002/10/01 17:49:28 sdudley Exp $ */
 
-#ifndef __DBASEC_H_DEFINED
-#define __DBASEC_H_DEFINED
+#ifndef BTREE_DBASEC_H_INCLUDED
+#define BTREE_DBASEC_H_INCLUDED
 
 #include "btreec.h"
 
@@ -33,13 +33,13 @@ typedef char DBASE;
 
 typedef struct
 {
-    char OS2FAR *szKey; /* Name of this key               */
-    unsigned uiOfs;     /* Offset of this field           */
-    unsigned uiSize;    /* Size of this field             */
-    keycomp_t kf;       /* Comparison function.           */
-                        /* if kf==NULL, this field is     */
-                        /* not an index.  All index fields*/
-                        /* must be at front of record!    */
+    const char OS2FAR *szKey; /* Name of this key               */
+    unsigned uiOfs;           /* Offset of this field           */
+    unsigned uiSize;          /* Size of this field             */
+    keycomp_t kf;             /* Comparison function.           */
+                              /* if kf==NULL, this field is     */
+                              /* not an index.  All index fields*/
+                              /* must be at front of record!    */
     keycomp_t kf_base;
 } FIELD;
 
@@ -68,4 +68,4 @@ SEQFIND BAPIENTRY DbFindSeqOpen(DBASE OS2FAR *pdb, void OS2FAR *pvRec);
 void OS2FAR *BAPIENTRY DbFindSeqNext(DBASE OS2FAR *pdb, SEQFIND sf);
 int BAPIENTRY DbFindSeqClose(DBASE OS2FAR *pdb, SEQFIND sf);
 
-#endif /* __DBASEC_H_DEFINED */
+#endif /* BTREE_DBASEC_H_INCLUDED */

@@ -417,12 +417,12 @@ char * CPPEXPORT TRACKER::GetPriority(TRK_MSG_NDX *ptmn)
 {
   switch (ptmn->tp)
   {
-    case TP_CRIT:     return "Critical";
-    case TP_URGENT:   return "Urgent";
-    case TP_NORMAL:   return "Normal";
-    case TP_LOW:      return "Low";
+    case TP_CRIT:     return const_cast<char*>("Critical");
+    case TP_URGENT:   return const_cast<char*>("Urgent");
+    case TP_NORMAL:   return const_cast<char*>("Normal");
+    case TP_LOW:      return const_cast<char*>("Low");
     case TP_NOTIFY:
-    default:          return "Notification";
+    default:          return const_cast<char*>("Notification");
   }
 }
 
@@ -433,11 +433,11 @@ char * CPPEXPORT TRACKER::GetStatus(TRK_MSG_NDX *ptmn)
 {
   switch (ptmn->ts)
   {
-    case TS_NEW:      return "New";
-    case TS_WORKING:  return "Working";
-    case TS_CLOSED:   return "Closed";
+    case TS_NEW:      return const_cast<char*>("New");
+    case TS_WORKING:  return const_cast<char*>("Working");
+    case TS_CLOSED:   return const_cast<char*>("Closed");
     case TS_OPEN:
-    default:          return "Open";
+    default:          return const_cast<char*>("Open");
   }
 }
 

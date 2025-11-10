@@ -80,7 +80,7 @@ int CPPEXPORT BLOCKBUF::deinit(void)
        bbnext=bb->next, delete bb, bb=bbnext)
   {
     if (bb->pvBlock)
-      delete [] bb->pvBlock;
+      delete [] static_cast<char*>(bb->pvBlock);
   }
 
   fOpen=FALSE;
@@ -244,7 +244,7 @@ int CPPEXPORT BLOCKBUF::get_lru(NNUM *pnn, void *pvBlock, unsigned *pfDelta)
 
   // Now delete the memory associated with this block
 
-  delete [] bbLow->pvBlock;
+  delete [] static_cast<char*>(bbLow->pvBlock);
   delete bbLow;
 
   // Decrement the block count for this list

@@ -21,8 +21,8 @@
 
 // Block I/O class for B-tree and database routines
 
-#ifndef __BLKIO_H_DEFINED
-#define __BLKIO_H_DEFINED
+#ifndef BTREE_BLKIO_H_INCLUDED
+#define BTREE_BLKIO_H_INCLUDED
 
 #include "btype.h" // B-tree type definitions
 
@@ -54,4 +54,4 @@ class BLKIO
     virtual NNUM CPPEXPORT high_node(void);
 };
 
-#endif // __BLKIO_H_DEFINED
+#endif // BTREE_BLKIO_H_INCLUDED

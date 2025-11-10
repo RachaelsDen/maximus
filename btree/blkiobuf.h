@@ -19,6 +19,9 @@
 
 /* $Id: blkiobuf.h,v 1.1.1.1 2002/10/01 17:49:21 sdudley Exp $ */
 
+#ifndef BTREE_BLKIOBUF_H_INCLUDED
+#define BTREE_BLKIOBUF_H_INCLUDED
+
 #include "bbuf.h"
 #include "blkio.h"
 
@@ -56,3 +59,5 @@ class BLKIOBUF : public BLKIO, private BLOCKBUF
     // int lock(NNUM nn);
     // int unlock(NNUM nn);
 };
+
+#endif // BTREE_BLKIOBUF_H_INCLUDED

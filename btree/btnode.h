@@ -19,8 +19,8 @@
 
 /* $Id: btnode.h,v 1.1.1.1 2002/10/01 17:49:21 sdudley Exp $ */
 
-#ifndef __BTNODE_H_DEFINED
-#define __BTNODE_H_DEFINED
+#ifndef BTREE_BTNODE_H_INCLUDED
+#define BTREE_BTNODE_H_INCLUDED
 
 class BTREE; // Forward decl for B-tree class
 
@@ -47,4 +47,4 @@ class BTNODE
     int put();
 };
 
-#endif // __BTNODE_H_DEFINED
+#endif // BTREE_BTNODE_H_INCLUDED

@@ -19,8 +19,8 @@
 
 /* $Id: trackc.h,v 1.1.1.1 2002/10/01 17:49:31 sdudley Exp $ */
 
-#ifndef __TRACKC_H_DEFINED
-#define __TRACKC_H_DEFINED
+#ifndef BTREE_TRACKC_H_INCLUDED
+#define BTREE_TRACKC_H_INCLUDED
 
 #include "btype.h"
 
@@ -79,4 +79,4 @@ typedef char OS2FAR *TRK;
 };
 #endif
 
-#endif // __TRACKC_H_DEFINED
+#endif // BTREE_TRACKC_H_INCLUDED

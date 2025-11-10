@@ -19,6 +19,9 @@
 
 /* $Id: btreec.h,v 1.1.1.1 2002/10/01 17:49:22 sdudley Exp $ */
 
+#ifndef BTREE_BTREEC_H_INCLUDED
+#define BTREE_BTREEC_H_INCLUDED
+
 #include "btype.h"
 
 /* We can't define the real type for DBASE and/or PALIST in here, so settle  *
@@ -43,3 +46,5 @@ int BAPIENTRY BtInsert(BTREE OS2FAR *pbt, void OS2FAR *key, unsigned flags);
 int BAPIENTRY BtValidate(BTREE OS2FAR *pbt);
 int BAPIENTRY BtRemove(BTREE OS2FAR *pbt, void OS2FAR *key);
 unsigned long BAPIENTRY BtSize(BTREE OS2FAR *pbt);
+
+#endif // BTREE_BTREEC_H_INCLUDED
