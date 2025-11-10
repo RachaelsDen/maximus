@@ -60,4 +60,5 @@ clean:
 	rm *.o $(PROGS)
 
 max2priv.o:	CPPFLAGS += -I../lang
+l_attach.o:	CPPFLAGS += -I../lang
 silt: EXTRA_LOADLIBES += -lmaxdb -lmaxbt -lmsgapi

@@ -97,20 +97,20 @@ DATAOBJ *idref(IDTYPE *id)
 /* Produce a DataObject struct corresponding to a BYTE with the constant    *
  * value 'ct'.                                                              */
 
-DATAOBJ *byteref(CONSTTYPE *ct)
+DATAOBJ *byteref(CONSTTYPE ct)
 {
     DATAOBJ *dobj = NewDataObj();
 
     dobj->type = &ByteType;
     dobj->objform = ObjformValue;
     dobj->form.val.valkind = ByteKind;
-    dobj->form.val.kind.byteval = (byte)ct->val;
+    dobj->form.val.kind.byteval = (byte)ct.val;
 
-    if ((byte)ct->val >= (byte)128)
+    if ((byte)ct.val >= (byte)128)
         dobj->type = &UnsignedByteType;
 
 #ifdef EXPRDEBUG
-    debug("Expr: ByteLiteral '%d'", ct->val);
+    debug("Expr: ByteLiteral '%d'", ct.val);
 #endif
 
     return dobj;
@@ -119,20 +119,20 @@ DATAOBJ *byteref(CONSTTYPE *ct)
 /* Produce a DataObject struct corresponding to a WORD with the constant    *
  * value 'ct'.                                                              */
 
-DATAOBJ *wordref(CONSTTYPE *ct)
+DATAOBJ *wordref(CONSTTYPE ct)
 {
     DATAOBJ *dobj = NewDataObj();
 
     dobj->type = &WordType;
     dobj->objform = ObjformValue;
     dobj->form.val.valkind = WordKind;
-    dobj->form.val.kind.wordval = ct->val;
+    dobj->form.val.kind.wordval = ct.val;
 
-    if ((word)ct->val >= (word)32768u)
+    if ((word)ct.val >= (word)32768u)
         dobj->type = &UnsignedWordType;
 
 #ifdef EXPRDEBUG
-    debug("Expr: WordLiteral '%d'", ct->val);
+    debug("Expr: WordLiteral '%d'", ct.val);
 #endif
 
     return dobj;
@@ -141,20 +141,20 @@ DATAOBJ *wordref(CONSTTYPE *ct)
 /* Produce a DataObject struct corresponding to a DWORD with the constant   *
  * value 'ct'.                                                              */
 
-DATAOBJ *dwordref(CONSTTYPE *ct)
+DATAOBJ *dwordref(CONSTTYPE ct)
 {
     DATAOBJ *dobj = NewDataObj();
 
     dobj->type = &DwordType;
     dobj->objform = ObjformValue;
     dobj->form.val.valkind = DwordKind;
-    dobj->form.val.kind.dwordval = ct->dwval;
+    dobj->form.val.kind.dwordval = ct.dwval;
 
-    if ((dword)ct->val >= (dword)2147483648Lu)
+    if ((dword)ct.val >= (dword)2147483648Lu)
         dobj->type = &UnsignedDwordType;
 
 #ifdef EXPRDEBUG
-    debug("Expr: DwordLiteral '%ld'", ct->dwval);
+    debug("Expr: DwordLiteral '%ld'", ct.dwval);
 #endif
 
     return dobj;
@@ -180,11 +180,11 @@ CONSTTYPE string_merge(CONSTTYPE c1, CONSTTYPE c2)
 /* Produce a DataObject struct corresponding to a STRING with the constant  *
  * value 'ct'.                                                              */
 
-DATAOBJ *stringref(CONSTTYPE *ct)
+DATAOBJ *stringref(CONSTTYPE ct)
 {
     struct _conval *cv;
     DATAOBJ *dobj = NewDataObj();
-    byte *s = ct->lit;
+    byte *s = ct.lit;
 
     dobj->type = &StringType;
     dobj->objform = ObjformValue;
@@ -199,10 +199,10 @@ DATAOBJ *stringref(CONSTTYPE *ct)
     dobj->init = cv;
 
 #ifdef EXPRDEBUG
-    debug("Expr: StringLiteral:  '%s'", ct->lit);
+    debug("Expr: StringLiteral:  '%s'", ct.lit);
 #endif
 
-    free(ct->lit);
+    free(ct.lit);
     return dobj;
 }
 

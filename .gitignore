@@ -80,6 +80,15 @@ squish/sqreidx
 # Max BBS executable
 max/max
 
+# MEX compiler and runtime
+mex/mex
+mex/libmexvm.so
+
+# Btree test programs
+btree/bttest
+btree/trackexp
+btree/trackimp
+
 # Shared libraries
 *.so
 *.so.*
@@ -94,6 +103,9 @@ squish/libmsgtrack.so
 depend.mk
 vars_local.mk
 util/mecca_vb.h
+
+# MEX compiled bytecode files
+*.vm
 
 # Symlinked source files
 util/l_attach.c

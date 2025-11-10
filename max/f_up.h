@@ -17,4 +17,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef F_UP_H_INCLUDED
+#define F_UP_H_INCLUDED
+
+#include "typedefs.h"  /* For word type */
+
 word FileIsDupe(char *name);
+
+#endif /* F_UP_H_INCLUDED */

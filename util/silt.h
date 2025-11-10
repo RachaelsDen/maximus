@@ -23,6 +23,7 @@
 #ifndef __SILT_H_INCLUDED
 #define __SILT_H_INCLUDED
 
+#include "max.h"       /* For FAREA, MAREA, struct _ovride, constants */
 #include "s_heap.h"
 
 typedef struct _ovlist

@@ -28,7 +28,7 @@ static char rcs_id[] = "$Id: vm_read.c,v 1.1.1.1 2002/10/01 17:54:17 sdudley Exp
 #include "vm.h"
 #include <string.h>
 
-static void NoMem(void) { (*pfnLogger)("!MEX:  out of memory reading file"); }
+/* NoMem() is defined in mex_err.c and declared in mex_prot.h */
 
 /* Read in the file header for a .vm file and all of the instructions. */
 

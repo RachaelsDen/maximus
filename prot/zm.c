@@ -107,8 +107,8 @@ static int near zmdm_status(void)
 #define ZRWINDOW 1400
 
 int Rxtimeout;                         /* Tenths of seconds to wait for something */
-static int Rxframeind;                 /* ZBIN ZBIN32, or ZHEX type of frame received */
-static int Rxtype;                     /* Type of header received */
+int Rxframeind;                 /* ZBIN ZBIN32, or ZHEX type of frame received */
+int Rxtype;                     /* Type of header received */
 int Rxcount;                           /* Count of data bytes received */
 char Rxhdr[4];                         /* Received header */
 char Txhdr[4];                         /* Transmitted header */
