@@ -61,7 +61,7 @@ int _fast lcopy(char *fromfile, char *tofile)
     }
 
     if ((file2 = sopen(tofile, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYWR,
-                       S_IREAD | S_IWRITE)) == -1)
+                       S_IRUSR | S_IWUSR)) == -1)
     {
         close(file1);
         free(temp);

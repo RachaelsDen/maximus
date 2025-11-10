@@ -20,6 +20,8 @@
 /*# name=Canonicalize filename or path
  */
 
+#define _DEFAULT_SOURCE  /* For realpath */
+
 #include "prog.h"
 #include <dos.h>
 
@@ -86,6 +88,7 @@ char *_fast canon(char *orig, char *dest)
 #endif /* DOS/8086 */
 #elif defined(UNIX)
 #include <sys/param.h>
+#include <stdlib.h>  /* For realpath */
 char *canon(char *orig, char *dest)
 {
 #warning interface ripe for buffer overrun

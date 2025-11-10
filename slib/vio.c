@@ -500,6 +500,8 @@ void pascal VidScroll(char Direction, char NumOfLines, char Attribute, char Left
 
 /* curses replacements for scott's direct video (dv*.*) by wes */
 
+#define _DEFAULT_SOURCE  /* For putenv */
+
 #include "compiler.h"
 #include "dv.h"
 #include "modem.h"

@@ -37,10 +37,10 @@ FILE *_fast shfopen(char *name, char *fpmode, int fdmode)
     int fd;
 
     fd = sopen(name, fdmode | ((fdmode & (O_APPEND | O_WRONLY)) ? O_CREAT : 0), SH_DENYNONE,
-               S_IREAD | S_IWRITE);
+               S_IRUSR | S_IWUSR);
 
     if (fd == -1 && errno == ENOENT && (fdmode & (O_APPEND | O_WRONLY)))
-        fd = sopen(name, fdmode | (O_WRONLY | O_CREAT | O_TRUNC), SH_DENYNONE, S_IREAD | S_IWRITE);
+        fd = sopen(name, fdmode | (O_WRONLY | O_CREAT | O_TRUNC), SH_DENYNONE, S_IRUSR | S_IWUSR);
 
     if (fd == -1)
         return NULL;

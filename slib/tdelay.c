@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#define _DEFAULT_SOURCE  /* For usleep */
+
 #include <dos.h>
 
 #define INCL_NOPM
@@ -50,6 +52,7 @@ void _fast tdelay(int msecs)
 void _fast tdelay(int msecs) { Sleep((DWORD)msecs); }
 
 #elif defined(UNIX)
+#include <unistd.h>
 void tdelay(int msecs) { usleep(msecs * 1000); }
 #else
 #error Unknown OS

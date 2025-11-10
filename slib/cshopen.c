@@ -95,7 +95,7 @@ int _fast cshopen(const char *path, int access)
 
 int _fast cshopen(const char *path, int access)
 {
-    return sopen(path, access | O_EXCL, SH_DENYNO, S_IREAD | S_IWRITE);
+    return sopen(path, access | O_EXCL, SH_DENYNO, S_IRUSR | S_IWUSR);
 }
 #else
 #error unknown operating system. (posix: try "open(path, O_EXCL|access)")

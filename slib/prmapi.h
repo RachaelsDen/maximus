@@ -20,6 +20,8 @@
 #ifndef PRMAPI_H_INCLUDED__
 #define PRMAPI_H_INCLUDED__
 
+#include "prm.h"  /* For struct m_pointers */
+
 typedef struct _hprm
 {
     struct m_pointers mp;
