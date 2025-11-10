@@ -630,29 +630,29 @@ useful_expr     :       lval_ident T_ASSIGN expr
                 ;
 
 const_byte_p	:	T_CONSTBYTE
-                                { $$ = &$1; }
+                                { $$ = byteref($1); }
                 ;
 
 const_word_p	:	T_CONSTWORD
-                                { $$ = &$1; }
+                                { $$ = wordref($1); }
                 ;
 
 const_dword_p	:	T_CONSTDWORD
-                                { $$ = &$1; }
+                                { $$ = dwordref($1); }
                 ;
 
 const_string_p	:	const_string
-                                { $$ = &$1; }
+                                { $$ = stringref($1); }
                 ;
 
 literal         :       const_byte_p
-                                { $$=byteref($1); }
+                                { $$=$1; }
                 |       const_word_p
-                                { $$=wordref($1); }
+                                { $$=$1; }
                 |       const_dword_p
-                                { $$=dwordref($1); }
+                                { $$=$1; }
                 |       const_string_p
-                                { $$=stringref($1); }
+                                { $$=$1; }
                 ;
 
 

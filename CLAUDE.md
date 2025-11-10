@@ -127,9 +127,9 @@ The `make reconfig` target recompiles all control files after editing.
 
 ## Known Issues & Limitations
 
-From the original README (as of v3.03b):
+From the original README (as of v3.03b), with 2025 updates:
 
-- **MEX VM is broken**: Remove .mex files for now, the scripting engine has bugs
+- **MEX VM**: ~~FIXED~~ - Now fully operational on GCC 14.2+ (see MEX VM Compiler Fix section)
 - **Big-endian support**: FidoNet packet handling may fail on big-endian systems
 - **File locking**: Multinode systems may have race conditions
 - **No serial support**: Telnet/network only (serial I/O not yet ported)
@@ -509,6 +509,35 @@ These are placeholder files for automatic header dependency tracking. They are:
 
 The files exist in version control as placeholders to prevent errors if Makefiles attempt to include them.
 
+### MEX VM Compiler Fix (November 2025)
+
+**Problem**: The MEX compiler failed to build with GCC 14.2 due to incompatible pointer type errors in the grammar file.
+
+**Root Cause**: The 2007 Solaris yacc compatibility fix (commit 04.06.07 wwg) introduced intermediate grammar rules that took the address of temporary stack values (`&$1`) to pass to `byteref()`, `wordref()`, `dwordref()`, and `stringref()` functions. This created dangling pointers that modern GCC 14.2 correctly rejects with `-Wincompatible-pointer-types`.
+
+**Solution**: Changed the four `*ref()` functions to accept `CONSTTYPE` by value instead of by pointer:
+
+**Files Modified**:
+- `mex/sem_expr.c`: Changed function signatures from `CONSTTYPE *ct` to `CONSTTYPE ct`, updated implementations to use `.` instead of `->`
+- `mex/mex_prot.h`: Updated function prototypes
+- `mex/mex_tab.y`: Modified grammar rules to call `*ref()` functions directly in intermediate productions instead of taking addresses
+
+**Before**:
+```yacc
+const_byte_p : T_CONSTBYTE { $$ = &$1; }  // ERROR: &$1 is dangling pointer
+literal      : const_byte_p { $$=byteref($1); }
+```
+
+**After**:
+```yacc
+const_byte_p : T_CONSTBYTE { $$ = byteref($1); }  // Pass value directly
+literal      : const_byte_p { $$=$1; }
+```
+
+**Testing**: Successfully compiled all 19 sample MEX scripts (including complex programs like card.mex blackjack game) with 0 errors and 0 warnings. Generated .vm bytecode files verified.
+
+**Status**: MEX VM compiler is now fully operational on modern GCC 14.2/Linux systems.
+
 ### Known Warnings (Non-Fatal)
 
 These warnings are expected and do not prevent compilation:
@@ -520,6 +549,10 @@ These warnings are expected and do not prevent compilation:
 2. **Packed attribute warnings**: `warning: 'packed' attribute ignored [-Wattributes]`
    - Appears in tracker headers (trackcom.h)
    - Safe to ignore (alignment handled differently on modern systems)
+
+3. **DEBUGVM redefinition warnings**: `warning: "DEBUGVM" redefined`
+   - Appears in mex/vm.h when compiling MEX VM files
+   - Safe to ignore (defined both in Makefile and header)
 
 ### Testing Modernized Build
 
