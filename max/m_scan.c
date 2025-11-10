@@ -32,6 +32,7 @@ static char rcs_id[] = "$Id: m_scan.c,v 1.1.1.1 2002/10/01 17:52:50 sdudley Exp 
 #define MAX_LANG_m_area   /* Message area language strings */
 
 #include "max_msg.h"
+#include "api_brow.h"
 #include "prog.h"
 #include "protod.h"  /* For function declarations */
 #include <io.h>
