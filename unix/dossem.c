@@ -1,3 +1,5 @@
+#define _GNU_SOURCE  /* For pthread_mutexattr_settype and PTHREAD_MUTEX_ERRORCHECK */
+
 #include "dossem.h"
 #include "share.h"
 #include <errno.h>
@@ -25,10 +27,10 @@
  *
  */
 
+/* Modern glibc has pthread_mutexattr_settype and PTHREAD_MUTEX_ERRORCHECK with _GNU_SOURCE */
 #if defined(LINUX) && !defined(PTHREAD_MUTEX_ERRORCHECK)
-/* RedHat 5.2 ships with a not-quite p pthreads interface.. don't know about later versions */
+/* Very old systems may need this fallback */
 #define PTHREAD_MUTEX_ERRORCHECK PTHREAD_MUTEX_ERRORCHECK_NP
-#define pthread_mutexattr_settype(attr, type) pthread_mutexattr_setkind_np(attr, type)
 #endif
 
 #define UNIX_SEMDIR "/tmp/.dossem" /* RAM on Solaris */

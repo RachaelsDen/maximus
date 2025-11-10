@@ -41,6 +41,14 @@ static char rcs_id[] = "$Id: s_link.c,v 1.2 2003/06/05 03:13:40 wesgarland Exp $
 #include <sys/types.h>
 #include <time.h>
 
+/* Forward declarations for static functions */
+static void Link_Area(struct _cfgarea *ar, HAREA opensq);
+static void near LinkIt(HAREA sq, struct _cfgarea *ar);
+static int _stdc msgcomp(const void *i1, const void *i2);
+static int _stdc msgidcomp(const void *i1, const void *i2);
+static size_t msgidsearch(struct _link **link, long nl, struct _link *find);
+static int _stdc umsgidcomp(const void *i1, const void *i2);
+
 static char *etn = NULL;
 
 void Link_Messages(char *etname)

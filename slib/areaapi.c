@@ -17,12 +17,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#define _GNU_SOURCE  /* For strdup */
+
 #include "areaapi.h"
 #include "bfile.h"
 #include "max.h"
 #include "prog.h"
 #include "uni.h"
 #include <fcntl.h>
+#include <string.h>  /* For strdup */
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>

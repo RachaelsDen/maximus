@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#define _GNU_SOURCE  /* For strdup */
+
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: s_misc.c,v 1.2 2003/06/05 03:13:40 wesgarland Exp $";
 #pragma on(unreferenced)
@@ -1041,7 +1043,7 @@ int CallExtern(char *origcmd, word archiver)
         /* Open the nul device using compatibility mode, NOT deny-none! */
 
         if ((nul_file = sopen(NULL_DEVICE, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_COMPAT,
-                              S_IREAD | S_IWRITE)) != -1)
+                              S_IRUSR | S_IWUSR)) != -1)
         {
             (void)dup2(nul_file, fileno(stdout));
             (void)close(nul_file);

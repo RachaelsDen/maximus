@@ -17,6 +17,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef S_TOSS_H_INCLUDED
+#define S_TOSS_H_INCLUDED
+
+#include "compiler.h"  /* For near, far, _stdc keywords */
+#include "prog.h"      /* For byte, word, PATHLEN, MAX_TAGLEN types */
+#include "msgapi.h"    /* For XMSG, HAREA */
+#include "squish.h"    /* For struct _cfgarea, struct _pktprefix, struct _pkthdr */
+
 struct _partial
 {
     char pktname[PATHLEN]; /* Name of the packet being tossed */
@@ -92,3 +100,4 @@ static void near ReadMaxMsgs(char *tosslog);
 static void near WriteMaxMsgs(void);
 static void near ReportSpeed(time_t secs);
 static void near TossArchives(struct _tosspath *tp);
+#endif /* S_TOSS_H_INCLUDED */

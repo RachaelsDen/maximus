@@ -328,7 +328,7 @@ void mdm_watchdog(int watch) /* No return value */ { CallFossil(FOSSIL_watchdog,
 sword mdm_getc(void) { return (mdm_avail() ? mdm_ggetcw() : -1); }
 
 /* The "& 0x00ff" kludge is necessary because X00 is broken, and       *
- * it forgets to zero out the AH register in this call...  O!Comm and  *
+ * it forgets to zero out the AH  in this call...  O!Comm and  *
  * others do it correctly, though.                                     */
 
 word mdm_ctrlc(word mask)

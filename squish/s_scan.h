@@ -17,6 +17,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef S_SCAN_H_INCLUDED
+#define S_SCAN_H_INCLUDED
+
+#include "compiler.h"  /* For near, far, _stdc keywords */
+#include "prog.h"      /* For byte, NETADDR types */
+#include "msgapi.h"    /* For XMSG */
+#include "squish.h"    /* For struct _cfgarea, struct _pktprefix */
+
 static void near AddAreaTag(char *txt, struct _cfgarea *ar);
 static int _stdc sbl_comp_nz(const void *s1, const void *s2);
 static void near Insert_Sb_Node(struct _sblist *look, struct _sblist *sb, unsigned *num_sb);
@@ -53,3 +61,5 @@ byte *begin_sb, *end_sb;
 
 #define SCAN_NOPOINT 0x01
 #define SCAN_TINY 0x02
+
+#endif /* S_SCAN_H_INCLUDED */

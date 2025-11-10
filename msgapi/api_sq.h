@@ -22,6 +22,9 @@
 #ifndef __API_SQ_H_DEFINED
 #define __API_SQ_H_DEFINED
 
+#include "prog.h"      /* For int32, dword, word, byte, UMSGID */
+#include "msgapi.h"    /* For HAREA, HMSG */
+
 struct _sqhdr;
 struct _sqidx;
 

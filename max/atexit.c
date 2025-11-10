@@ -36,7 +36,7 @@ typedef struct _atexitstruct
 
 AtExitStruct *paeExitList = 0;
 
-int maximus_atexit(register void (*func)(void))
+int maximus_atexit( void (*func)(void))
 {
     AtExitStruct *pae;
 

@@ -611,7 +611,7 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
     GenPopQuads();
 
     /* Generate an object to hold the return value of the function call,      *
-     * using the register that the caller placed the value in.                */
+     * using the  that the caller placed the value in.                */
 
     ret = NewDataObj();
     ret->type = f->func->c.f.ret_type;
@@ -634,7 +634,7 @@ DATAOBJ *EndFuncCall(FUNCCALL *f, DATAOBJ *args)
         ret->form.addr.typedesc = f->func->c.f.ret_type;
 
         /* However, since this temporary is used by ALL function returns, we    *
-         * must move the value out of the x000 register as soon as possible.    */
+         * must move the value out of the x000  as soon as possible.    */
 
         res = NewDataObj();
         res->type = ret->type;

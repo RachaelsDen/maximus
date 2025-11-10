@@ -67,7 +67,7 @@ int op_funcret(INST *inst, struct _args *arg)
 
     pbSp += inst->res.jump_label;
 
-    /* Pop the old bp register off the stack */
+    /* Pop the old bp  off the stack */
 
     Pop(pbBp, byte *);
 

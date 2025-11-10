@@ -308,7 +308,7 @@ static void near ReadMaxMsgs(char *tosslog)
         return;
     }
 
-    if ((fd = sopen(msgs_name, O_RDONLY | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE)) == -1)
+    if ((fd = sopen(msgs_name, O_RDONLY | O_BINARY, SH_DENYNO, S_IRUSR | S_IWUSR)) == -1)
         S_LogMsg(cantopen, msgs_name);
     else
     {
@@ -352,7 +352,7 @@ static void near WriteMaxMsgs(void)
     part.long_packet = resume.long_packet;
 
     if ((fd = sopen(msgs_name, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYNO,
-                    S_IREAD | S_IWRITE)) == -1)
+                    S_IRUSR | S_IWUSR)) == -1)
         S_LogMsg(cantopen, msgs_name);
     else
     {
@@ -406,7 +406,7 @@ static int near Decompress_Archive(char *arcname, char *get)
     /*dptab(FALSE);*/
 #endif
 
-    if ((fd = sopen(arcname, O_RDONLY | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE)) == -1)
+    if ((fd = sopen(arcname, O_RDONLY | O_BINARY, SH_DENYNO, S_IRUSR | S_IWUSR)) == -1)
         return -1;
 
     (void)printf("\nDecompressing ");
@@ -841,7 +841,7 @@ static void near Toss_Pkt(char *pktname, word tflag)
 #endif
 
     if ((in.pktfile = sopen(in.pktname, O_RDONLY | O_BINARY | O_NOINHERIT, SH_DENYWR,
-                            S_IREAD | S_IWRITE)) == -1)
+                            S_IRUSR | S_IWUSR)) == -1)
     {
         (void)printf("Error opening packet `%s'!\n", fancy_fn(in.pktname));
         return;

@@ -43,7 +43,7 @@ extern int __NFiles;
 
 int _stdc nopen(const char *name, int mode, ...)
 {
-    int permiss = S_IREAD | S_IWRITE;
+    int permiss = S_IRUSR | S_IWUSR;
 
     if (mode & O_CREAT)
     {
@@ -120,7 +120,7 @@ static void near _wcsetiomode(int fd, int mode)
 int _stdc nsopen(const char *name, int mode, int shacc, ...)
 {
     union REGS save, r;
-    int permiss = S_IREAD | S_IWRITE;
+    int permiss = S_IRUSR | S_IWUSR;
     int fd;
 
 #ifndef __FLAT__
@@ -492,7 +492,7 @@ int _stdc nsopen(const char *name, int mode, int shacc, ...)
 #else
     USHORT rc, usAction;
 #endif
-    int permiss = S_IREAD | S_IWRITE;
+    int permiss = S_IRUSR | S_IWUSR;
     char *p;
 
     if (mode & O_CREAT)
@@ -703,7 +703,7 @@ int _stdc ndup2(int fd1, int fd2)
 
 int _stdc nsopen(const char *name, int mode, int shacc, ...)
 {
-    return sopen(name, mode, shacc, S_IREAD | S_IWRITE);
+    return sopen(name, mode, shacc, S_IRUSR | S_IWUSR);
 }
 
 int _stdc nread(int fd, char *buf, unsigned len) { return read(fd, buf, len); }
@@ -757,7 +757,7 @@ main()
     int fd;
 
     if ((fd = nopen("nopen.obj", O_CREAT | O_TRUNC | O_EXCL | O_RDWR | O_BINARY,
-                    S_IREAD | S_IWRITE)) == -1)
+                    S_IRUSR | S_IWUSR)) == -1)
     {
         printf("  OK: O_EXCL1 (%d)\n", fd);
     }
@@ -770,7 +770,7 @@ main()
     unlink("notexist.fil");
 
     if ((fd = nopen("notexist.fil", O_CREAT | O_TRUNC | O_EXCL | O_RDWR | O_BINARY,
-                    S_IREAD | S_IWRITE)) == -1)
+                    S_IRUSR | S_IWUSR)) == -1)
     {
         printf("FAIL: O_EXCL2 (%d)\n", fd);
     }
@@ -782,7 +782,7 @@ main()
 
     unlink("notexist.fil");
 
-    if ((fd = nopen("notexist.fil", O_CREAT | O_EXCL | O_RDWR | O_BINARY, S_IREAD | S_IWRITE)) ==
+    if ((fd = nopen("notexist.fil", O_CREAT | O_EXCL | O_RDWR | O_BINARY, S_IRUSR | S_IWUSR)) ==
         -1)
     {
         printf("FAIL: O_EXCL3 (%d)\n", fd);
@@ -795,7 +795,7 @@ main()
 
     unlink("notexist.fil");
 
-    if ((fd = nopen("notexist.fil", O_RDONLY | O_BINARY | O_EXCL, S_IREAD | S_IWRITE)) == -1)
+    if ((fd = nopen("notexist.fil", O_RDONLY | O_BINARY | O_EXCL, S_IRUSR | S_IWUSR)) == -1)
     {
         printf("  OK: O_RDONLY1\n");
     }
@@ -805,7 +805,7 @@ main()
         nclose(fd);
     }
 
-    if ((fd = nopen("notexist.fil", O_RDONLY | O_BINARY, S_IREAD | S_IWRITE)) == -1)
+    if ((fd = nopen("notexist.fil", O_RDONLY | O_BINARY, S_IRUSR | S_IWUSR)) == -1)
     {
         printf("  OK: O_RDONLY2\n");
     }
@@ -815,7 +815,7 @@ main()
         nclose(fd);
     }
 
-    if ((fd = nopen("nopen.obj", O_RDONLY | O_BINARY, S_IREAD | S_IWRITE)) == -1)
+    if ((fd = nopen("nopen.obj", O_RDONLY | O_BINARY, S_IRUSR | S_IWUSR)) == -1)
     {
         printf("FAIL: O_RDONLY3 (%d)\n", fd);
     }
@@ -829,7 +829,7 @@ main()
         nclose(fd);
     }
 
-    if ((fd = nopen("nopen.obj", O_CREAT | O_RDWR | O_BINARY, S_IREAD | S_IWRITE)) == -1)
+    if ((fd = nopen("nopen.obj", O_CREAT | O_RDWR | O_BINARY, S_IRUSR | S_IWUSR)) == -1)
     {
         printf("FAIL: O_CREAT1 (%d)\n", fd);
     }
@@ -843,7 +843,7 @@ main()
         nclose(fd);
     }
 
-    if ((fd = nopen("nopen.obj", O_CREAT | O_TRUNC | O_RDWR | O_BINARY, S_IREAD | S_IWRITE)) == -1)
+    if ((fd = nopen("nopen.obj", O_CREAT | O_TRUNC | O_RDWR | O_BINARY, S_IRUSR | S_IWUSR)) == -1)
     {
         printf("FAIL: O_CREAT2 %d %d\n", fd, errno);
     }
@@ -858,7 +858,7 @@ main()
         nclose(fd);
     }
 
-    if ((fd = nopen("new.fil", O_CREAT | O_RDWR | O_BINARY, S_IREAD | S_IWRITE)) == -1)
+    if ((fd = nopen("new.fil", O_CREAT | O_RDWR | O_BINARY, S_IRUSR | S_IWUSR)) == -1)
     {
         printf("FAIL: O_CREAT3 (%d)\n", fd);
     }

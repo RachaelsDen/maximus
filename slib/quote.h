@@ -20,4 +20,9 @@
 /*# name=Quote delimiter specification
  */
 
+#ifndef QUOTE_H_INCLUDED
+#define QUOTE_H_INCLUDED
+
 #define QUOTE '\\'
+
+#endif /* QUOTE_H_INCLUDED */

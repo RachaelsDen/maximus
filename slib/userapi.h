@@ -20,6 +20,10 @@
 #ifndef __USERAPI_H_DEFINED
 #define __USERAPI_H_DEFINED
 
+#include "compiler.h"  /* For _fast and other compiler-specific macros */
+#include "prog.h"      /* For dword */
+#include "max_u.h"     /* For struct _usr */
+
 #define UNDX_BLOCK 512 /* Number of USER.NDX entries to buffer */
 #define UBBS_BLOCK 16  /* Hold 16 user records at a time */
 

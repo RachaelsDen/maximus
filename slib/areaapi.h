@@ -20,6 +20,9 @@
 #ifndef __AREAAPI_H_DEFINED
 #define __AREAAPI_H_DEFINED
 
+#include "compiler.h"  /* For _fast and other compiler-specific macros */
+#include "max.h"       /* For MAH and FAH types */
+
 #define AFFO_DIV 0x0001 /* Allow findopen to return division entries */
 
 /* Handle for accessing an area file */

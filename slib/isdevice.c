@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#define _DEFAULT_SOURCE  /* For S_IFIFO, S_IFCHR, S_IFBLK, S_IFSOCK */
+
 #include "prog.h"
 #include <dos.h>
 #include <io.h>

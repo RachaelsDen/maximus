@@ -59,7 +59,8 @@
 
 #include <sys/types.h>
 
-#if defined(LINUX) || defined(SOLARIS)
+/* Modern Linux no longer defines ushort/ulong by default, so we define them ourselves */
+#if defined(SOLARIS)
 #define HAVE_ULONG
 #define HAVE_USHORT
 #endif

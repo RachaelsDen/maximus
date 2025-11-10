@@ -31,7 +31,7 @@ static char rcs_id[]="$Id: dbase.cc,v 1.2 2003/06/11 17:21:38 wesgarland Exp $";
 
 #include <stdio.h>
 #include <string.h>
-#include <new.h>
+#include <new>
 #include "dbase.h"
 
 #ifndef max

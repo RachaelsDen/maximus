@@ -76,11 +76,11 @@ int op_scopy(INST *inst, struct _args *arg)
     if (arg->a2.segment == SEG_GLOBAL && arg->a2.offset >= vmh.lGlobSize + vmh.lStackSize &&
         (inst->arg2.addr.segment != SEG_TEMP || inst->arg2.addr.indirect))
     {
-        /* The last line in the 'if' is needed cause a temp register will never
+        /* The last line in the 'if' is needed cause a temp  will never
          * have a prior, unsaved string in it.  Strings in temps will always
          * be SKILLed before we try to assign something to them, so doing it
          * here would be redundant.  However, if we are using a temporary
-         * register as an index, we still need to kill the destination.
+         *  as an index, we still need to kill the destination.
          */
 
         kill_str(&arg->a2, &inst->arg2.addr);

@@ -44,7 +44,7 @@ void StatsOpen(void)
     /* Open the file */
 
     if ((fd = sopen(config.statfile, O_CREAT | O_WRONLY | O_BINARY | O_APPEND | O_NOINHERIT,
-                    SH_DENYNO, S_IREAD | S_IWRITE)) == -1)
+                    SH_DENYNO, S_IRUSR | S_IWUSR)) == -1)
     {
         S_LogMsg(cantopen, config.statfile);
         return;

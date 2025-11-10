@@ -17,6 +17,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef S_SQUASH_H_INCLUDED
+#define S_SQUASH_H_INCLUDED
+
+#include <stddef.h>     /* For NULL */
+#include "compiler.h"   /* For near keyword */
+#include "prog.h"       /* For PATHLEN */
+
 #define cvlen (sizeof(cv) / sizeof(cv[0]))
 
 #define COPYSIZE 4096 /* Copy buffer for merging .PKT files */
@@ -48,3 +55,4 @@ static struct _defn
     char *xlat;
     struct _defn *next;
 } * defns;
+#endif /* S_SQUASH_H_INCLUDED */

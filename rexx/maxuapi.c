@@ -219,7 +219,7 @@ OS2UINT APIENTRY RMaxLoadFuncs(PUCHAR pszName, OS2UINT argc, PRXSTRING prxsArgv,
 
     for (pt = ptNames; *pt; pt++)
     {
-        /* Don't register a function that is already registered */
+        /* Don't  a function that is already registered */
 
         if (RexxQueryFunction(*pt + 1) == RXFUNC_OK)
             continue;

@@ -514,7 +514,7 @@ static void near process_include(char *name)
 
 static MACDEF near find_macro(char *szName)
 {
-    register char ch = *szName;
+     char ch = *szName;
     MACDEF md;
 
     for (md = macList; md; md = md->next)

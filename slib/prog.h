@@ -299,7 +299,7 @@ void pascal End_Shadow(void);
     (void)printf("\n" prog "  " desc ", Version %s.\nCopyright " year                              \
                  " by Lanius Corporation.  All rights reserved.\n\n",                              \
                  version)
-#define shopen(path, access) sopen(path, access, SH_DENYNONE, S_IREAD | S_IWRITE)
+#define shopen(path, access) sopen(path, access, SH_DENYNONE, S_IRUSR | S_IWUSR)
 #define GTdate(s1, s2) (GEdate(s1, s2) && (s1)->ldate != (s2)->ldate)
 #define carrier_flag (prm.carrier_mask)
 #define BitOff(a, x) ((void)((a)[(x) / CHAR_BITS] &= ~(1 << ((x) % CHAR_BITS))))

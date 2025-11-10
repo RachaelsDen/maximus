@@ -17,6 +17,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef S_PACK_H_INCLUDED
+#define S_PACK_H_INCLUDED
+
+#include <stdio.h>     /* For FILE */
+#include "compiler.h"  /* For near, EXPENTRY */
+#include "prog.h"      /* For byte, word, dword */
+#include "msgapi.h"    /* For XMSG, HAREA, HMSG */
+#include "squish.h"    /* For struct _cfgarea, NETADDR */
+
 #define REMAP_BUF_SIZE 4096
 
 static char *msgbuf;
@@ -39,3 +48,4 @@ static void near Process_OneAttReqUpd(XMSG *msg, char *filename, int tflag, char
 static void near TrackMessage(XMSG *msg, byte *ctrl);
 static void near AddViaLine(byte *msgbuf, byte *ctrl);
 static void near ExpandAndSend(XMSG *msg, int tflag, char *filename, char *pwd, char *szName);
+#endif /* S_PACK_H_INCLUDED */

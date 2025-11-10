@@ -1209,7 +1209,7 @@ MenuFunction(DlgValAct)
 
     _TuiFindMenuStartLoc(h);
 
-    /* Now register the priv menu.  Fix the <esc> key so that it can be used  *
+    /* Now  the priv menu.  Fix the <esc> key so that it can be used  *
      * to leave the menu, even though the menu system thinks that the val     *
      * menu is a top-level menu.                                              */
 

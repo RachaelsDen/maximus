@@ -290,7 +290,7 @@ BOOL COMMAPI ComOpen(LPTSTR pszDevice, HCOMM *phc, DWORD dwRxBuf, DWORD dwTxBuf)
 
 openIt:
 
-    /* Now attempt to register this handle to get our threads going */
+    /* Now attempt to  this handle to get our threads going */
     if (!ComOpenHandle(h, phc, dwRxBuf, dwTxBuf))
     {
         close(h);

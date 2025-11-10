@@ -17,7 +17,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef S_MATCH_H_INCLUDED
+#define S_MATCH_H_INCLUDED
+
+#include "compiler.h"  /* For near keyword */
+#include "prog.h"      /* For word type */
+
 static char *fourqs = "????";
 static char *p04x = "%04x";
 
 static int near FindOutbound(word zone);
+
+#endif /* S_MATCH_H_INCLUDED */

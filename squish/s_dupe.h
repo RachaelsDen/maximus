@@ -17,7 +17,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef S_DUPE_H_INCLUDED
+#define S_DUPE_H_INCLUDED
+
+#include "prog.h"      /* For dword, word */
+#include "msgapi.h"    /* For HAREA, XMSG, UMSGID */
+#include "squish.h"    /* For struct _cfgarea */
+
 /* Structure for the *.SQB duplicate database */
+
+#define DUPE_HASH_SIZE 97
+#define DUPE_HASH_BITS 7
 
 typedef struct
 {
@@ -44,3 +54,5 @@ int IsADupe(struct _cfgarea *ar, XMSG *msg, char *ctrl, dword uid);
 dword FindUpdateMessage(HAREA sq, struct _cfgarea *ar, dword msgid_hash, dword msgid_serial,
                         dword **ppmsgid_hash, dword **ppmsgid_serial);
 void GetDidMsgid(DUPEID *pid, char *ctrl);
+
+#endif /* S_DUPE_H_INCLUDED */
