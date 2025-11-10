@@ -17,8 +17,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __SQFIX_H_DEFINED
+#define __SQFIX_H_DEFINED
+
+#include "prog.h"      /* For union stamp_combo */
+#include "api_sq.h"    /* For FOFS type */
+
 typedef struct _rlnk
 {
     union stamp_combo date;
     FOFS pos;
 } RLNK;
+
+#endif /* __SQFIX_H_DEFINED */

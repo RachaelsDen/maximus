@@ -82,7 +82,7 @@ int _stdc main(int argc, char *argv[])
 
     sprintf(temp, "%s" SQI_EXT, argv[1]);
 
-    if ((idxfile = open(temp, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, S_IREAD | S_IWRITE)) == -1)
+    if ((idxfile = open(temp, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, S_IRUSR | S_IWUSR)) == -1)
     {
         printf("Error opening index file `%s' for write!\n", temp);
         exit(1);
@@ -94,7 +94,7 @@ int _stdc main(int argc, char *argv[])
 
     /* Now open the temporary index file */
 
-    if ((idxfile = open(idxname, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, S_IREAD | S_IWRITE)) ==
+    if ((idxfile = open(idxname, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, S_IRUSR | S_IWUSR)) ==
         -1)
     {
         printf("Error opening index file `%s' for write!\n", idxname);

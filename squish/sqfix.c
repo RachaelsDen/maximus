@@ -148,13 +148,13 @@ static void near link_base(char *origname)
 
     sprintf(name, sqi_name, origname);
 
-    if ((sqi = sopen(name, O_CREAT | O_TRUNC | O_RDWR | O_BINARY, SH_DENYRW, S_IREAD | S_IWRITE)) ==
+    if ((sqi = sopen(name, O_CREAT | O_TRUNC | O_RDWR | O_BINARY, SH_DENYRW, S_IRUSR | S_IWUSR)) ==
         -1)
         ErrOpen(name);
 
     sprintf(name, sqd_name, origname);
 
-    if ((sqd = sopen(name, O_RDWR | O_BINARY, SH_DENYRW, S_IREAD | S_IWRITE)) == -1)
+    if ((sqd = sopen(name, O_RDWR | O_BINARY, SH_DENYRW, S_IRUSR | S_IWUSR)) == -1)
         ErrOpen(name);
 
     if (read(sqd, (char *)&sqb, sizeof(sqb)) != sizeof(sqb))
@@ -464,7 +464,7 @@ static void near rewrite_lastreads(char *base_name, dword huge *pmsg, dword num_
     printf("Rewriting lastread pointers...\n");
 
     if ((fd = sopen(sql_name, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYRW,
-                    S_IREAD | S_IWRITE)) == -1)
+                    S_IRUSR | S_IWUSR)) == -1)
     {
         printf("Error opening %s for write!\n", sql_name);
         return;
@@ -546,7 +546,7 @@ dword huge *save_lastreads(char *sqd_name, dword *pnum_lastread)
 
     /* Open the index file */
 
-    if ((fd = sopen(sqi_name, O_RDONLY | O_BINARY, SH_DENYRW, S_IREAD | S_IWRITE)) == -1)
+    if ((fd = sopen(sqi_name, O_RDONLY | O_BINARY, SH_DENYRW, S_IRUSR | S_IWUSR)) == -1)
         return NULL;
 
     size = lseek(fd, 0L, SEEK_END);
@@ -651,7 +651,7 @@ static void near fix_base(char *name)
 
     sprintf(old_name, "%s.sqd", name);
 
-    if ((old_sqd = sopen(old_name, O_RDONLY | O_BINARY, SH_DENYRW, S_IREAD | S_IWRITE)) == -1)
+    if ((old_sqd = sopen(old_name, O_RDONLY | O_BINARY, SH_DENYRW, S_IRUSR | S_IWUSR)) == -1)
         ErrOpen(old_name);
 
     if ((bufr = malloc(BSIZ)) == NULL)

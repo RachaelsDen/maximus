@@ -370,7 +370,7 @@ static void near BounceMessage(struct _feat_netmsg far *pfn)
     strcpy(msg.to, pfn->pMsg->from);
     sprintf(msg.subj, "NetMail bounced by %s", Address(&msg.orig));
 
-    Get_Dos_Date(&msg.date_written);
+    Get_Dos_Date((union stamp_combo *)&msg.date_written);
     msg.date_arrived = msg.date_written;
     msg.attr = MSGLOCAL | MSGPRIVATE;
 
