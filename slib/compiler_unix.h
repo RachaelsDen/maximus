@@ -50,6 +50,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>  /* For strncasecmp() */
 #include <unistd.h>
 
 #define __POSIX__

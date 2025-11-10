@@ -20,6 +20,8 @@
 #ifndef __COMQUEUE_H_DEFINED
 #define __COMQUEUE_H_DEFINED
 
+#include "typedefs.h"  /* For PBYTE type */
+
 typedef struct
 {
     PBYTE pbBuf;  /* Start of queue buffer */
