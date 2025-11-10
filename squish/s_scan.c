@@ -50,6 +50,7 @@ extern FILE *dj;
 
 static word full_scan = 0;
 static dword scan_ctr;
+
 #ifndef UNIX
 static char maxmsgs_scan[] = "MAXMSGS2.DAT";
 #else

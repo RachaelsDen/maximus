@@ -185,7 +185,7 @@ static sword near DisplayOneFile(DSTK *d)
 {
     sword ret;
 
-    if (nullptr())
+    if (is_nullptr())
         Got_A_Null_Pointer("file ", d->filename);
 
     d->skipcr = FALSE;

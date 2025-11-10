@@ -197,7 +197,7 @@ void VioPutc(char ch)
  * The only action that this function must perform is to fill out the       *
  * 'feature information' structure that is passed to it by Squish.          *
  * At present, the only field in this structure is the 'Config Name'        *
- * option.  This can be used to register keywords for which the             *
+ * option.  This can be used to  keywords for which the             *
  * FeatureConfig function will be called.  This can be used to              *
  * implement feature-specific keywords in the configuration file.           *
  *                                                                          *

@@ -1,6 +1,8 @@
 #ifndef _VIOCURSES_H
 #define _VIOCURSES_H
 
+#include <stddef.h>  /* For size_t */
+
 int VioSetCurPos(int row, int column, void *handle);
 int VioWrtTTY(const char *string, size_t length, void *handle);
 /* chtype cursesAttribute(unsigned char dosAttribute); */

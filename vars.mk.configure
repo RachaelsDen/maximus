@@ -29,7 +29,7 @@ H_DIRS		:= unix/include slib msgapi btree max prot mex
 SO_DIRS		:= unix slib msgapi btree prot mex comdll
 LDFLAGS		+= $(foreach DIR, $(SO_DIRS), -L$(SRC)/$(DIR))
 INCLUDES	:= -I. $(foreach DIR, $(H_DIRS), -I$(SRC)/$(DIR))
-CXXFLAGS	:= $(CFLAGS) -fpermissive
+CXXFLAGS	:= $(CFLAGS)
 LOADLIBES	= $(EXTRA_LOADLIBES) -lmax -lcompat -lcurses
 
 include		$(SRC)/vars_$(PLATFORM).mk

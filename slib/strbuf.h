@@ -25,6 +25,9 @@
 #ifndef STRBUF_H_DEFINED
 #define STRBUF_H_DEFINED
 
+#include "compiler.h"  /* For _fast */
+#include "prog.h"      /* For word type */
+
 #define STRBUFSZ 2048   /* Default size */
 #define STRDELMK '\xff' /* Deleted string marker */
 

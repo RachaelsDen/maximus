@@ -211,7 +211,7 @@ BFILE _fast Bopen(char *pszName, int fMode, int fShare, size_t stBufSize)
     /* Try to open the file */
 
     if ((b->fd = nsopen(pszName, TranslateBMode(fMode), TranslateBShare(fShare),
-                        S_IREAD | S_IWRITE)) == -1)
+                        S_IRUSR | S_IWUSR)) == -1)
     {
         free(b);
         return NULL;

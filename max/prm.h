@@ -23,6 +23,7 @@
 #if !defined(__PRM_H_DEFINED) || defined(FORCE)
 
 #include "compiler.h"
+#include "prog.h"  /* For word type */
 
 #if defined(FORCE)
 #undef OFS

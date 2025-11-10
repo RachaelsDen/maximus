@@ -136,7 +136,7 @@ HUF _fast UserFileOpen(char *name, int mode)
     for (tries = 10; tries--;)
     {
         if ((huf->fdbbs =
-                 sopen(filename, O_RDWR | O_BINARY | mode, SH_DENYNO, S_IREAD | S_IWRITE)) != -1)
+                 sopen(filename, O_RDWR | O_BINARY | mode, SH_DENYNO, S_IRUSR | S_IWUSR)) != -1)
             break;
 
 #ifdef OS_2
@@ -154,7 +154,7 @@ HUF _fast UserFileOpen(char *name, int mode)
     strcpy(filename, name);
     strcat(filename, ".idx");
 
-    if ((huf->fdndx = sopen(filename, O_RDWR | O_BINARY | mode, SH_DENYNO, S_IREAD | S_IWRITE)) ==
+    if ((huf->fdndx = sopen(filename, O_RDWR | O_BINARY | mode, SH_DENYNO, S_IRUSR | S_IWUSR)) ==
         -1)
     {
         /* If the index file was damaged, recreate it */
@@ -162,7 +162,7 @@ HUF _fast UserFileOpen(char *name, int mode)
         if (huf->fdndx == -1)
         {
             huf->fdndx = sopen(filename, O_CREAT | O_TRUNC | O_RDWR | O_BINARY, SH_DENYNO,
-                               S_IREAD | S_IWRITE);
+                               S_IRUSR | S_IWUSR);
 
             if (huf->fdndx != -1)
                 _RebuildIndex(huf);

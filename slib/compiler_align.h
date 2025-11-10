@@ -19,6 +19,9 @@
 
 #ifndef _COMPILER_ALIGN_H
 #define _COMPILER_ALIGN_H
+
+#include <stddef.h>  /* For size_t */
+
 /* Packing the structures with the compiler allows us a certain
  * measure of binary compatibility with files (lastuser.bbs,
  * fidonet packets, squish bases, user.bbs, ipc.bbs...) written

@@ -45,6 +45,8 @@
  * RG         Ray Gardner                                          *
  *******************************************************************/
 
+#define _DEFAULT_SOURCE  /* For timezone variable */
+
 #include "prog.h"
 
 #ifndef NO_MKTIME /* Only used if compiler doesn't already have mktime() */

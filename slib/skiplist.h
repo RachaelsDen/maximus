@@ -20,6 +20,9 @@
 #ifndef __SKIPLIST_H_DEFINED
 #define __SKIPLIST_H_DEFINED
 
+#include "compiler.h"  /* For _fast, _stdc */
+#include "prog.h"      /* For word, sword types */
+
 #define SKIP_OK 0      /* No error */
 #define SKIP_ENOMEM -1 /* Error codes returned by Skip...() functions */
 #define SKIP_EEXIST -2 /* Node already exists */

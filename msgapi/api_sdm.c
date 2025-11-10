@@ -43,11 +43,21 @@ static char rcs_id[] = "$Id: api_sdm.c,v 1.3 2003/06/11 14:03:06 wesgarland Exp 
 #include <sys/stat.h>
 #include <sys/types.h>
 
+/* Forward declarations for static functions */
+static void MSGAPI Init_Xmsg(PXMSG msg);
+static void MSGAPI Convert_Fmsg_To_Xmsg(struct _omsg *fmsg, PXMSG msg, word def_zone);
+static void MSGAPI Convert_Xmsg_To_Fmsg(PXMSG msg, struct _omsg *fmsg);
+static void near Get_Binary_Date(union _stampu *todate, union _stampu *fromdate, byte *asciidate);
+static sword near _SdmRescanArea(HAREA mh);
+static sword near _Grab_Clen(HMSG msgh);
+static dword MSGAPI SdmGetHighWater(HAREA mh);
+static sword MSGAPI SdmSetHighWater(HAREA mh, dword hwm);
+
 #define SDM_BLOCK 256
 #define Mhd ((struct _sdmdata *)(mh->apidata))
 #define MsghMhd ((struct _sdmdata *)(((HMSG)msgh)->ha->apidata))
 
-static byte *hwm_from = "-=|ÿSquishMailÿ|=-";
+static byte *hwm_from = "-=|ï¿½SquishMailï¿½|=-";
 
 // extern void far pascal DosSleep(dword);
 
@@ -324,7 +334,7 @@ static HMSG MAPIENTRY SdmOpenMsg(HAREA mh, word mode, dword msgnum)
     _nopen_cheat = TRUE; /* Use fast "cheat" mode for creating msgs */
 
     if ((handle = sopen(msgname, filemode | O_BINARY | O_NOINHERIT, SH_DENYNONE,
-                        S_IREAD | S_IWRITE)) == -1)
+                        S_IRUSR | S_IWUSR)) == -1)
     {
         if (filemode & O_CREAT)
             msgapierr = MERR_BADF;

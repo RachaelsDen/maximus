@@ -17,6 +17,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef S_LINK_H_INCLUDED
+#define S_LINK_H_INCLUDED
+
+#include <stddef.h>     /* For size_t */
+#include "compiler.h"   /* For near, _stdc */
+#include "prog.h"       /* For byte, dword */
+#include "msgapi.h"     /* For HAREA, UMSGID */
+#include "squish.h"     /* For struct _cfgarea, MAX_REPLY */
+
 struct _link;
 
 static void Link_Area(struct _cfgarea *ar, HAREA opensq);
@@ -40,3 +49,4 @@ struct _link
     dword reply_hash;  /* Hash of address portion of ^aREPLY */
     dword reply_stamp; /* ^aREPLY timestamp */
 };
+#endif /* S_LINK_H_INCLUDED */

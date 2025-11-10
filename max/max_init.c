@@ -788,7 +788,7 @@ static void near install_handlers(void)
 {
     /* Initialize the null-pointer check module */
 
-    nullptr();
+    is_nullptr();
 }
 
 static void near StartUpVideo(void)

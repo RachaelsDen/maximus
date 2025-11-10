@@ -174,7 +174,7 @@ void HoleScanHole(void)
         (void)printf("Attempting to read %s\n", fname);
 #endif
 
-        if ((pfd = sopen(fname, O_RDONLY | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE)) == -1)
+        if ((pfd = sopen(fname, O_RDONLY | O_BINARY, SH_DENYNO, S_IRUSR | S_IWUSR)) == -1)
             continue;
 
         bytes = (unsigned)fastread(pfd, (char *)&hdr, sizeof(struct _pkthdr));
@@ -589,7 +589,7 @@ void HoleOpenList(void)
 
     (void)sprintf(temp, holename, FixOutboundName(1u));
 
-    if ((holefile = sopen(temp, O_CREAT | O_WRONLY | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE)) ==
+    if ((holefile = sopen(temp, O_CREAT | O_WRONLY | O_BINARY, SH_DENYNO, S_IRUSR | S_IWUSR)) ==
         -1)
     {
         S_LogMsg("!Error creating HOLELIST.DAT!");

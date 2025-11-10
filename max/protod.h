@@ -516,7 +516,7 @@ void RipClear();
 char *_fast stristr_nochin(char *string, char *search);
 int PushFileAreaSt(PFAH pfah, BARINFO *pbi);
 int PushMsgAreaSt(PMAH pmah, BARINFO *pbi);
-int maximus_atexit(register void (*func)(void));
+int maximus_atexit( void (*func)(void));
 void maximus_exit(int status);
 
 cpp_end()

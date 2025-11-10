@@ -226,11 +226,11 @@ ADDRESS GetTemporary(TYPEDESC *td)
     new->next = NULL;
 
     /* Search the linked list of linked lists, and find the one containing    *
-     * the register size we want.                                             */
+     * the  size we want.                                             */
 
     for (t = temp; t; t = t->next)
     {
-        /* If this is the linked list containing register elements of this size */
+        /* If this is the linked list containing  elements of this size */
 
         if (t->size == td->size)
         {
@@ -331,7 +331,7 @@ int WouldWeFreeTemporary(DATAOBJ *o, TLLIST **pptlT, TLIST **pptlTl, TLIST **ppt
 }
 
 /* If the object 'o' is a temporary register, this routine will try to      *
- * free the register and make it available for use again.                   */
+ * free the  and make it available for use again.                   */
 
 void MaybeFreeTemporary(DATAOBJ *o, word free_str)
 {
@@ -352,7 +352,7 @@ void MaybeFreeTemporary(DATAOBJ *o, word free_str)
         else
             t->tlist = tl->next;
 
-        /* If the temporary register holds a string, try to free it too.
+        /* If the temporary  holds a string, try to free it too.
          * If free_str==2, only free the string if the indirect flag
          * was NOT set.  Otherwise, free it.  This is to allow
          * strings in structs to work properly.
@@ -897,7 +897,7 @@ int ConvertTypes(DATAOBJ *fromobj, TYPEDESC *fromtype, DATAOBJ *toobj, TYPEDESC 
     toobj->type = totype;
 
     /* If we have to convert a constant, do it at compile-time.  Otherwise, *
-     * allocate a temporary register for the conversion.                    */
+     * allocate a temporary  for the conversion.                    */
 
     if (fromobj->objform == ObjformValue)
     {
@@ -928,7 +928,7 @@ int ConvertTypes(DATAOBJ *fromobj, TYPEDESC *fromtype, DATAOBJ *toobj, TYPEDESC 
     else
     {
         /* Otherwise we need to coerce at runtime, so get a temporary         *
-         * register to hold the value of the coerced type in.                 */
+         *  to hold the value of the coerced type in.                 */
 
         t = GetTemporary(totype);
 

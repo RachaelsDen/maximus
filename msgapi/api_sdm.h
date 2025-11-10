@@ -20,7 +20,10 @@
 /* $Id: api_sdm.h,v 1.1.1.1 2002/10/01 17:54:21 sdudley Exp $ */
 
 #ifndef __API_SDM_H_DEFINED
-#define __API_SFM_H_DEFINED
+#define __API_SDM_H_DEFINED
+
+#include "prog.h"      /* For dword, word, byte, sword, sdword, UMSGID */
+#include "msgapi.h"    /* For HAREA, HMSG, PXMSG */
 
 #define MAX_SDM_CLEN                                                                               \
     512 /* Maximum number of bytes which can be used    *                                          \

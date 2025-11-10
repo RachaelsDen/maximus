@@ -45,6 +45,23 @@ static char rcs_id[] = "$Id: s_pack.c,v 1.3 2003/06/05 23:17:22 wesgarland Exp $
 static char area_col[] = "AREA:";
 static char file_delim[] = " ;,";
 
+/* Forward declarations for static functions */
+static void near PackIt(struct _cfgarea *ar);
+static void EXPENTRY AddToMsgBuf(byte OS2FAR *str);
+static int near GateRouteMessage(XMSG *msg, dword mn, NETADDR *olddest);
+static unsigned near Pack_Netmail_Msg(HAREA sq, dword *mn, struct _cfgarea *ar);
+static int near Send_Message(HMSG mh, XMSG *msg, dword bytes, dword mn, struct _cfgarea *ar);
+static int near OkToForward(XMSG *msg);
+static int near Remap_Message(XMSG *msg, dword mn);
+static void near Point_To_Fakenet_Dest(XMSG *msg);
+static void near Point_To_Fakenet_Orig(XMSG *msg);
+static void near Process_AttReqUpd(XMSG *msg, char *filename, word manual);
+static void near Process_OneAttReqUpd(XMSG *msg, char *filename, int tflag, char *orig_fspec,
+                                      char *pwd);
+static void near TrackMessage(XMSG *msg, byte *ctrl);
+static void near AddViaLine(byte *msgbuf, byte *ctrl);
+static void near ExpandAndSend(XMSG *msg, int tflag, char *filename, char *pwd, char *szName);
+
 void Pack_Messages(struct _cfgarea *nets)
 {
     struct _cfgarea *ar;
@@ -1119,7 +1136,7 @@ static void near Process_OneAttReqUpd(XMSG *msg, char *filename, int tflag, char
 
         /* Create an empty ?LO file, if one doesn't already exist */
 
-        if ((fd = sopen(floname, O_CREAT | O_WRONLY | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE)) !=
+        if ((fd = sopen(floname, O_CREAT | O_WRONLY | O_BINARY, SH_DENYNO, S_IRUSR | S_IWUSR)) !=
             -1)
         {
             (void)close(fd);

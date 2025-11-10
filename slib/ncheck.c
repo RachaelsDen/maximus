@@ -38,7 +38,7 @@
 
 #define CHECK_SIZE 20 /* check-sum this many bytes */
 
-int _fast nullptr(void)
+int _fast is_nullptr(void)
 {
     static int checksum = 0, FirstTime = TRUE; /* the valid chksum could be zero, so we need this */
 
@@ -67,5 +67,5 @@ int _fast nullptr(void)
 }
 
 #else
-int _fast nullptr(void) { return (FALSE); }
+int _fast is_nullptr(void) { return (FALSE); }
 #endif

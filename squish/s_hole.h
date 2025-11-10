@@ -20,6 +20,8 @@
 #ifndef __S_HOLE_H_DEFINED
 #define __S_HOLE_H_DEFINED
 
+#include "squish.h"  /* For struct _sblist */
+
 void GetFunkyPacketName(char *name, struct _sblist *from, struct _sblist *to, int flavour);
 
 #endif /* __S_HOLE_H_DEFINED */

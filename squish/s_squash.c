@@ -278,10 +278,10 @@ int Merge_Pkts(byte *from, byte *to)
             return 0;
     }
 
-    if ((fromfile = sopen(from, O_RDONLY | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE)) == -1)
+    if ((fromfile = sopen(from, O_RDONLY | O_BINARY, SH_DENYNO, S_IRUSR | S_IWUSR)) == -1)
         return -1;
 
-    if ((tofile = open(to, O_RDWR | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE)) == -1 ||
+    if ((tofile = open(to, O_RDWR | O_BINARY, SH_DENYNO, S_IRUSR | S_IWUSR)) == -1 ||
         lseek(tofile, -(long)sizeof(word), SEEK_END) == -1 ||
         read(tofile, (char *)&tempint, (unsigned)sizeof(word)) != (int)sizeof(word) ||
         tempint != 0 || (copybuf = malloc(COPYSIZE)) == NULL)
@@ -822,7 +822,7 @@ static void near RV_Poll(byte *line, byte *ag[], NETADDR nn[], word num)
         else
         {
             if ((fd = sopen(scratch, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYNONE,
-                            S_IREAD | S_IWRITE)) == -1)
+                            S_IRUSR | S_IWUSR)) == -1)
             {
                 S_LogMsg("!Err creating `%s'", scratch);
                 continue;
@@ -1038,7 +1038,7 @@ static void near StompPacketHeader(char *fname, PNETADDR pna, int check_point)
 
     /* Open packet file */
 
-    if ((fd = sopen(fname, O_RDWR | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE)) == -1)
+    if ((fd = sopen(fname, O_RDWR | O_BINARY, SH_DENYNO, S_IRUSR | S_IWUSR)) == -1)
         return;
 
     /* Read in the old packet header */
@@ -1479,7 +1479,7 @@ static void near RV_GateRoute(byte *line, byte *ag[], NETADDR nn[], word num)
             if ((infile = open(mo->name, O_RDONLY | O_BINARY)) == -1)
                 continue;
 
-            if ((outfile = open(outfn, O_CREAT | O_RDWR | O_BINARY, S_IREAD | S_IWRITE)) == -1)
+            if ((outfile = open(outfn, O_CREAT | O_RDWR | O_BINARY, S_IRUSR | S_IWUSR)) == -1)
             {
                 close(infile);
                 continue;

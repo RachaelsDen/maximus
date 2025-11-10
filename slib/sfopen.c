@@ -37,10 +37,10 @@ FILE *_fast sfopen(char *name, char *fpmode, int fdmode, int access)
     FILE *fp;
     int fd;
 
-    fd = sopen(name, fdmode, access, S_IREAD | S_IWRITE);
+    fd = sopen(name, fdmode, access, S_IRUSR | S_IWUSR);
 
     if (fd == -1 && errno == ENOENT && (fdmode & (O_APPEND | O_WRONLY)))
-        fd = sopen(name, fdmode | (O_WRONLY | O_CREAT | O_TRUNC), access, S_IREAD | S_IWRITE);
+        fd = sopen(name, fdmode | (O_WRONLY | O_CREAT | O_TRUNC), access, S_IRUSR | S_IWUSR);
 
     if (fd == -1)
         return NULL;

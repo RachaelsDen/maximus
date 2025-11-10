@@ -337,7 +337,7 @@ void _fast brktrapos2(void *err, int fDoTrap)
 
     if ((rc = DosSetExceptionHandler(perr)) != 0)
     {
-        printf("Can't register exception handler - %lu\n", rc);
+        printf("Can't  exception handler - %lu\n", rc);
         return;
     }
 

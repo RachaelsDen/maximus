@@ -33,6 +33,9 @@ static char rcs_id[] = "$Id: sq_read.c,v 1.2 2003/06/05 22:54:50 wesgarland Exp 
 #include <io.h>
 #include <stdio.h>
 
+/* Forward declaration from structrw.c */
+int read_xmsg(int handle, XMSG *pxmsg);
+
 /* Read in the binary message header from the data file */
 
 static unsigned near _SquishReadXmsg(HMSG hmsg, PXMSG pxm, dword *pdwOfs)
@@ -46,7 +49,7 @@ static unsigned near _SquishReadXmsg(HMSG hmsg, PXMSG pxm, dword *pdwOfs)
             return FALSE;
         }
 
-    if (read_xmsg(HSqd->sfd, (char *)pxm) != 1)
+    if (read_xmsg(HSqd->sfd, pxm) != 1)
     {
         msgapierr = MERR_BADF;
         return FALSE;

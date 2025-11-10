@@ -661,7 +661,7 @@ static int near VmRun(char *pszArgs)
         hpdbug();
 #endif
 
-    /* Return the value currently held in the FIRST word register */
+    /* Return the value currently held in the FIRST word  */
 
     return (regs_2[0]);
 }

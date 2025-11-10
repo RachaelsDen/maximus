@@ -36,10 +36,10 @@ char __fd2n;
 
 int _stdc sopen(const char *name, int mode, int shacc, ...)
 {
-    return nsopen(name, mode, shacc, S_IREAD | S_IWRITE);
+    return nsopen(name, mode, shacc, S_IRUSR | S_IWUSR);
 }
 
-int _stdc open(const char *name, int mode, ...) { return nopen(name, mode, S_IREAD | S_IWRITE); }
+int _stdc open(const char *name, int mode, ...) { return nopen(name, mode, S_IRUSR | S_IWUSR); }
 
 #if defined(__TOPAZ__) || defined(__BORLANDC__)
 int IOTYPE read(int fd, void *buf, unsigned len)
