@@ -26,6 +26,7 @@ static char rcs_id[] = "$Id: max_main.c,v 1.2 2003/06/04 23:46:22 wesgarland Exp
 
 #define MAX_LANG_max_main
 #define MAX_INCL_COMMS
+#define MAX_INCL_VER      /* Include version information */
 #define INCL_NOPM
 #define INCL_DOS
 
@@ -34,6 +35,7 @@ static char rcs_id[] = "$Id: max_main.c,v 1.2 2003/06/04 23:46:22 wesgarland Exp
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include <dos.h>
 #include <fcntl.h>
@@ -59,6 +61,7 @@ static char rcs_id[] = "$Id: max_main.c,v 1.2 2003/06/04 23:46:22 wesgarland Exp
 #include "max_area.h"
 #include "max_main.h"
 #include "max_menu.h"
+#include "max_vr.h"  /* For version variables */
 #include "mm.h"
 #include "prog.h"
 #include "protod.h"  /* For function declarations */

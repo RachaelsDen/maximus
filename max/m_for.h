@@ -20,7 +20,15 @@
 #ifndef __M_FOR_H_DEFINED
 #define __M_FOR_H_DEFINED
 
+#include "prog.h"       /* For byte, word types */
+#include "msgapi.h"     /* For XMSG, UMSGID, HMSG, HAREA types */
+#include "max_u.h"      /* For MAX_ALEN constant */
+
+/* Note: MAH and FAH types come from max.h which includes this file */
 /* This file is #included by M_FOR.C and M_SAVE.C... */
+
+/* Forward declarations */
+typedef struct _mahandle MAH;
 
 struct _fwdp
 {

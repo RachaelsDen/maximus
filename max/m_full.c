@@ -26,6 +26,8 @@ static char rcs_id[] = "$Id: m_full.c,v 1.2 2003/06/04 23:31:28 wesgarland Exp $
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_m_area   /* Message area language strings */
+#define MAX_LANG_m_browse /* Message browse language strings */
 
 #include "m_full.h"
 #include "max_msg.h"

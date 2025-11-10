@@ -1,3 +1,4 @@
+#define _GNU_SOURCE  /* For strdup */
 /*
  * Maximus Version 3.02
  * Copyright 1989, 2002 by Lanius Corporation.  All rights reserved.
@@ -31,6 +32,7 @@ static char rcs_id[] = "$Id: mb_novl.c,v 1.1.1.1 2002/10/01 17:52:12 sdudley Exp
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "dr.h"
 #include "m_browse.h"

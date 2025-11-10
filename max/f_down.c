@@ -32,6 +32,8 @@ static char rcs_id[] = "$Id: f_down.c,v 1.1.1.1 2002/10/01 17:51:03 sdudley Exp 
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
+#define MAX_LANG_f_area   /* File area language strings */
 
 #include "f_down.h"
 #include "alc.h"
@@ -320,7 +322,7 @@ int File_Get_Download_Names(int do_tag, sword protocol)
                         long size = ff->ulSize;
                         char temp[PATHLEN];
 
-                        sprintf(temp, fn_format, *fpath ? fpath : FAS(fah, downpath), MAX_FN_LEN,
+                        sprintf(temp, fn_format, *fpath ? (char *)fpath : FAS(fah, downpath), MAX_FN_LEN,
                                 ff->szName);
 
                         if (do_tag)

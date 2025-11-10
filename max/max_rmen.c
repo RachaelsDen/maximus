@@ -29,6 +29,7 @@ static char rcs_id[] = "$Id: max_rmen.c,v 1.1.1.1 2002/10/01 17:52:02 sdudley Ex
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "max_menu.h"
 #include "max_msg.h"

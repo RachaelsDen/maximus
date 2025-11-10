@@ -29,6 +29,7 @@ static char rcs_id[] = "$Id: max_fbbs.c,v 1.2 2003/06/04 23:46:21 wesgarland Exp
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_f_area   /* File area language strings */
 
 #include "display.h"
 #include "ffind.h"

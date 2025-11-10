@@ -23,7 +23,7 @@ static char rcs_id[]="$Id: cppmain.cc,v 1.1.1.1 2002/10/01 17:50:46 sdudley Exp 
 
 #include "prog.h"
 
-extern "C" c_main(int argc, char *argv[]);
+extern "C" int c_main(int argc, char *argv[]);
 extern "C" unsigned far _ovl_openflags(unsigned sharing_mode);
 
 int main(int argc, char *argv[])

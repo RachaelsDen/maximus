@@ -504,8 +504,8 @@ else_part       :       /* epsilon */
                                 { $$.patchout=NULL;
                                   $$.else_label=this_quad;
                                 }
-                |       T_ELSE 
-                                { ElseHandler(&$$); }
+                |       T_ELSE
+                                { $<elsetype>$.patchout=NULL; ElseHandler(&$<elsetype>$); }
                         statement
                                 { $$=$<elsetype>2; }
                 ;

@@ -26,6 +26,7 @@ static char rcs_id[] = "$Id: events.c,v 1.2 2003/06/04 23:14:57 wesgarland Exp $
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "events.h"
 #include "mm.h"
@@ -150,7 +151,7 @@ static void near Write_Events(int e_num, int dateit)
     sprintf(edatn, event_name, PRM(sys_path), e_num, dotdat);
 
     if ((fd = sopen(edatn, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYNONE,
-                    S_IREAD | S_IWRITE)) == -1)
+                    S_IRUSR | S_IWUSR)) == -1)
     {
         cant_open(edatn);
         return;

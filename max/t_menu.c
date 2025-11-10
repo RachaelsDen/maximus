@@ -28,6 +28,7 @@ static char rcs_id[] = "$Id: t_menu.c,v 1.1.1.1 2002/10/01 17:53:14 sdudley Exp 
 #define MAX_LANG_global   /* Global language strings */
 
 #include "trackp.h"
+#include "protod.h"  /* For function declarations */
 
 static void near TrackMenuInsert(void);
 

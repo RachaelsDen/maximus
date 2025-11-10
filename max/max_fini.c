@@ -27,17 +27,20 @@ static char rcs_id[] = "$Id: max_fini.c,v 1.1.1.1 2002/10/01 17:51:38 sdudley Ex
 #define MAX_LANG_max_init
 #define MAX_LANG_max_chat
 #define MAX_INCL_COMMS
+#define MAX_INCL_VER      /* Include version information */
 
 
 #define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "dr.h"
 #include "ffind.h"
 #include "max_file.h"
 #include "max_msg.h"
+#include "max_vr.h"  /* For version variables */
 #include "prog.h"
 #include "protod.h"  /* For function declarations */
 #include "trackm.h"
@@ -248,9 +251,9 @@ void FinishUp2(int hangup)
     Free_File_Buffer();
 
 #ifdef DBG
-    printf("ô\n"
-           "³ Maximus down.\n"
-           "õ\n\n");
+    printf("ï¿½\n"
+           "ï¿½ Maximus down.\n"
+           "ï¿½\n\n");
 #endif
 }
 

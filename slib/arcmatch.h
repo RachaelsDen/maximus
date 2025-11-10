@@ -17,4 +17,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-int _fast MatchArcType(int fd, struct _arcinfo *ai);
+#ifndef __ARCMATCH_H_DEFINED
+#define __ARCMATCH_H_DEFINED
+
+#include "arc_def.h"  /* For struct _arcinfo definition */
+
+int MatchArcType(int fd, struct _arcinfo *ai);
+
+#endif /* __ARCMATCH_H_DEFINED */

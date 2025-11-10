@@ -31,6 +31,7 @@ static char rcs_id[] = "$Id: max_rest.c,v 1.1.1.1 2002/10/01 17:52:00 sdudley Ex
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "max_file.h"
 #include "max_msg.h"
@@ -344,7 +345,7 @@ void Write_Restart(char restart_type, char *restart_name, long restart_offset, i
     sprintf(temp, restarxx_bbs, original_path, task_num);
 
     if ((file = sopen(temp, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYNONE,
-                      S_IREAD | S_IWRITE)) == -1)
+                      S_IRUSR | S_IWUSR)) == -1)
         cant_open(temp);
     else
     {

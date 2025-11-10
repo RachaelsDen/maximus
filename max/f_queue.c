@@ -29,6 +29,7 @@ static char rcs_id[] = "$id";
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_f_area   /* File area language strings */
 
 #include "alc.h"
 #include "ffind.h"

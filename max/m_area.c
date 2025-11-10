@@ -31,6 +31,8 @@ static char rcs_id[] = "$Id: m_area.c,v 1.2 2003/06/04 23:46:21 wesgarland Exp $
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
+#define MAX_LANG_m_area   /* Message area language strings */
 
 #include "max_menu.h"
 #include "max_msg.h"
@@ -286,7 +288,7 @@ int Msg_Area(void)
             ok = TRUE;
     } while (!ok);
 
-    logit(log_msga, usr.msg ? usr.msg : "(null)");
+    logit(log_msga, usr.msg ? (char *)usr.msg : "(null)");
     DisposeMah(&ma);
 
     return 0;

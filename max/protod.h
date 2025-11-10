@@ -19,6 +19,10 @@
 
 #include "m_reply.h"
 
+/* Forward declaration for SEARCH type */
+struct _search;
+typedef struct _search SEARCH;
+
 cpp_begin()
 
     void Update_User(void);

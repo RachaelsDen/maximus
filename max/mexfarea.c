@@ -25,6 +25,7 @@
 
 #include "max_file.h"
 #include "mexall.h"
+#include "protod.h"  /* For function declarations */
 
 #ifdef MEX
 

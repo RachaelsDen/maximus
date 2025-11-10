@@ -34,8 +34,8 @@ static char rcs_id[] = "$Id: mb_qwkup.c,v 1.2 2003/06/04 23:46:22 wesgarland Exp
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
-#include "mb_qwkup.h"
 #include "arcmatch.h"
 #include "max_file.h"
 #include "max_msg.h"
@@ -58,6 +58,16 @@ static char rcs_id[] = "$Id: mb_qwkup.c,v 1.2 2003/06/04 23:46:22 wesgarland Exp
 extern struct _akh akh;
 extern struct _akd *akd;
 extern char *qwk_path;
+
+/* Forward declarations for static functions */
+static int near Receive_REP(char *name);
+static int near Decompress_REP(char *rep_name);
+static int near Toss_QWK_Packet(char *name);
+static int near QWK_Get_Rep_Header(int qfd, char *block);
+static void near QWK_To_Xmsg(struct _qmhdr *qh, XMSG *msg, word msgn);
+static int near Toss_QWK_Message(struct _qmhdr *qh, XMSG *msg, int qfd, char *block);
+static char *near fix_basic_crap(char *str);
+static int near all_caps(char *s);
 
 static char *msg_name;
 
@@ -295,7 +305,7 @@ static int near Decompress_REP(char *rep_name)
             /* Create semaphore */
 
             if ((fd = sopen(qwk_busy, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYNO,
-                            S_IREAD | S_IWRITE)) != -1)
+                            S_IRUSR | S_IWUSR)) != -1)
                 close(fd);
 
             ret = Outside(NULL, NULL, OUTSIDE_RUN, cmd, FALSE, CTL_NONE, 0, NULL);

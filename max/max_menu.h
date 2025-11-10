@@ -17,6 +17,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __MAX_MENU_H_DEFINED
+#define __MAX_MENU_H_DEFINED
+
+#include "prog.h"      /* For byte, word, sword types */
+#include "msgapi.h"    /* For XMSG type */
+#include "max_area.h"  /* For PMAH, PFAH types (via areaapi.h) */
+
 void Initialize_Menu(struct _amenu *menu);
 sword Read_Menu(struct _amenu *menu, char *mname);
 void Free_Menu(struct _amenu *menu);
@@ -25,3 +32,5 @@ char *RunOption(struct _amenu *menu, struct _opt *thisopt, int ch, XMSG *msg, un
 int OptionOkay(struct _amenu *menu, struct _opt *popt, int displaying, char *barricade, PMAH pmah,
                PFAH pfah, char *menuname);
 int DoDspFile(byte help, word flag);
+
+#endif /* __MAX_MENU_H_DEFINED */

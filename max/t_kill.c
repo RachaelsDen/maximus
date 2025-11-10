@@ -28,6 +28,7 @@ static char rcs_id[] = "$Id: t_kill.c,v 1.1.1.1 2002/10/01 17:53:13 sdudley Exp 
 #define MAX_LANG_global   /* Global language strings */
 
 #include "trackp.h"
+#include "protod.h"  /* For function declarations */
 
 #ifdef MAX_TRACKER
 

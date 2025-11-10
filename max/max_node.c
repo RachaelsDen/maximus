@@ -17,7 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#error this file no longer used.
+/* NOTE: This file is no longer used but kept for reference */
+/* #error this file no longer used. */
 
 /*# name=Nodelist searching and retrieval functions
  */
@@ -27,6 +28,7 @@
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "mm.h"
 #include "prog.h"

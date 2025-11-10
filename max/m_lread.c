@@ -29,6 +29,8 @@ static char rcs_id[] = "$Id: m_lread.c,v 1.1.1.1 2002/10/01 17:52:46 sdudley Exp
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_m_area   /* Message area language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "alc.h"
 #include "max_msg.h"
@@ -88,7 +90,7 @@ void FixLastread(HAREA lsq, word type, dword lastmsg, char *path)
     /* Open and/or create the file as necessary */
 
     if ((lrfile = sopen(temp, O_CREAT | O_RDWR | O_BINARY | O_NOINHERIT, SH_DENYNONE,
-                        S_IREAD | S_IWRITE)) == -1)
+                        S_IRUSR | S_IWUSR)) == -1)
     {
         cant_open(temp);
         return;
@@ -153,7 +155,7 @@ void ScanLastreadPointer(dword *lastmsg)
         uid = 0;
 
         if ((lrfile = sopen(temp, O_WRONLY | O_CREAT | O_BINARY | O_NOINHERIT, SH_DENYNONE,
-                            S_IREAD | S_IWRITE)) == -1)
+                            S_IRUSR | S_IWUSR)) == -1)
         {
             cant_open(temp);
         }

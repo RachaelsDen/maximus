@@ -25,6 +25,7 @@
 
 #include "mexall.h"
 #include "modem.h"
+#include "protod.h"  /* For Input functions, Mdm_ functions, etc. */
 
 #ifdef MEX
 

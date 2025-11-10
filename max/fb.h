@@ -24,6 +24,8 @@
 #include "typedefs.h"
 #endif
 
+#include "max.h"       /* For MAX_FN_LEN and stamp.h */
+
 #define MAX_SEARCH_DAT 32
 #define DMP_BUF_SIZE 2048
 

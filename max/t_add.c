@@ -26,8 +26,10 @@ static char rcs_id[] = "$Id: t_add.c,v 1.2 2003/06/11 14:03:06 wesgarland Exp $"
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "trackp.h"
+#include "protod.h"  /* For function declarations */
 
 #ifdef MAX_TRACKER
 

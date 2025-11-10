@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#include "userapi.h"  /* For HUF, HUFF types */
+
 #define N_INTRINFUNC (sizeof(_intrinfunc) / sizeof(_intrinfunc[0]))
 #define StoreString(str, type, field, val) MexStoreStringAt(str + offsetof(type, field), val)
 

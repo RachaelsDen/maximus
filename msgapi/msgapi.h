@@ -362,7 +362,8 @@ cpp_end()
 };
 #endif
 
-#include "api_brow.h"
+/* Forward declaration for BROWSE type used in MsgBrowseArea() */
+typedef struct _browse BROWSE;
 
 /* This variable is modified whenever an error occurs with the Msg...()     *
  * functions.  If msgapierr==0, then no error occurred.                     */

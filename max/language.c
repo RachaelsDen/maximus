@@ -34,6 +34,7 @@ static char rcs_id[] = "$Id: language.c,v 1.3 2003/06/11 14:52:19 wesgarland Exp
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "mm.h"
 #include "prog.h"
@@ -43,10 +44,20 @@ void Chg_Language(void) {}
 
 #else /* external languages */
 
+#define _GNU_SOURCE  /* For strdup */
+
+#define MAX_INCL_VARS     /* Include global variable declarations from max_v.h */
+#define MAX_INCL_LANGUAGE /* Include language structures and definitions */
+#define MAX_INCL_LANGLTH  /* Include english.lth language strings */
+#define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
+#define MAX_LANG_max_chat /* Chat language strings */
+
 #include "alc.h"
 #include "language.h"
 #include "mm.h"
 #include "prog.h"
+#include "protod.h"  /* For function declarations */
 #include <fcntl.h>
 #include <io.h>
 #include <mem.h>
@@ -215,7 +226,7 @@ static int Load_Language(char *name, struct _lang *l)
     /* Open with deny-write since writing to the .LTF file while Max is       *
      * active is disastrous.                                                  */
 
-    if ((lf = sopen(temp, O_RDONLY | O_BINARY | O_NOINHERIT, SH_DENYWR, S_IREAD | S_IWRITE)) == -1)
+    if ((lf = sopen(temp, O_RDONLY | O_BINARY | O_NOINHERIT, SH_DENYWR, S_IRUSR | S_IWUSR)) == -1)
     {
         return -1;
     }

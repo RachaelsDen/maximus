@@ -27,9 +27,9 @@ static char rcs_id[] = "$Id: node.c,v 1.1.1.1 2002/10/01 17:52:53 sdudley Exp $"
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
 
+#include "mm.h"       /* Must come before node.h for struct _maxnode definition */
 #include "node.h"
 #include "fdnode.h"
-#include "mm.h"
 #include <fcntl.h>
 #include <io.h>
 #include <share.h>

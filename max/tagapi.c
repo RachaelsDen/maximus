@@ -26,6 +26,7 @@ static char rcs_id[] = "$Id: tagapi.c,v 1.1.1.1 2002/10/01 17:53:09 sdudley Exp 
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include <fcntl.h>
 #include <io.h>
@@ -42,6 +43,7 @@ static char rcs_id[] = "$Id: tagapi.c,v 1.1.1.1 2002/10/01 17:53:09 sdudley Exp 
 
 #include "max_msg.h"
 #include "tagapip.h"
+#include "protod.h"  /* For function declarations */
 
 #include "ffind.h"
 
@@ -511,7 +513,7 @@ static int near _TagAddToFree(struct _mtagidx *pmti, int recnum)
     sprintf(fname, mtag_fre, PRM(sys_path));
 
     if ((fd = shopen(fname, O_WRONLY | O_BINARY)) == -1)
-        fd = sopen(fname, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE);
+        fd = sopen(fname, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, SH_DENYNO, S_IRUSR | S_IWUSR);
 
     if (fd == -1)
         return FALSE;
@@ -568,7 +570,7 @@ static int near _TagReadIdx(struct _mtagidx *pmti)
     sprintf(fname, mtag_idx, PRM(sys_path));
 
     if ((fd = shopen(fname, O_RDONLY | O_BINARY)) == -1)
-        fd = sopen(fname, O_WRONLY | O_BINARY, SH_DENYNO, S_IREAD | S_IWRITE);
+        fd = sopen(fname, O_WRONLY | O_BINARY, SH_DENYNO, S_IRUSR | S_IWUSR);
 
     if (fd == -1)
         return FALSE;

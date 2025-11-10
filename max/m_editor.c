@@ -32,6 +32,8 @@ static char rcs_id[] = "$Id: m_editor.c,v 1.1.1.1 2002/10/01 17:52:39 sdudley Ex
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings (for usingeditor, outofeditor) */
+#define MAX_LANG_m_area   /* Message area language strings */
 
 #include "m_reply.h"
 #include "max_edit.h"

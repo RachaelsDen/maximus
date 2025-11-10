@@ -24,6 +24,8 @@ static char rcs_id[] = "$Id: max_wfc.c,v 1.3 2003/06/06 01:18:58 wesgarland Exp 
 /*# name=Waiting-for-caller routines
  */
 
+#define _GNU_SOURCE  /* For usleep */
+
 #define MAX_LANG_max_wfc
 #define MAX_INCL_COMMS
 
@@ -32,6 +34,9 @@ static char rcs_id[] = "$Id: max_wfc.c,v 1.3 2003/06/06 01:18:58 wesgarland Exp 
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_max_main /* Max main language strings */
+#define MAX_LANG_wfc      /* WFC language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "max_wfc.h"
 #include "alc.h"
@@ -51,6 +56,7 @@ static char rcs_id[] = "$Id: max_wfc.c,v 1.3 2003/06/06 01:18:58 wesgarland Exp 
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
 
 static long startbaud;      /* baud rate specified on cmdline */
 static long init_tmr = -1L; /* Time until next modem initialization */

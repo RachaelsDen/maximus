@@ -41,7 +41,8 @@
 #define equ(s)
 #endif
 
-#define bcopy(f, t, size) memmove(t, f, size)
+/* bcopy macro disabled - use memmove directly */
+/* #define bcopy(f, t, size) memmove(t, f, size) */
 #define isidchar(c) (isalpha(c) || isdigit(c) || (c) == '_')
 
 /*****************************************************************************

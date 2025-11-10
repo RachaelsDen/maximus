@@ -25,6 +25,7 @@
 
 #include "max_msg.h"
 #include "mexall.h"
+#include "protod.h"  /* For Msg_Area, ValidMsgArea, SetAreaName, PopPushMsgAreaSt */
 
 #ifdef MEX
 

@@ -17,6 +17,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __MH_TTY_H_DEFINED
+#define __MH_TTY_H_DEFINED
+
+#include "compiler.h"  /* For near keyword */
+#include "msgapi.h"    /* For XMSG type */
+
+/* Forward declaration for PMAH */
+typedef struct _mahandle *PMAH;
+
 int near TTYGetPrivate(PMAH pmah, XMSG *msg);
 int near TTYGetNetmailAddress(PMAH pmah, XMSG *msg);
 int near TTYGetToField(PMAH pmah, XMSG *msg);
@@ -25,3 +34,5 @@ int near TTYGetFrom(PMAH pmah, XMSG *msg);
 int near TTYGetAttach(PMAH pmah, XMSG *msg);
 static void near DisplayEmptyHeader(PMAH pmah);
 static void near AskMessageAttrs(XMSG *msg);
+
+#endif /* __MH_TTY_H_DEFINED */

@@ -105,5 +105,5 @@ void LFARecInit(LFA_REC *plfa, char *szTo, char *szArea, UMSGID uid, char *szFro
     strnncpy(plfa->szFrom, szFrom, sizeof(plfa->szFrom));
     strnncpy(plfa->szFile, szFile, sizeof(plfa->szFile));
     plfa->uid = uid;
-    TmDate_to_DosDate(tim, &plfa->scDateAttached.ldate);
+    TmDate_to_DosDate(tim, &plfa->scDateAttached);
 }

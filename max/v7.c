@@ -182,7 +182,7 @@ static long near btree(char *filename, void *desired,
     int stream;
 
     if ((stream = sopen(filename, O_RDONLY | O_BINARY | O_NOINHERIT, SH_DENYNO,
-                        S_IREAD | S_IWRITE)) == -1)
+                        S_IRUSR | S_IWUSR)) == -1)
         return (-1L); /* no file, no work to do */
 
     if ((nodeidx = malloc(sizeof(struct _ndx))) == NULL ||
@@ -346,7 +346,7 @@ static int near get_ver7_info(unsigned long pos, NETADDRP faddr, struct _newnode
     strcat(temp, ".dat");                /* then the extension */
 #endif
 
-    if ((stream = sopen(temp, O_RDONLY | O_BINARY | O_NOINHERIT, SH_DENYNO, S_IREAD | S_IWRITE)) ==
+    if ((stream = sopen(temp, O_RDONLY | O_BINARY | O_NOINHERIT, SH_DENYNO, S_IRUSR | S_IWUSR)) ==
         -1)
     {
         return 0;

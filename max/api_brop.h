@@ -17,9 +17,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __API_BROP_H_DEFINED
+#define __API_BROP_H_DEFINED
+
+#include "prog.h"  /* For sword, word types */
+#include "api_brow.h"  /* For BROWSE type */
+
 sword EXPENTRY MsgBrowseArea(BROWSE *b);
 static int near BrowseCheckScanFile(BROWSE *b);
 static int near Browse_Scan_Message(BROWSE *b);
 int near StringMatchInStr(char *msg, char *search);
 int near StringMatchEqual(char *msg, char *search);
 static int near BrowseMatchMessage(BROWSE *b, char *msgtxt, word checkaddr);
+
+#endif /* __API_BROP_H_DEFINED */

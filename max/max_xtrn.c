@@ -29,12 +29,14 @@ static char rcs_id[] = "$Id: max_xtrn.c,v 1.2 2003/06/04 23:53:08 wesgarland Exp
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "dr.h"
 #include "max_file.h"
 #include "max_msg.h"
 #include "mm.h"
 #include "prog.h"
+#include "proto.h"   /* For protocol functions (IoPause, IoResume) */
 #include "protod.h"  /* For function declarations */
 #include <errno.h>
 #include <fcntl.h>

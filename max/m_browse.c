@@ -24,6 +24,7 @@ static char rcs_id[] = "$Id: m_browse.c,v 1.1.1.1 2002/10/01 17:52:38 sdudley Ex
 /*# name=Message Section: B)rowse command
  */
 
+#define _GNU_SOURCE       /* For strdup */
 #define MAX_LANG_m_browse
 
 
@@ -31,6 +32,7 @@ static char rcs_id[] = "$Id: m_browse.c,v 1.1.1.1 2002/10/01 17:52:38 sdudley Ex
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_m_area   /* Message area language strings */
 
 #include "m_browse.h"
 #include "dr.h"

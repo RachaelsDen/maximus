@@ -28,6 +28,7 @@ static char rcs_id[] = "$Id: mex.c,v 1.1.1.1 2002/10/01 17:52:23 sdudley Exp $";
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "mex.h"
 #include "max_file.h"

@@ -31,6 +31,7 @@ static char rcs_id[] = "$Id: max_bor.c,v 1.1.1.1 2002/10/01 17:51:28 sdudley Exp
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "alc.h"
 #include "m_reply.h"

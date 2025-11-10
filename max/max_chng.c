@@ -32,6 +32,7 @@ static char rcs_id[] = "$Id: max_chng.c,v 1.1.1.1 2002/10/01 17:51:31 sdudley Ex
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "arc_def.h"
 #include "md5.h"
@@ -407,7 +408,7 @@ void Chg_Alias(void)
 
     cfancy_str(temp);
 
-    strncpy(usr.alias, *temp ? temp : usr.name, sizeof(usr.alias) - 1);
+    strncpy(usr.alias, *temp ? temp : (char *)usr.name, sizeof(usr.alias) - 1);
     usr.alias[sizeof(usr.alias) - 1] = '\0';
 
     SetUserName(&usr, usrname);

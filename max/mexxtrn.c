@@ -24,6 +24,7 @@
 #define MAX_LANG_global   /* Global language strings */
 
 #include "mexall.h"
+#include "protod.h"  /* For BbsRunOpt, Display_File, Outside functions */
 
 #ifdef MEX
 

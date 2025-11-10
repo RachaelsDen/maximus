@@ -31,9 +31,11 @@ static char rcs_id[] = "$Id: m_for.c,v 1.2 2003/06/11 14:03:06 wesgarland Exp $"
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_m_area   /* Message area language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
-#include "m_for.h"
 #include "max_msg.h"
+#include "m_for.h"
 #include "prog.h"
 #include "protod.h"  /* For function declarations */
 #include <ctype.h>

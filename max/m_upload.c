@@ -29,6 +29,8 @@ static char rcs_id[] = "$Id: m_upload.c,v 1.1.1.1 2002/10/01 17:52:51 sdudley Ex
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_m_area   /* Message area language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "arcmatch.h"
 #include "max_file.h"

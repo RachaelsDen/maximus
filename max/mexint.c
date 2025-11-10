@@ -38,6 +38,7 @@ static char rcs_id[] = "$Id: mexint.c,v 1.1.1.1 2002/10/01 17:52:25 sdudley Exp 
 #define MAX_LANG_global   /* Global language strings */
 
 #include "mexall.h"
+#include "protod.h"  /* For function declarations */
 
 #ifdef MEX
 

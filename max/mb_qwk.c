@@ -33,6 +33,7 @@ static char rcs_id[] = "$Id: mb_qwk.c,v 1.2 2003/06/04 23:46:22 wesgarland Exp $
 #define MAX_INCL_LANGUAGE /* Include language structures and definitions */
 #define MAX_INCL_LANGLTH  /* Include english.lth language strings */
 #define MAX_LANG_global   /* Global language strings */
+#define MAX_LANG_sysop    /* Sysop language strings */
 
 #include "mb_qwk.h"
 #include "dr.h"
@@ -392,7 +393,7 @@ static int near Create_Messages_DAT(void)
     sprintf(mdatname, mdat_template, qwk_path);
 
     if ((qwkfile = sopen(mdatname, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY | O_NOINHERIT,
-                         SH_DENYNONE, S_IREAD | S_IWRITE)) == -1)
+                         SH_DENYNONE, S_IRUSR | S_IWUSR)) == -1)
     {
         cant_open(mdatname);
         free(mdat_buf);
@@ -483,7 +484,7 @@ int Write_Kludge_File(struct _akh *akh, struct _akd **akd)
     sprintf(temp + strlen(temp), o8lxdat, (long)usr.lastread_ptr);
 
     if ((kfd = sopen(temp, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY | O_NOINHERIT, SH_DENYNONE,
-                     S_IREAD | S_IWRITE)) == -1)
+                     S_IRUSR | S_IWUSR)) == -1)
     {
         return -1;
     }
@@ -569,7 +570,7 @@ int QWK_Status(BROWSE *b, char *aname, int colour)
     sprintf(tp, ndx_name, qwk_path, this_conf);
 
     if ((ndxfile = sopen(tp, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY | O_NOINHERIT, SH_DENYNONE,
-                         S_IREAD | S_IWRITE)) == -1)
+                         S_IRUSR | S_IWUSR)) == -1)
     {
         cant_open(tp);
         return -1;
@@ -711,7 +712,7 @@ static int near AddPersonalIndex(BROWSE *b, struct _qmndx *pqn)
         sprintf(fname, personal_name, qwk_path);
 
         if ((perndx = sopen(fname, O_CREAT | O_APPEND | O_WRONLY | O_BINARY | O_NOINHERIT,
-                            SH_DENYNONE, S_IREAD | S_IWRITE)) == -1)
+                            SH_DENYNONE, S_IRUSR | S_IWUSR)) == -1)
         {
             cant_open(fname);
         }
@@ -956,7 +957,7 @@ int QWK_Display(BROWSE *b)
     /* Don't download messages which are older than the specified date */
 
     if (((union stamp_combo *)&b->msg.date_arrived)->ldate != 0 &&
-        !GEdate(&b->msg.date_arrived, &scRestrict))
+        !GEdate((union stamp_combo *)&b->msg.date_arrived, &scRestrict))
     {
         return 0;
     }
@@ -1319,7 +1320,7 @@ static void near MakeBlank(char *s)
     strcpy(fname, qwk_path);
     strcat(fname, s);
 
-    if ((fd = open(fname, O_CREAT | O_WRONLY | O_BINARY, S_IREAD | S_IWRITE)) != -1)
+    if ((fd = open(fname, O_CREAT | O_WRONLY | O_BINARY, S_IRUSR | S_IWUSR)) != -1)
         close(fd);
 }
 #endif
@@ -1363,9 +1364,9 @@ static void near GenerateStupidFiles(void)
 
     if ((fp = fopen(fname, "w")) != NULL)
     {
-        fprintf(fp, door_id_name, us_short);
-        fprintf(fp, door_id_ver, version);
-        fprintf(fp, door_id_sys, xfer_id);
+        fprintf(fp, door_id_name, "Maximus");
+        fprintf(fp, door_id_ver, "3.03b");
+        fprintf(fp, door_id_sys, PRM(system_name));
         fprintf(fp, door_id_cname, cprog_name);
         fprintf(fp, door_id_ctype_add);
         fprintf(fp, door_id_ctype_drop);

@@ -18,6 +18,7 @@
  */
 
 #include "events.h"
+#include "win.h"  /* For VWIN type */
 
 static void near Get_Next_Event(void);
 static void near WFC_Init(void);

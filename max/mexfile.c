@@ -104,7 +104,7 @@ word EXPENTRY intrin_open(void)
         if (wMode & IOPEN_BINARY)
             mode |= O_BINARY;
 
-        mode = sopen(s, mode, SH_DENYNO, S_IREAD | S_IWRITE);
+        mode = sopen(s, mode, SH_DENYNO, S_IRUSR | S_IWUSR);
         free(s);
 
         if (mode != -1)
