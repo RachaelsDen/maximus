@@ -23,8 +23,8 @@
  * C and C++ source files.
  */
 
-#ifndef __BTYPE_H_DEFINED
-#define __BTYPE_H_DEFINED
+#ifndef BTREE_BTYPE_H_INCLUDED
+#define BTREE_BTYPE_H_INCLUDED
 
 #include "compiler.h"
 
@@ -143,4 +143,4 @@ struct NoMem
 };
 #endif
 
-#endif /* __BTYPE_H_DEFINED */
+#endif /* BTREE_BTYPE_H_INCLUDED */

@@ -19,8 +19,8 @@
 
 /* $Id: btree.h,v 1.1.1.1 2002/10/01 17:49:22 sdudley Exp $ */
 
-#ifndef __BTREE_H_DEFINED
-#define __BTREE_H_DEFINED
+#ifndef BTREE_BTREE_H_INCLUDED
+#define BTREE_BTREE_H_INCLUDED
 
 #include "blkiobuf.h"
 #include "btnode.h"
@@ -133,4 +133,4 @@ class BTREE : private BLKIOBUF
     BTERROR CPPEXPORT error();
 };
 
-#endif // __BTREE_H_DEFINED
+#endif // BTREE_BTREE_H_INCLUDED

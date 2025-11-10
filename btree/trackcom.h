@@ -21,8 +21,8 @@
 
 // Common definitions for track.h and trackc.h
 
-#ifndef __TRACKCOM_H_DEFINED
-#define __TRACKCOM_H_DEFINED
+#ifndef BTREE_TRACKCOM_H_INCLUDED
+#define BTREE_TRACKCOM_H_INCLUDED
 #include "typedefs.h"
 
 #ifndef __MSGAPI_H_DEFINED
@@ -123,4 +123,4 @@ typedef struct
     TRK_OWNER to; // Default owner of this area
 } TRK_AREA_NDX __attribute__((packed, aligned(2)));
 
-#endif // __TRACKCOM_H_DEFINED
+#endif // BTREE_TRACKCOM_H_INCLUDED

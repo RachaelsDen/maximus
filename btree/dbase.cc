@@ -804,7 +804,7 @@ int CPPEXPORT DBASE::remove(void **ppvFields)
 
   rc=ppvFields && _lookup(ppvFields, 0, pvFoundRec, &nn, 0, TRUE, 0, 0);
 
-  delete [] pvFoundRec;
+  delete [] static_cast<char*>(pvFoundRec);
 
   if (!rc)
     return FALSE;

@@ -19,6 +19,9 @@
 
 /* $Id: track.h,v 1.1.1.1 2002/10/01 17:49:31 sdudley Exp $ */
 
+#ifndef BTREE_TRACK_H_INCLUDED
+#define BTREE_TRACK_H_INCLUDED
+
 // Include the common structures
 
 #include "trackcom.h"
@@ -61,3 +64,5 @@ class TRACKER
     BTREE *CPPEXPORT GetAreaBtree(void);
     DBASE *CPPEXPORT GetMsgDbase(void);
 };
+
+#endif // BTREE_TRACK_H_INCLUDED

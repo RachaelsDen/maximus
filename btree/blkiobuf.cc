@@ -217,7 +217,7 @@ int BLKIOBUF::_insert_list(NNUM nn, char *pcDiskNode, unsigned fSetDelta)
       printf("\a***couldn't get lru block\n");
     }
 
-    delete [] pvBlock;
+    delete [] static_cast<char*>(pvBlock);
   }
 
   return BLOCKBUF::put(nn, pcDiskNode, fSetDelta);

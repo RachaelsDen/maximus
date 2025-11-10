@@ -19,8 +19,8 @@
 
 /* $Id: palist.h,v 1.1.1.1 2002/10/01 17:49:30 sdudley Exp $ */
 
-#ifndef __PALIST_H_DEFINED
-#define __PALIST_H_DEFINED
+#ifndef BTREE_PALIST_H_INCLUDED
+#define BTREE_PALIST_H_INCLUDED
 
 #include "btype.h"
 
@@ -52,4 +52,4 @@ class PALIST
     PNODE *CPPEXPORT nodes();
 };
 
-#endif // __PALIST_H_DEFINED
+#endif // BTREE_PALIST_H_INCLUDED

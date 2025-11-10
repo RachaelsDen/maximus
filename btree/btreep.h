@@ -19,6 +19,9 @@
 
 /* $Id: btreep.h,v 1.1.1.1 2002/10/01 17:49:22 sdudley Exp $ */
 
+#ifndef BTREE_BTREEP_H_INCLUDED
+#define BTREE_BTREEP_H_INCLUDED
+
 // Header for a B-tree node, as it is stored on disk
 
 struct DISKNODEHDR
@@ -38,3 +41,5 @@ struct DISKFILEHDR
     unsigned short usKeySize; // Size of each key element
     unsigned long cKeys;      // Total number of keys in file
 };
+
+#endif // BTREE_BTREEP_H_INCLUDED

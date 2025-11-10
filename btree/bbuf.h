@@ -19,6 +19,9 @@
 
 /* $Id: bbuf.h,v 1.2 2003/06/05 23:26:47 wesgarland Exp $ */
 
+#ifndef BTREE_BBUF_H_INCLUDED
+#define BTREE_BBUF_H_INCLUDED
+
 #include "btype.h"
 
 // Internal structure used for maintaining the list of buffered
@@ -72,3 +75,5 @@ class BLOCKBUF
     CPPEXPORT BLOCKBUF();
     virtual CPPEXPORT ~BLOCKBUF();
 };
+
+#endif // BTREE_BBUF_H_INCLUDED
