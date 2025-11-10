@@ -2,7 +2,7 @@
 
 **Version:** 3.03b (Modernized 2025-11-10)
 **License:** GNU General Public License v2
-**Status:** Active Modernization - Squish Source Files Compile Successfully
+**Status:** Active Modernization - Core Libraries Building Successfully
 
 ## Overview
 
@@ -59,14 +59,18 @@ This codebase has undergone extensive modernization to compile with modern GCC 1
 
 | Component | Compilation | Linking | Status |
 |-----------|-------------|---------|--------|
-| **Squish** | ✅ All .c files | ⚠️ Needs libraries | **Ready for linking** |
-| slib | ⚠️ In progress | ❌ | Needs fixes |
-| msgapi | ⚠️ In progress | ❌ | Needs fixes |
-| unix (libcompat) | ⚠️ In progress | ❌ | Needs fixes |
-| max | ⚠️ In progress | ❌ | Needs fixes |
+| **Squish** | ✅ All .c files | ⚠️ Needs msgapi | **Ready for linking** |
+| **slib** | ✅ Complete | ✅ libmax.so (139KB) | **✅ BUILT** |
+| **unix** | ✅ Complete | ✅ libcompat.so (28KB) | **✅ BUILT** |
+| msgapi | ⚠️ In progress | ❌ | api_sdm.c needs fixes |
+| max | ❌ Not started | ❌ | Pending msgapi |
 | btree | ❌ | ❌ | C++ modernization needed |
 
-**Milestone Achieved:** All Squish source files (17 files) now compile successfully with zero errors!
+**Latest Milestones:**
+- ✅ All Squish source files (17 files) compile successfully
+- ✅ slib library fully built - libmax.so (139KB, 100+ source files)
+- ✅ unix library fully built - libcompat.so (28KB, DOS/OS2 emulation)
+- 🔄 msgapi library in progress - most files compile, 1 file needs fixes
 
 ## Building
 
@@ -142,7 +146,7 @@ make config_install
 - `s_dupe.h` - Complete rewrite with proper includes
 - `bld.c` - Various fixes
 
-### Core Libraries
+### Core Libraries (slib - ✅ Complete)
 
 - `slib/compiler_align.h` - Added `<stddef.h>`
 - `slib/progprot.h` - Renamed `nullptr` → `is_nullptr`
@@ -151,21 +155,39 @@ make config_install
 - `slib/typedefs.h` - Fixed ushort/ulong for modern Linux
 - `slib/areaapi.c/h` - Added includes, `_GNU_SOURCE`
 - `slib/userapi.c/h` - POSIX constants, includes
-- `slib/sfopen.c` - POSIX constants
+- `slib/sfopen.c`, `shfopen.c`, `bfile.c`, `cshopen.c`, `fd2n.c`, `lcopy.c` - POSIX constants
 - `slib/isdevice.c` - `_DEFAULT_SOURCE`
+- `slib/tdelay.c` - `_DEFAULT_SOURCE` for usleep
+- `slib/canon.c` - `_DEFAULT_SOURCE` for realpath, added includes
+- `slib/mktime.c` - `_DEFAULT_SOURCE` for timezone variable
+- `slib/smalloc.c` - `_GNU_SOURCE` for strdup
+- `slib/acomp.c` - `_DEFAULT_SOURCE` for strcasecmp
+- `slib/vio.c` - `_DEFAULT_SOURCE` for putenv
+- `slib/align.c` - `_GNU_SOURCE`, added malloc.h and string.h
+- `slib/skiplist.h` - Added compiler.h and prog.h includes
+- `slib/prmapi.h` - Added prm.h include for struct definitions
+- `slib/strbuf.h` - Added compiler.h and prog.h includes
 
-### Message API
+### Message API (msgapi - ⚠️ In Progress)
 
 - `msgapi/api_sq.h` - Added includes for types
 - `msgapi/sq_area.c` - POSIX constants
 - `msgapi/sq_read.c` - Forward declarations, fixed cast
+- `msgapi/sq_write.c` - Forward declaration for write_xmsg, removed invalid cast
+- `msgapi/api_sdm.c` - Added 8 forward declarations (partial fix, more work needed)
 
-### Unix Compatibility Layer
+### Unix Compatibility Layer (unix - ✅ Complete)
 
 - `unix/include/viocurses.h` - Added `<stddef.h>`
 - `unix/include/winstr.h` - Removed incorrect `inline` keywords
+- `unix/include/wincomm.h` - Added typedefs.h for BYTE/WORD/DWORD types
 - `unix/dossem.c` - `_GNU_SOURCE` for pthread
 - `unix/process.c` - Fixed `__FUNCTION__` usage
+
+### Maximus
+
+- `max/prm.h` - Added prog.h include for word type
+- `max/max_menu.c`, `max/display.c`, `max/max_init.c` - Updated nullptr calls
 
 ### B-Tree Library
 
