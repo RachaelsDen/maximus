@@ -17,12 +17,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#define _GNU_SOURCE      /* For strdup */
+#define _DEFAULT_SOURCE  /* For isascii */
+
 #pragma off(unreferenced)
 static char rcs_id[] = "$Id: maid.c,v 1.2 2003/06/05 03:18:58 wesgarland Exp $";
 #pragma on(unreferenced)
 
 #define MAX_INCL_LANGUAGE
 #define MAX_INCL_VER
+#define MAX_DEFINE_VERSION  /* Actually define version variable, not just declare extern */
 
 #include "language.h"
 #include "max.h"
@@ -47,7 +51,7 @@ static char rcs_id[] = "$Id: maid.c,v 1.2 2003/06/05 03:18:58 wesgarland Exp $";
 
 #define MAX_HEAP_STR 256
 
-static char *version = VERSION;
+/* version defined in max_vr.h */
 static char *heap;
 static char *hptr;
 
