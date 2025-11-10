@@ -59,18 +59,23 @@ This codebase has undergone extensive modernization to compile with modern GCC 1
 
 | Component | Compilation | Linking | Status |
 |-----------|-------------|---------|--------|
-| **Squish** | ✅ All .c files | ⚠️ Needs msgapi | **Ready for linking** |
+| **Squish** | ✅ All .c files | ✅ squish + 7 utils | **✅ COMPLETE** |
 | **slib** | ✅ Complete | ✅ libmax.so (139KB) | **✅ BUILT** |
 | **unix** | ✅ Complete | ✅ libcompat.so (28KB) | **✅ BUILT** |
-| msgapi | ⚠️ In progress | ❌ | api_sdm.c needs fixes |
-| max | ❌ Not started | ❌ | Pending msgapi |
+| **msgapi** | ✅ Complete | ✅ libmsgapi.so (79KB) | **✅ BUILT** |
+| max | ❌ Not started | ❌ | Ready to build |
 | btree | ❌ | ❌ | C++ modernization needed |
 
-**Latest Milestones:**
-- ✅ All Squish source files (17 files) compile successfully
-- ✅ slib library fully built - libmax.so (139KB, 100+ source files)
-- ✅ unix library fully built - libcompat.so (28KB, DOS/OS2 emulation)
-- 🔄 msgapi library in progress - most files compile, 1 file needs fixes
+**🎉 MAJOR MILESTONE: COMPLETE SQUISH BUILD!**
+- ✅ **squish** (184KB) - FidoNet message tosser/scanner
+- ✅ **sqfix** (23KB) - Message base repair utility
+- ✅ **sqpack** (27KB) - Message base packing utility
+- ✅ **sqconv** (17KB) - Message base conversion utility
+- ✅ **sqinfo** (21KB) - Message base information utility
+- ✅ **sqset** (17KB) - Set message attributes utility
+- ✅ **sstat** (22KB) - Statistics utility
+- ✅ **sqreidx** (17KB) - Reindex utility
+- ✅ All 3 core libraries built (slib, unix, msgapi)
 
 ## Building
 
@@ -132,8 +137,9 @@ make config_install
 
 ## Files Modified in Modernization
 
-### Squish (All compile successfully!)
+### Squish (✅ Complete - All binaries built!)
 
+**Main Source Files:**
 - `s_scan.c/h` - Added forward declarations, fixed missing variables
 - `s_toss.c/h` - Added includes, header guards, POSIX constants
 - `s_pack.c/h` - Forward declarations, includes
@@ -145,6 +151,16 @@ make config_install
 - `s_misc.c` - `_GNU_SOURCE`, POSIX constants
 - `s_dupe.h` - Complete rewrite with proper includes
 - `bld.c` - Various fixes
+
+**Utilities:**
+- `sqfix.h/c` - Added header guards, includes (prog.h, api_sq.h), POSIX constants
+- `sqpack.h/c` - Added header guards, compiler.h include, POSIX constants
+- `sqconv.c` - POSIX constants
+- `sqinfo.c` - Built successfully
+- `sqset.c` - Built successfully
+- `sstat.c` - Built successfully
+- `sqreidx.c` - POSIX constants
+- `msgtrack.c` - Fixed type cast for Get_Dos_Date()
 
 ### Core Libraries (slib - ✅ Complete)
 
@@ -168,13 +184,15 @@ make config_install
 - `slib/prmapi.h` - Added prm.h include for struct definitions
 - `slib/strbuf.h` - Added compiler.h and prog.h includes
 
-### Message API (msgapi - ⚠️ In Progress)
+### Message API (msgapi - ✅ Complete)
 
-- `msgapi/api_sq.h` - Added includes for types
+- `msgapi/api_sq.h` - Added includes for types (prog.h, msgapi.h)
+- `msgapi/api_sdm.h` - Added includes (prog.h, msgapi.h), fixed header guard typo
+- `msgapi/api_sdmp.h` - Added MSGAPI macro to forward declarations, struct _omsg forward declaration
 - `msgapi/sq_area.c` - POSIX constants
 - `msgapi/sq_read.c` - Forward declarations, fixed cast
 - `msgapi/sq_write.c` - Forward declaration for write_xmsg, removed invalid cast
-- `msgapi/api_sdm.c` - Added 8 forward declarations (partial fix, more work needed)
+- `msgapi/api_sdm.c` - POSIX constants, fixed all type conflicts
 
 ### Unix Compatibility Layer (unix - ✅ Complete)
 
