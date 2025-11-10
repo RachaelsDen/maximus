@@ -23,12 +23,12 @@
 #include "areaapi.h"
 
 #ifndef ORACLE
-extern HAF haf; /* Handle for farea.dat */
-extern HAF ham; /* Handle for marea.dat */
+extrn HAF haf; /* Handle for farea.dat */
+extrn HAF ham; /* Handle for marea.dat */
 #endif
 
-extern MAH mah; /* Current message area */
-extern FAH fah; /* Current file area */
+extrn MAH mah; /* Current message area */
+extrn FAH fah; /* Current file area */
 
 #if 0
 extern struct _area area;    /* AREA.DAT entry for this area                */
