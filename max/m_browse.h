@@ -21,7 +21,8 @@
 #define __M_BROWSE_H_DEFINED
 
 #include "prog.h"      /* For word, dword types */
-#include "max_msg.h"   /* For BROWSE type */
+#include "max_msg.h"   /* For message area types */
+#include "api_brow.h"  /* For BROWSE and SEARCH struct definitions */
 
 /* Linked list structure for updating lastread pointers after a QWK         *
  * download.                                                                */
