@@ -19,6 +19,9 @@
 
 /* $Id: api_sdmp.h,v 1.2 2003/06/11 14:03:06 wesgarland Exp $ */
 
+/* Forward declaration for struct _omsg (defined in old_msg.h) */
+struct _omsg;
+
 static sword MAPIENTRY SdmCloseArea(HAREA mh);
 static HMSG MAPIENTRY SdmOpenMsg(HAREA mh, word mode, dword msgnum);
 static sword MAPIENTRY SdmCloseMsg(HMSG msgh);
@@ -39,9 +42,9 @@ static dword MAPIENTRY SdmGetTextLen(HMSG msgh);
 static dword MAPIENTRY SdmGetCtrlLen(HMSG msgh);
 static UMSGID MAPIENTRY SdmGetNextUid(HAREA ha);
 
-static void Convert_Fmsg_To_Xmsg(struct _omsg *fmsg, PXMSG msg, word def_zone);
-static void Convert_Xmsg_To_Fmsg(PXMSG msg, struct _omsg *fmsg);
-static void Init_Xmsg(PXMSG msg);
+static void MSGAPI Convert_Fmsg_To_Xmsg(struct _omsg *fmsg, PXMSG msg, word def_zone);
+static void MSGAPI Convert_Xmsg_To_Fmsg(PXMSG msg, struct _omsg *fmsg);
+static void MSGAPI Init_Xmsg(PXMSG msg);
 static sword near _SdmRescanArea(HAREA mh);
 static sword near _Grab_Clen(HMSG msgh);
 static void MAPIENTRY WriteToFd(byte OS2FAR *str);

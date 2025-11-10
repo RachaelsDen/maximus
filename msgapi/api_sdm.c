@@ -334,7 +334,7 @@ static HMSG MAPIENTRY SdmOpenMsg(HAREA mh, word mode, dword msgnum)
     _nopen_cheat = TRUE; /* Use fast "cheat" mode for creating msgs */
 
     if ((handle = sopen(msgname, filemode | O_BINARY | O_NOINHERIT, SH_DENYNONE,
-                        S_IREAD | S_IWRITE)) == -1)
+                        S_IRUSR | S_IWUSR)) == -1)
     {
         if (filemode & O_CREAT)
             msgapierr = MERR_BADF;
