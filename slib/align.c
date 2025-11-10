@@ -4,12 +4,16 @@
  *  @note This is NOT good programming style, but it is
  *        necessary to do this to avoid changing large
  *        parts of Maximus to run on non-sloppy (e.g.
- *	  sparc) processors that demand proper alignment
+ *	 ï¿½sparc) processors that demand proper alignment
  *        of certain types.
  */
 
+#define _GNU_SOURCE  /* For memalign() */
+
 #include "compiler.h"
 #include <stdlib.h>
+#include <malloc.h>  /* For memalign() */
+#include <string.h>  /* For memcpy() */
 
 void NoMem();
 
