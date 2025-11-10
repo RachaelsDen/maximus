@@ -1,5 +1,6 @@
 #ifndef _WINCOMM_H
 #include <termios.h>
+#include "typedefs.h"  /* For BYTE, WORD, DWORD */
 
 typedef int OSCOMMHANDLE;
 typedef int hfComm;
