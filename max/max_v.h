@@ -63,18 +63,18 @@ struct _proto_str intern_proto[] = {{PROTOCOL_NONE, ""},
 
 #else
 
-extern unsigned char nohibit[];
-extern struct _proto_str intern_proto[];
+extrn unsigned char nohibit[];
+extrn struct _proto_str intern_proto[];
 
 #endif
 
 #ifdef BINK_PROTOCOLS
-extern byte *Txbuf, /* File-transfer TRANSMIT buffer */
+extrn byte *Txbuf, /* File-transfer TRANSMIT buffer */
     *Secbuf;        /* File-transfer RECEIVE buffer */
 #endif
 
-extern unsigned cdecl _stklen;
-extern int cdecl brk_trapped; /* XTRNL variable to hold local ^C count!  */
+extrn unsigned cdecl _stklen;
+extrn int cdecl brk_trapped; /* XTRNL variable to hold local ^C count!  */
 
 /* Routines that puts chars and strings on the local screen.  Varies        *
  * by prm.video, and it's called using the macro lputc().                   */
@@ -85,21 +85,21 @@ typedef void(_stdc *std_arg_charstar)(char *);
 extern void(_stdc *local_putc)(int ch) IS((std_arg_int)fputchar);
 extern void(_stdc *local_puts)(char *s) IS((std_arg_charstar)putss);
 
-extern struct m_pointers prm;          /* Everything in the .CTL/PRM file        */
-extern struct _arcinfo *ari;           /* Archiving programs                     */
-extern struct _usr usr;                /* Current user!                          */
-extern struct _usr origusr;            /* User record, as read when we started   */
-extern struct _bbs_stats bstats;       /* BBS statistics file                    */
-extern union stamp_combo new_date;     /* Date for F*, L* new files listing      */
-extern union stamp_combo date_newfile; /* User's original new-files-date value*/
-extern union stamp_combo scRestrict;   /* Only DL msgs newer than this date     */
+extrn struct m_pointers prm;          /* Everything in the .CTL/PRM file        */
+extrn struct _arcinfo *ari;           /* Archiving programs                     */
+extrn struct _usr usr;                /* Current user!                          */
+extrn struct _usr origusr;            /* User record, as read when we started   */
+extrn struct _bbs_stats bstats;       /* BBS statistics file                    */
+extrn union stamp_combo new_date;     /* Date for F*, L* new files listing      */
+extrn union stamp_combo date_newfile; /* User's original new-files-date value*/
+extrn union stamp_combo scRestrict;   /* Only DL msgs newer than this date     */
 
 #ifndef BINK_PROTOCOLS
-extern word *crctab;  /* 16-bit CRC table                       */
-extern dword *cr3tab; /* 32-bit CRC table                       */
+extrn word *crctab;  /* 16-bit CRC table                       */
+extrn dword *cr3tab; /* 32-bit CRC table                       */
 #endif
 
-extern FILE *chatlog;
+extrn FILE *chatlog;
 
 extern VWIN *win IS(NULL);      /* The main screen window                   */
 extern VWIN *dspwin IS(NULL);   /* Display window ("above" normal screen)   */
@@ -289,167 +289,167 @@ extern char err_no_key[] IS("Error!  Key file MAXIMUS.KEY does not exist or is i
 #endif
 
 /**/
-extern char *gkey_info; /* Pointer to key info */
-extern byte menuhelp;
+extrn char *gkey_info; /* Pointer to key info */
+extrn byte menuhelp;
 extern byte finished IS(FALSE);
 extern char *offsets IS(NULL);  /* Pointer to PRM info.            */
 extern char *menuname IS(NULL); /* Pointer to mname[] in MAX_MENU  */
 extern char *original_prompt IS(NULL);
-extern char *orig_path2[LEN(MAX_DRIVES)];       /* What dir we started in, alt1    */
-extern char *orig_path3[LEN(MAX_DRIVES)];       /* What dir we started in, alt2    */
+extrn char *orig_path2[LEN(MAX_DRIVES)];       /* What dir we started in, alt1    */
+extrn char *orig_path3[LEN(MAX_DRIVES)];       /* What dir we started in, alt2    */
 extern char main_menu[MAX_MENUNAME] IS("MAIN"); /* unless overriden in max.prm */
 extern char files_bbs[13] IS("files.bbs");
 extern char sfiles[13] IS("files");
 extern char last_onexit[LEN(PATHLEN)] IS("");
-extern char orig_disk2;             /* Disk drive we started from, alt1*/
-extern char orig_disk3;             /* Disk drive we started from, alt2*/
-extern char original_path[PATHLEN]; /* The DRIVE/PATH we started from  */
+extrn char orig_disk2;             /* Disk drive we started from, alt1*/
+extrn char orig_disk3;             /* Disk drive we started from, alt2*/
+extrn char original_path[PATHLEN]; /* The DRIVE/PATH we started from  */
 #ifdef UNIX
 extern char prmname[LEN(80)] IS("etc/max.prm"); /* Name of current .PRM file     */
 #else
 extern char prmname[LEN(80)] IS("max.prm"); /* Name of current .PRM file     */
 #endif
-extern char searchfor[LEN(BUFLEN)]; /* Text to search FILES.BBS for    */
-extern char log_name[LEN(80)];      /* Name of log file                */
-extern char menupath[LEN(80)];      /* Path to the current menu files. */
+extrn char searchfor[LEN(BUFLEN)]; /* Text to search FILES.BBS for    */
+extrn char log_name[LEN(80)];      /* Name of log file                */
+extrn char menupath[LEN(80)];      /* Path to the current menu files. */
                                    /* Can be mod'ed by barricades.    */
-extern char rippath[LEN(80)];       /* Path to the current rip files.  */
+extrn char rippath[LEN(80)];       /* Path to the current rip files.  */
 
 #ifdef MCP
-extern char szMcpPipe[LEN(80)]; /* Pipe for MCP                    */
+extrn char szMcpPipe[LEN(80)]; /* Pipe for MCP                    */
 #endif
 
-extern char fix_menupath[LEN(MAX_MENUNAME)]; /* Name to adjust menupath to  */
-extern char firstname[LEN(36)];              /* User's first name.              */
-extern union stamp_combo next_ludate;        /* Ludate to insert at logoff      */
-extern char last_readln[MAXLEN + 1];
-extern byte linebuf[LEN(BUFLEN + 1)];       /* Line input bfr for stacked cmds */
-extern char arq_info[ARQ_LEN];              /* MNP/V42b info                   */
-extern char usrname[LEN(sizeof(usr.name))]; /* Name/alias of current user   */
+extrn char fix_menupath[LEN(MAX_MENUNAME)]; /* Name to adjust menupath to  */
+extrn char firstname[LEN(36)];              /* User's first name.              */
+extrn union stamp_combo next_ludate;        /* Ludate to insert at logoff      */
+extrn char last_readln[MAXLEN + 1];
+extrn byte linebuf[LEN(BUFLEN + 1)];       /* Line input bfr for stacked cmds */
+extrn char arq_info[ARQ_LEN];              /* MNP/V42b info                   */
+extrn char usrname[LEN(sizeof(usr.name))]; /* Name/alias of current user   */
 
-extern char local;                     /* If we're in local mode          */
-extern char displaymode;               /* Local display mode              */
-extern char snoop;                     /* If we see what's on the screen. */
-extern char keyboard;                  /* If we can type.  Implies snoop. */
-extern byte task_num;                  /* What our task number is         */
-extern byte fSetTask;                  /* True if -n spec'd on cmd line   */
-extern char no_local_output;           /* Local output suppressed         */
-extern char no_remote_output;          /* Remove output suppressed        */
-extern byte event_num;                 /* Which event file to use?        */
-extern char caller_online;             /* If caller currently on-line     */
-extern char do_timecheck;              /* If we check the user's time     */
-extern char fossil_initd;              /* If the FOSSIl has been started  */
+extrn char local;                     /* If we're in local mode          */
+extrn char displaymode;               /* Local display mode              */
+extrn char snoop;                     /* If we see what's on the screen. */
+extrn char keyboard;                  /* If we can type.  Implies snoop. */
+extrn byte task_num;                  /* What our task number is         */
+extrn byte fSetTask;                  /* True if -n spec'd on cmd line   */
+extrn char no_local_output;           /* Local output suppressed         */
+extrn char no_remote_output;          /* Remove output suppressed        */
+extrn byte event_num;                 /* Which event file to use?        */
+extrn char caller_online;             /* If caller currently on-line     */
+extrn char do_timecheck;              /* If we check the user's time     */
+extrn char fossil_initd;              /* If the FOSSIl has been started  */
 extern char curattr IS(DEFAULT_ATTR);  /* Current local screen attribute  */
 extern char mdm_attr IS(DEFAULT_ATTR); /* Current remote screen attribute */
-extern byte lastmenu;                  /* The last ^OR response           */
-extern char protocol_letter;           /* First letter of xtrnl protocol  */
-extern char written_echomail;          /* User wrote echomail message?    */
-extern char written_matrix;            /* User wrote matrix message?      */
-extern char written_local;             /* User wrote local message?       */
-extern char written_conf;              /* User wrote conference message?  */
-extern char sent_time_5left;           /* If issued a "5minleft" warn     */
-extern char sent_time_almostup;        /* If issued a "t.almostup" warn   */
-extern char barricade_ok;              /* If  barricade pwd was asked     */
-extern char wrap;                      /* If the current line has wrapped */
-extern char first_search;              /* 1st area srched with L)ocate    */
-extern char inmagnet;                  /* If we're in the MagnEt editor   */
-extern char multitasker;               /* Which Mtask we're under         */
-extern char restart_system;            /* If restarting the current user  */
-extern char erl;                       /* Errorlevel exited with          */
-extern char in_file_xfer;              /* Force logit() calls to display  */
-extern char in_mcheck;                 /* If we're in the mailchecker     */
-extern char create_userbbs;            /* Create USER.BBS?                */
-extern char this_logon_bad;            /* If user failed current logon    */
-extern char inchat;                    /* If we're in sysop chat mode     */
-extern char locked;                    /* If priv level is locked         */
-extern char chatreq;                   /* If user req'd chat this call    */
-extern char do_useredit;               /* Run user-editor at startup      */
-extern char fthru_yuhu;                /* If YooHoo has fallen through    */
-extern char shut_up;                   /* If timelimit should be shut up  */
-extern char nowrite_lastuser;          /* Don't write LASTUSxx.BBS at exit*/
-extern char ul_no_space;               /* Ran out of space during upload  */
-extern char dsp_set;                   /* If 'displaymode' has been set   */
-extern char mn_dirty;                  /* If menuname var has changed     */
-extern char no_zmodem;                 /* Turn off internal Zmodem        */
-extern char no_shell;                  /* Turn off local Alt-J command    */
-extern char no_video;                  /* No local video                  */
-extern char mcp_video;                 /* Send video via pipes            */
-extern char last_maxed;                /* If last editor was MaxEd        */
-extern char in_node_chat;              /* If user is in multi-node chat   */
-extern char chkmail_reply;             /* If we're doing a CheckMail reply*/
-extern char do_caller_vanished;        /* If caller hung up               */
-extern char waitforcaller;             /* Wait and grab caller ourselves  */
-extern char in_wfc;                    /* Currently waiting for a caller  */
-extern char in_msghibit;               /* In a msg action that might permit hibits */
-extern char log_wfc;                   /* Put log msgs in WFC window      */
-extern char no_dcd_check;              /* Disable DCD detection           */
-extern char port_is_device;            /* True if 'port' contains a       *
+extrn byte lastmenu;                  /* The last ^OR response           */
+extrn char protocol_letter;           /* First letter of xtrnl protocol  */
+extrn char written_echomail;          /* User wrote echomail message?    */
+extrn char written_matrix;            /* User wrote matrix message?      */
+extrn char written_local;             /* User wrote local message?       */
+extrn char written_conf;              /* User wrote conference message?  */
+extrn char sent_time_5left;           /* If issued a "5minleft" warn     */
+extrn char sent_time_almostup;        /* If issued a "t.almostup" warn   */
+extrn char barricade_ok;              /* If  barricade pwd was asked     */
+extrn char wrap;                      /* If the current line has wrapped */
+extrn char first_search;              /* 1st area srched with L)ocate    */
+extrn char inmagnet;                  /* If we're in the MagnEt editor   */
+extrn char multitasker;               /* Which Mtask we're under         */
+extrn char restart_system;            /* If restarting the current user  */
+extrn char erl;                       /* Errorlevel exited with          */
+extrn char in_file_xfer;              /* Force logit() calls to display  */
+extrn char in_mcheck;                 /* If we're in the mailchecker     */
+extrn char create_userbbs;            /* Create USER.BBS?                */
+extrn char this_logon_bad;            /* If user failed current logon    */
+extrn char inchat;                    /* If we're in sysop chat mode     */
+extrn char locked;                    /* If priv level is locked         */
+extrn char chatreq;                   /* If user req'd chat this call    */
+extrn char do_useredit;               /* Run user-editor at startup      */
+extrn char fthru_yuhu;                /* If YooHoo has fallen through    */
+extrn char shut_up;                   /* If timelimit should be shut up  */
+extrn char nowrite_lastuser;          /* Don't write LASTUSxx.BBS at exit*/
+extrn char ul_no_space;               /* Ran out of space during upload  */
+extrn char dsp_set;                   /* If 'displaymode' has been set   */
+extrn char mn_dirty;                  /* If menuname var has changed     */
+extrn char no_zmodem;                 /* Turn off internal Zmodem        */
+extrn char no_shell;                  /* Turn off local Alt-J command    */
+extrn char no_video;                  /* No local video                  */
+extrn char mcp_video;                 /* Send video via pipes            */
+extrn char last_maxed;                /* If last editor was MaxEd        */
+extrn char in_node_chat;              /* If user is in multi-node chat   */
+extrn char chkmail_reply;             /* If we're doing a CheckMail reply*/
+extrn char do_caller_vanished;        /* If caller hung up               */
+extrn char waitforcaller;             /* Wait and grab caller ourselves  */
+extrn char in_wfc;                    /* Currently waiting for a caller  */
+extrn char in_msghibit;               /* In a msg action that might permit hibits */
+extrn char log_wfc;                   /* Put log msgs in WFC window      */
+extrn char no_dcd_check;              /* Disable DCD detection           */
+extrn char port_is_device;            /* True if 'port' contains a       *
                                        * COMx port number, not a file    *
                                        * handle.                         */
 #ifdef BINK_PROTOCOLS
-extern char got_dupe; /* If dupe file rec'd via xm/ym/sea*/
+extrn char got_dupe; /* If dupe file rec'd via xm/ym/sea*/
 #endif
-extern char debug_ovl; /* Debug overlays?                 */
-extern byte cYes;      /* Static vars for y/n/= prompts   */
-extern byte cNo;
-extern byte cNonStop;
-extern char *szHeyDude; /* [apb] template */
-extern char *szPageMsg; /* chat page template */
+extrn char debug_ovl; /* Debug overlays?                 */
+extrn byte cYes;      /* Static vars for y/n/= prompts   */
+extrn byte cNo;
+extrn byte cNonStop;
+extrn char *szHeyDude; /* [apb] template */
+extrn char *szPageMsg; /* chat page template */
 
-extern int cdecl port; /* Actual com port we're using     */
+extrn int cdecl port; /* Actual com port we're using     */
 
-extern int fLoggedOn;      /* Has user logged on yet?         */
-extern int cls;            /* Class num. of current user      */
-extern int matches;        /* # of matches in FILES.BBS       */
-extern int menu_lines;     /* #of lines menu options take up  */
-extern int next_menu_char; /* Execute this char as the next   *
+extrn int fLoggedOn;      /* Has user logged on yet?         */
+extrn int cls;            /* Class num. of current user      */
+extrn int matches;        /* # of matches in FILES.BBS       */
+extrn int menu_lines;     /* #of lines menu options take up  */
+extrn int next_menu_char; /* Execute this char as the next   *
                            * menu option (from MoreYnns_Read)*/
 
 /*extrn int last IS(MENU_OTHER);*/ /* Last menu-file displayed        */
-extern int lockpriv;                /* The current user's locked priv  */
+extrn int lockpriv;                /* The current user's locked priv  */
 extern byte debuglog IS(FALSE);     /* debug statements in log         */
-extern word num_yells;              /* Number of yells                 */
-extern int datelen;                 /* Max length of MsgDate() output  */
+extrn word num_yells;              /* Number of yells                 */
+extrn int datelen;                 /* Max length of MsgDate() output  */
 
-extern unsigned long timestart;     /* When Max execution started      */
-extern unsigned long timeon;        /* Timestmp whn usr got on systm   */
-extern unsigned long timeoff;       /* Timestmp whn usr mst be off sys */
-extern unsigned long getoff;        /* timestart+(max_time*60L)        */
-extern unsigned long max_time;      /* -t parameter                    */
-extern unsigned long baud;          /* User's current baud rate        */
-extern unsigned long last_bps;      /* Transfer rate of last file sent */
-extern unsigned long input_timeout; /* Timer for caller sleep timeout  */
-extern word timeout_tics;           /* Default # of csecs before t'out */
+extrn unsigned long timestart;     /* When Max execution started      */
+extrn unsigned long timeon;        /* Timestmp whn usr got on systm   */
+extrn unsigned long timeoff;       /* Timestmp whn usr mst be off sys */
+extrn unsigned long getoff;        /* timestart+(max_time*60L)        */
+extrn unsigned long max_time;      /* -t parameter                    */
+extrn unsigned long baud;          /* User's current baud rate        */
+extrn unsigned long last_bps;      /* Transfer rate of last file sent */
+extrn unsigned long input_timeout; /* Timer for caller sleep timeout  */
+extrn word timeout_tics;           /* Default # of csecs before t'out */
 
-extern long ultoday;        /* Kbytes uploaded on this call    */
-extern dword last_lastread; /* Initial val of lread ptr        */
+extrn long ultoday;        /* Kbytes uploaded on this call    */
+extrn dword last_lastread; /* Initial val of lread ptr        */
 
-extern long rst_offset; /* Used with -r and .BBS file      */
+extrn long rst_offset; /* Used with -r and .BBS file      */
 
-extern unsigned int current_baud; /* Current baud, in format         */
+extrn unsigned int current_baud; /* Current baud, in format         */
                                  /* acceptable by mdm_baud call.    */
                                  /* Use the normal `baud' if you    */
                                  /* need the numeric value.         */
 
-extern dword steady_baud_l;      /* Baud rate (below is mask)       */
-extern unsigned int steady_baud; /* steady_baud is the baud mask    */
+extrn dword steady_baud_l;      /* Baud rate (below is mask)       */
+extrn unsigned int steady_baud; /* steady_baud is the baud mask    */
                                 /* to lock the COM port at, if     */
                                 /* any.                            */
 
-extern unsigned char display_line; /* # of lines since last More[Y,n] */
-extern unsigned char display_col;  /* Column# since last More[Y,n]    */
-extern unsigned char current_line; /* Actual line of screen we're on  */
-extern unsigned char current_col;  /* Actual col of screen we're on   */
+extrn unsigned char display_line; /* # of lines since last More[Y,n] */
+extrn unsigned char display_col;  /* Column# since last More[Y,n]    */
+extrn unsigned char current_line; /* Actual line of screen we're on  */
+extrn unsigned char current_col;  /* Actual col of screen we're on   */
 
-extern struct _maxcol col;         /* Max colour information          */
-extern int last_protocol;          /* Last protocol download          */
+extrn struct _maxcol col;         /* Max colour information          */
+extrn int last_protocol;          /* Last protocol download          */
 extern byte fFlow IS(FALSE);       /* If flow control restriction     */
 extern byte no_dtr_drop IS(FALSE); /* If we're not to drop DTR        */
 extern byte no_traptrap IS(FALSE); /* Don't trap traps (OS/2)         */
 
-extern PCLH pclh; /* Class information               */
+extrn PCLH pclh; /* Class information               */
 
-extern struct callinfo sci; /* Caller information              */
+extrn struct callinfo sci; /* Caller information              */
 
 #ifndef OS_2
 extern void(far pascal *sleeper)(void) IS(NULL); /* Give away timeslice f()*/

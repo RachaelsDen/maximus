@@ -24,10 +24,10 @@
 #include "prog.h"  /* For byte, word types, LEN macro */
 #include "max.h"   /* For MAX_LINES constant */
 
-extern jmp_buf jumpto; /* "Jump" location for MaxEd/BORED errors */
-extern byte *screen[LEN(MAX_LINES + 2)];
-extern word num_lines;
-extern word max_lines; /* Virtual maximum number of msg. lines */
-extern byte usrwidth;  /* Effective screen width for editors */
+extrn jmp_buf jumpto; /* "Jump" location for MaxEd/BORED errors */
+extrn byte *screen[LEN(MAX_LINES + 2)];
+extrn word num_lines;
+extrn word max_lines; /* Virtual maximum number of msg. lines */
+extrn byte usrwidth;  /* Effective screen width for editors */
 
 #endif /* __MAX_EDIT_H_DEFINED */

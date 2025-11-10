@@ -4,7 +4,7 @@ COMP=unix
 PLATFORM=linux
 
 # Build platform: Linux max 6.14.11-4-pve #1 SMP PREEMPT_DYNAMIC PMX 6.14.11-4 (2025-10-10T08:04Z) x86_64 GNU/Linux
-# Configured Mon Nov 10 06:42:37 AM PST 2025 by kgoodwin
+# Configured Mon Nov 10 12:57:09 PM PST 2025 by kgoodwin
 
 CC		= gcc
 CXX		= gcc
