@@ -2,8 +2,12 @@
 
 # Script to add required MAX_* defines and protod.h to all .c files in max directory
 # that are missing them
+#
+# NOTE: This script requires bash (not just sh) for the BASH_SOURCE variable used below
+# to correctly locate the script directory regardless of how it's invoked.
 
 # Get the directory where this script is located
+# Uses BASH_SOURCE[0] (bash-specific) to get script path even when sourced
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Change to max directory (relative to script location)
