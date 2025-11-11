@@ -56,6 +56,7 @@ add_executable(max ${MAX_MAIN} ${MAX_SOURCES} date.c)
 
 target_include_directories(max PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/slib
     ${CMAKE_SOURCE_DIR}/unix/include
     ${CMAKE_SOURCE_DIR}/msgapi

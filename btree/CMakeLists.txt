@@ -31,6 +31,7 @@ add_library(maxbt SHARED ${BTREE_SOURCES})
 
 target_include_directories(maxbt PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/slib
     ${CMAKE_SOURCE_DIR}/unix/include
 )
@@ -49,6 +50,7 @@ add_library(maxdb SHARED ${TRACK_SOURCES})
 
 target_include_directories(maxdb PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/slib
     ${CMAKE_SOURCE_DIR}/unix/include
 )

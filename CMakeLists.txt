@@ -66,16 +66,17 @@ else()
     message(STATUS "Endianness: Little endian")
 endif()
 
-# Generate compiler_details.h
+# Generate compiler_details.h in build directory
 configure_file(
     "${CMAKE_SOURCE_DIR}/cmake/compiler_details.h.in"
-    "${CMAKE_SOURCE_DIR}/slib/compiler_details.h"
+    "${CMAKE_BINARY_DIR}/slib/compiler_details.h"
     @ONLY
 )
 
 # Common include directories
 set(MAXIMUS_INCLUDE_DIRS
     ${CMAKE_SOURCE_DIR}/unix/include
+    ${CMAKE_BINARY_DIR}/slib  # Generated headers (compiler_details.h)
     ${CMAKE_SOURCE_DIR}/slib
     ${CMAKE_SOURCE_DIR}/msgapi
     ${CMAKE_SOURCE_DIR}/btree

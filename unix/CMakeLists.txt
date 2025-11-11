@@ -19,6 +19,7 @@ add_library(compat SHARED ${COMPAT_SOURCES})
 
 target_include_directories(compat PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/slib
 )
 

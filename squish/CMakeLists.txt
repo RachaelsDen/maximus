@@ -27,6 +27,7 @@ add_executable(squish ${SQUISH_SOURCES})
 
 target_include_directories(squish PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/slib
     ${CMAKE_SOURCE_DIR}/unix/include
     ${CMAKE_SOURCE_DIR}/msgapi
@@ -44,6 +45,7 @@ target_link_libraries(squish
 # Standard include directories for squish utilities
 set(SQUISH_UTIL_INCLUDES
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/slib
     ${CMAKE_SOURCE_DIR}/unix/include
     ${CMAKE_SOURCE_DIR}/msgapi
@@ -81,6 +83,7 @@ target_link_libraries(sqreidx -Wl,--start-group msgapi maxlib -Wl,--end-group co
 # Build shared libraries
 add_library(killrcat SHARED killrcat.c)
 target_include_directories(killrcat PRIVATE
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/slib
     ${CMAKE_SOURCE_DIR}/unix/include
     ${CMAKE_SOURCE_DIR}/msgapi
@@ -93,6 +96,7 @@ set_target_properties(killrcat PROPERTIES
 
 add_library(msgtrack SHARED msgtrack.c)
 target_include_directories(msgtrack PRIVATE
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/slib
     ${CMAKE_SOURCE_DIR}/unix/include
     ${CMAKE_SOURCE_DIR}/msgapi

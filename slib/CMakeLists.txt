@@ -40,6 +40,7 @@ add_library(maxlib SHARED ${SLIB_SOURCES})
 
 target_include_directories(maxlib PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/unix/include
     ${CMAKE_SOURCE_DIR}/max
     ${CMAKE_SOURCE_DIR}/msgapi
@@ -56,6 +57,7 @@ add_library(smserial SHARED smserial.c)
 
 target_include_directories(smserial PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/unix/include
 )
 

@@ -24,6 +24,7 @@ add_library(msgapi SHARED ${MSGAPI_SOURCES})
 
 target_include_directories(msgapi PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/slib
     ${CMAKE_SOURCE_DIR}/unix/include
 )

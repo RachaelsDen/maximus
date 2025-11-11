@@ -4,6 +4,7 @@
 # Standard include directories for utility programs
 set(UTIL_INCLUDES
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/slib  # For generated compiler_details.h
     ${CMAKE_SOURCE_DIR}/slib
     ${CMAKE_SOURCE_DIR}/unix/include
     ${CMAKE_SOURCE_DIR}/msgapi
