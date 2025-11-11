@@ -19,7 +19,8 @@ option(BUILD_UTILITIES "Build utility programs" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
 # Installation paths (mimics ./configure --prefix behavior)
-set(CMAKE_INSTALL_PREFIX "/var/max" CACHE PATH "Installation prefix")
+# CMAKE_INSTALL_PREFIX defaults to /usr/local (standard CMake behavior)
+# Override with: cmake -DCMAKE_INSTALL_PREFIX=/var/max
 set(MAXIMUS_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Binary installation directory")
 set(MAXIMUS_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Library installation directory")
 set(MAXIMUS_ETC_DIR "${CMAKE_INSTALL_PREFIX}/etc" CACHE PATH "Configuration installation directory")
@@ -167,22 +168,34 @@ configure_file(
     @ONLY
 )
 
+configure_file(
+    ${CMAKE_SOURCE_DIR}/cmake/CreateUserDB.cmake.in
+    ${CMAKE_BINARY_DIR}/CreateUserDB.cmake
+    @ONLY
+)
+
 add_custom_target(reconfig
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/Reconfig.cmake
     COMMENT "Recompiling configuration files"
     VERBATIM
 )
 
+# Installation and configuration compilation target
+# Note: Commands execute sequentially and stop on first failure
 add_custom_target(config_install
+    COMMAND ${CMAKE_COMMAND} -E echo "Step 1: Installing files..."
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E echo "Step 2: Compiling configuration files..."
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target reconfig
+    COMMAND ${CMAKE_COMMAND} -E echo "Configuration installation complete."
     COMMENT "Installing and compiling configuration files"
     VERBATIM
 )
 
 # Create user database if needed (run after config_install)
+# Uses portable CMake script instead of shell-specific syntax
 add_custom_target(create_userdb
-    COMMAND test -f ${CMAKE_INSTALL_PREFIX}/etc/user.bbs || (cd ${CMAKE_INSTALL_PREFIX} && bin/max etc/max -c)
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/CreateUserDB.cmake
     COMMENT "Creating user.bbs database if needed"
     VERBATIM
 )

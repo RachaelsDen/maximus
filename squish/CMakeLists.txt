@@ -41,26 +41,41 @@ target_link_libraries(squish
     ${CURSES_LIBRARIES}
 )
 
+# Standard include directories for squish utilities
+set(SQUISH_UTIL_INCLUDES
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/slib
+    ${CMAKE_SOURCE_DIR}/unix/include
+    ${CMAKE_SOURCE_DIR}/msgapi
+)
+
 # Build utility programs
 add_executable(sqfix sqfix.c)
+target_include_directories(sqfix PRIVATE ${SQUISH_UTIL_INCLUDES})
 target_link_libraries(sqfix -Wl,--start-group msgapi maxlib -Wl,--end-group compat ${CURSES_LIBRARIES})
 
 add_executable(sqpack sqpack.c)
+target_include_directories(sqpack PRIVATE ${SQUISH_UTIL_INCLUDES})
 target_link_libraries(sqpack -Wl,--start-group msgapi maxlib -Wl,--end-group compat ${CURSES_LIBRARIES})
 
 add_executable(sqconv sqconv.c)
+target_include_directories(sqconv PRIVATE ${SQUISH_UTIL_INCLUDES})
 target_link_libraries(sqconv -Wl,--start-group msgapi maxlib -Wl,--end-group compat ${CURSES_LIBRARIES})
 
 add_executable(sqinfo sqinfo.c)
+target_include_directories(sqinfo PRIVATE ${SQUISH_UTIL_INCLUDES})
 target_link_libraries(sqinfo -Wl,--start-group msgapi maxlib -Wl,--end-group compat ${CURSES_LIBRARIES})
 
 add_executable(sqset sqset.c)
+target_include_directories(sqset PRIVATE ${SQUISH_UTIL_INCLUDES})
 target_link_libraries(sqset -Wl,--start-group msgapi maxlib -Wl,--end-group compat ${CURSES_LIBRARIES})
 
 add_executable(sstat sstat.c)
+target_include_directories(sstat PRIVATE ${SQUISH_UTIL_INCLUDES})
 target_link_libraries(sstat -Wl,--start-group msgapi maxlib -Wl,--end-group compat ${CURSES_LIBRARIES})
 
 add_executable(sqreidx sqreidx.c)
+target_include_directories(sqreidx PRIVATE ${SQUISH_UTIL_INCLUDES})
 target_link_libraries(sqreidx -Wl,--start-group msgapi maxlib -Wl,--end-group compat ${CURSES_LIBRARIES})
 
 # Build shared libraries

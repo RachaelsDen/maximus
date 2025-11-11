@@ -235,14 +235,13 @@ void pascal End_Shadow(void);
 /* endian definition from configure */
 #include "compiler_details.h"
 
-/* Note: compiler_details.h now defines MAXIMUS_BIG_ENDIAN or MAXIMUS_LITTLE_ENDIAN
- * and provides backward compatibility for BIG_ENDIAN/LITTLE_ENDIAN if not already
- * defined by system headers. The validation below is redundant but kept for safety. */
+/* Note: compiler_details.h defines exactly one of:
+ *   MAXIMUS_BIG_ENDIAN or MAXIMUS_LITTLE_ENDIAN
+ * The validation checks below provide additional safety. */
 
 #if !defined(MAXIMUS_BIG_ENDIAN) && !defined(MAXIMUS_LITTLE_ENDIAN) && !defined(UNIX)
-/* Do OS/2, DOS or Windows run on non-Intel, non-Alpha CPUs?? */
+/* Fallback for non-UNIX platforms (OS/2, DOS, Windows are little-endian) */
 #define MAXIMUS_LITTLE_ENDIAN
-#define LITTLE_ENDIAN
 #endif
 
 #if defined(MAXIMUS_BIG_ENDIAN) && defined(MAXIMUS_LITTLE_ENDIAN)

@@ -21,23 +21,33 @@ if(NOT RESULT EQUAL 0)
 endif()
 
 message(STATUS " - Compiling MECCA help files")
-execute_process(
-    COMMAND ${BIN}/mecca ${ETC}/help/*.mec
-    WORKING_DIRECTORY ${PREFIX}
-    RESULT_VARIABLE RESULT
-)
-if(NOT RESULT EQUAL 0)
-    message(WARNING "Failed to compile some MECCA help files")
+file(GLOB HELP_MECCA_FILES "${ETC}/help/*.mec")
+if(HELP_MECCA_FILES)
+    execute_process(
+        COMMAND ${BIN}/mecca ${HELP_MECCA_FILES}
+        WORKING_DIRECTORY ${PREFIX}
+        RESULT_VARIABLE RESULT
+    )
+    if(NOT RESULT EQUAL 0)
+        message(WARNING "Failed to compile some MECCA help files")
+    endif()
+else()
+    message(STATUS "   No .mec files found in ${ETC}/help/")
 endif()
 
 message(STATUS " - Compiling misc MECCA files")
-execute_process(
-    COMMAND ${BIN}/mecca ${ETC}/misc/*.mec
-    WORKING_DIRECTORY ${PREFIX}
-    RESULT_VARIABLE RESULT
-)
-if(NOT RESULT EQUAL 0)
-    message(WARNING "Failed to compile some misc MECCA files")
+file(GLOB MISC_MECCA_FILES "${ETC}/misc/*.mec")
+if(MISC_MECCA_FILES)
+    execute_process(
+        COMMAND ${BIN}/mecca ${MISC_MECCA_FILES}
+        WORKING_DIRECTORY ${PREFIX}
+        RESULT_VARIABLE RESULT
+    )
+    if(NOT RESULT EQUAL 0)
+        message(WARNING "Failed to compile some misc MECCA files")
+    endif()
+else()
+    message(STATUS "   No .mec files found in ${ETC}/misc/")
 endif()
 
 message(STATUS " - Compiling max.ctl")

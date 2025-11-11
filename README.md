@@ -406,7 +406,7 @@ GNU General Public License v2 (GPL-2.0)
 
 Copyright © 1989-2003 Lanius Corporation and Scott J. Dudley
 UNIX Port © 2003 Wes Garland
-Modernization © 2025
+Modernization © 2025 Katelyn Goodwin
 
 See `LICENSE` file for full license text.
 
@@ -414,7 +414,11 @@ See `LICENSE` file for full license text.
 
 - **Original Author:** Scott J. Dudley (Lanius Corporation)
 - **UNIX Port:** Wes Garland
-- **2025 Modernization:** Automated tooling + systematic fixes
+- **2025 Modernization:** Katelyn Goodwin
+  - CMake build system migration
+  - GCC 14.2 compatibility fixes
+  - Modern C++ standards compliance
+  - Build system portability improvements
 - **Testing:** Bo Simonsen (Squish validation)
 
 ## Support & Resources

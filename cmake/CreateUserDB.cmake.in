@@ -1,0 +1,32 @@
+# CMake script for creating initial user database
+# This script checks if user.bbs exists and creates it if needed
+
+set(PREFIX "@CMAKE_INSTALL_PREFIX@")
+set(USER_DB "${PREFIX}/etc/user.bbs")
+set(MAX_BIN "${PREFIX}/bin/max")
+set(MAX_CTL "${PREFIX}/etc/max")
+
+if(EXISTS "${USER_DB}")
+    message(STATUS "User database already exists: ${USER_DB}")
+else()
+    message(STATUS "Creating initial user database...")
+    message(STATUS "Running: ${MAX_BIN} ${MAX_CTL} -c")
+
+    execute_process(
+        COMMAND ${MAX_BIN} ${MAX_CTL} -c
+        WORKING_DIRECTORY ${PREFIX}
+        RESULT_VARIABLE RESULT
+        OUTPUT_VARIABLE OUTPUT
+        ERROR_VARIABLE ERROR
+    )
+
+    if(NOT RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to create user database:\n${ERROR}")
+    endif()
+
+    if(EXISTS "${USER_DB}")
+        message(STATUS "User database created successfully: ${USER_DB}")
+    else()
+        message(WARNING "Command completed but ${USER_DB} was not created")
+    endif()
+endif()
