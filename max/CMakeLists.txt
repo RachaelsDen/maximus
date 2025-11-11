@@ -1,0 +1,101 @@
+# max - Maximus BBS main program
+
+# Main object
+set(MAX_MAIN max.c)
+
+# Other runtime sources (from MOBJS in Makefile)
+set(MAX_SOURCES
+    uedit.c ued_cmds.c ued_disp.c
+    display.c disp_dat.c disp_qu.c max_rip.c
+    disp_max.c disp_mis.c med_add.c maxed.c
+    med_scrn.c med_move.c med_del.c med_quot.c
+    med_read.c med_misc.c f_area.c f_con.c
+    f_intrin.c f_isval.c f_kill.c f_locate.c
+    f_misc.c f_over.c f_raw.c f_tag.c
+    f_titles.c f_type.c f_up.c f_logup.c
+    f_xfer.c f_idx.c f_down.c f_hurl.c
+    f_queue.c
+    tagapi.c m_area.c m_browse.c mb_list.c
+    mb_qwk.c mb_qwkup.c m_change.c m_create.c
+    m_editor.c m_editu.c m_enter.c m_for.c
+    m_full.c m_header.c mh_graph.c mh_tty.c
+    m_hurl.c m_inq.c m_intrin.c m_isval.c
+    m_kill.c m_lread.c m_mdate.c m_node.c
+    m_read.c m_reply.c m_save.c m_scan.c
+    m_tag.c mb_novl.c m_upload.c m_xport.c
+    me_misc.c m_edit.c m_misc.c m_restr.c
+    mb_read.c m_util.c m_attach.c l_attach.c
+    t_add.c t_disp.c t_kill.c max_clss.c
+    t_menu.c t_misc.c t_qwk.c t_report.c
+    static.c language.c api_brow.c mex.c
+    mexint.c debug.c events.c max_in.c
+    max_gets.c max_locl.c max_out.c max_outl.c
+    max_outr.c max_wfc.c max_fman.c max_init.c
+    max_mtsk.c max_inif.c max_args.c max_rest.c
+    max_fini.c max_mcmd.c max_misc.c max_cust.c
+    max_menu.c max_rmen.c max_runo.c max_main.c
+    max_chng.c node.c max_log.c max_ocmd.c
+    max_fbbs.c max_bor.c max_cmod.c max_xtrn.c
+    max_fins.c max_chat.c max_cho.c max_bar.c
+    fos.c log.c max_sq.c
+    v7.c joho.c emsi.c fos_dos.c
+    max_prot.c fos_os2.c callinfo.c
+    async.c medinit.c os2.c dos.c
+    thunk.c asyncnt.c
+    max2priv.c mexintu.c mexstat.c mexfarea.c
+    mexcall.c mexoutp.c mextime.c mexlang.c
+    mexrip.c mexstr.c mexmarea.c mexfile.c
+    mexclass.c mexuser.c mexinp.c mextag.c
+    mexffind.c mexxtrn.c mexrtl.c max_accs.c
+    m_input.c m_lines.c f_okay.c atexit.c
+    cppmain.cc
+)
+
+# Build max executable
+add_executable(max ${MAX_MAIN} ${MAX_SOURCES} date.c)
+
+target_include_directories(max PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/slib
+    ${CMAKE_SOURCE_DIR}/unix/include
+    ${CMAKE_SOURCE_DIR}/msgapi
+    ${CMAKE_SOURCE_DIR}/mex
+    ${CMAKE_SOURCE_DIR}/prot
+    ${CMAKE_SOURCE_DIR}/lang
+)
+
+target_compile_definitions(max PRIVATE
+    UNIX
+)
+
+# Link libraries (in correct order for circular dependencies)
+target_link_libraries(max
+    mexvm
+    msgapi
+    smserial
+    maxlib
+    maxbt
+    maxdb
+    xfer
+    comm
+    compat
+    ${CURSES_LIBRARIES}
+)
+
+# Special compilation flags (from original Makefile)
+target_compile_options(max PRIVATE
+    -funsigned-bitfields
+    -Wcast-align
+)
+
+# Handle special source files that need language includes
+set_source_files_properties(
+    l_attach.c max2priv.c
+    PROPERTIES
+    COMPILE_FLAGS "-I${CMAKE_SOURCE_DIR}/lang"
+)
+
+# Installation
+install(TARGETS max
+    RUNTIME DESTINATION ${MAXIMUS_BIN_DIR}
+)

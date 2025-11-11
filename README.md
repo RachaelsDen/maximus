@@ -112,56 +112,59 @@ This codebase has undergone extensive modernization to compile with modern GCC 1
 
 ```bash
 # Debian/Ubuntu
-sudo apt-get install build-essential gcc g++ make bison libncurses-dev libpthread-stubs0-dev
+sudo apt-get install build-essential gcc g++ cmake bison libncurses-dev
 
 # Required versions
 gcc --version     # 14.2+ recommended (tested on 14.2.0)
-make --version    # GNU Make 3.79+
-```
-
-### Configuration
-
-```bash
-# Default installation to /var/max
-./configure
-
-# Custom installation prefix
-./configure --prefix=/opt/maximus
+cmake --version   # 3.20+ required
 ```
 
 ### Build Commands
 
 ```bash
-# Build everything (when libraries are ready)
-make build
+# Configure the build (out-of-source build)
+cmake -B build -DCMAKE_BUILD_TYPE=Release
 
-# Build only Squish
-make squish
+# Custom installation prefix
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/maximus
 
-# Build only Maximus
-make max
+# Build everything
+cmake --build build
+
+# Build with parallel jobs (faster)
+cmake --build build -j$(nproc)
+
+# Build only Squish components
+cmake --build build --target all_squish
+
+# Build only Maximus components
+cmake --build build --target all_maximus
 
 # Clean build artifacts
-make clean
-
-# Complete clean including generated configs
-make distclean
+rm -rf build/
 ```
 
 ### Installation
 
 ```bash
-# Install everything
-make install
+# Install everything (requires prior build)
+sudo cmake --install build
 
-# Install only Squish
-make squish_install
+# Install with custom prefix (matches build configuration)
+sudo cmake --install build --prefix /opt/maximus
+```
 
-# Install only Maximus
-make max_install
+### Configuration Targets
 
-# Install configuration files only
-make config_install
+```bash
+# Install and compile configuration files
+cmake --build build --target config_install
+
+# Recompile configuration files only (after editing .ctl/.mec files)
+cmake --build build --target reconfig
+
+# Create initial user database
+cmake --build build --target create_userdb
 ```
 
 ## Files Modified in Modernization
@@ -380,14 +383,21 @@ Contributions welcome! Priority areas:
 ### Development Workflow
 
 ```bash
-# Make your changes
+# Configure and build
+cmake -B build -DCMAKE_BUILD_TYPE=Debug  # Use Debug for development
+cmake --build build -j$(nproc)
+
+# Make your changes, then rebuild
+cmake --build build
+
+# Test specific components
+cmake --build build --target max     # Just Maximus
+cmake --build build --target squish  # Just Squish
+cmake --build build --target mex     # Just MEX compiler
+
+# Commit changes
 git add <files>
 git commit -m "Description of changes"
-
-# Use automation tools for repetitive fixes
-bash scripts/analyze_errors.sh        # Analyze build errors
-python3 scripts/fix_headers.py <file> # Fix header issues
-bash scripts/auto_modernize.sh        # Run all automation
 ```
 
 ## License
@@ -417,5 +427,5 @@ See `LICENSE` file for full license text.
 ---
 
 **Last Updated:** 2025-11-10
-**Build System:** GNU Make + GCC
+**Build System:** CMake 3.20+ with GCC 14.2+
 **Target Platform:** Linux (x86_64, little-endian)

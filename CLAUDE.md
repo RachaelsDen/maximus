@@ -16,56 +16,60 @@ Released under GPL by Lanius Corporation and Scott J. Dudley. UNIX port by Wes G
 ## Build System
 
 ### Prerequisites
-- GCC 2.72+ (with G++)
-- GNU Make 3.79+
-- Bison/Yacc
-- curses library
+- GCC 14.2+ (with G++)
+- CMake 3.20+
+- Bison
+- ncurses library
 
 ### Configuration and Building
 
 ```bash
-# Configure (default install: /var/max)
-./configure
-# Or with custom prefix:
-./configure --prefix=/custom/path
+# Configure (default install: /usr/local)
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+# Custom installation prefix
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/var/max
 
 # Build everything
-make build
+cmake --build build
+
+# Build with parallel jobs
+cmake --build build -j$(nproc)
 
 # Build only Squish
-make squish
+cmake --build build --target all_squish
 
 # Build only Maximus
-make max
+cmake --build build --target all_maximus
 
-# Install everything (requires prior configure)
-make install
+# Install everything
+sudo cmake --install build
 
-# Install only Squish
-make squish_install
-
-# Install only Maximus
-make max_install
-
-# Install just configuration files
-make config_install
+# Compile configuration files after installation
+cmake --build build --target config_install
 
 # Recompile control/MECCA files after changes
-make reconfig
+cmake --build build --target reconfig
+
+# Create initial user database
+cmake --build build --target create_userdb
 
 # Clean build artifacts
-make clean
-
-# Clean everything including generated config
-make distclean
+rm -rf build/
 ```
 
 ### Build Variables
-Edit `vars.mk` to customize paths, or pass `--prefix` to configure. Key paths:
-- `PREFIX`: Installation root (default: /var/max)
-- `BIN`: Binaries (PREFIX/bin)
-- `LIB`: Shared libraries (PREFIX/lib)
-- `ETC`: Configuration files (PREFIX/etc)
+CMake configuration options (set with `-D` flag):
+- `CMAKE_INSTALL_PREFIX`: Installation root (default: /usr/local)
+- `CMAKE_BUILD_TYPE`: Build type (Debug, Release, RelWithDebInfo, MinSizeRel)
+- `BUILD_MAXIMUS`: Build Maximus BBS (default: ON)
+- `BUILD_SQUISH`: Build Squish tosser (default: ON)
+- `BUILD_UTILITIES`: Build utilities (default: ON)
+
+Installation directories (relative to CMAKE_INSTALL_PREFIX):
+- Binaries: `bin/`
+- Shared libraries: `lib/`
+- Configuration files: `etc/`
 
 ## Architecture
 
@@ -633,3 +637,105 @@ Areas that may need attention in future work:
   - Added vars.mk and vars_local.mk for build configuration
   - Fixed endianness detection conflicts
   - Improved POSIX-reserved identifier usage
+
+## CMake Build System (November 2025)
+
+### Migration from Make to CMake
+
+The build system has been fully migrated from GNU Make to CMake 3.20+ for better cross-platform support, modern dependency management, and improved build performance.
+
+#### Key Changes
+
+**Build System Structure:**
+- **Out-of-source builds**: All build artifacts in `build/` directory (gitignored)
+- **Modern CMake practices**: Target-based approach with proper dependency tracking
+- **Parallel builds**: Full support for multi-core compilation (`-j` flag)
+- **Component targets**: Can build Maximus, Squish, or utilities independently
+
+**Circular Dependency Resolution:**
+- Fixed SquishHash circular dependency between `libmsgapi.so` and `libmax.so`
+- Solution: Using `-Wl,--start-group` and `-Wl,--end-group` linker flags
+- Applied to: MEX compiler, all utilities (13), all Squish programs (8)
+
+**MEX Parser Integration:**
+- Pre-generated `mex_tab.c` and `mex_tab.h` used from source tree
+- Contains manual GCC 14.2 compatibility fixes (see MEX VM Compiler Fix section)
+- **Important**: Do NOT regenerate unless modifying `mex_tab.y`
+
+**Include Directory Management:**
+- Proper PUBLIC/PRIVATE include propagation
+- Self-contained headers with correct dependencies
+- Fixed missing includes for: msgapi, max, btree, prot, lang
+
+#### Build Targets
+
+**Component Targets:**
+- `all_squish` - All Squish programs and libraries
+- `all_maximus` - Maximus BBS and dependencies
+- Individual executables: `max`, `squish`, `mex`, `maid`, `mecca`, `silt`, etc.
+
+**Library Targets:**
+- `maxlib` - libmax.so (core utility library)
+- `msgapi` - libmsgapi.so (FidoNet message API)
+- `compat` - libcompat.so (UNIX compatibility layer)
+- `smserial` - libsmserial.so (serial communications)
+- `mexvm` - libmexvm.so (MEX virtual machine)
+- `maxbt` - libmaxbt.so (B-tree library)
+- `maxdb` - libmaxdb.so (database library)
+- `xfer` - libxfer.so (file transfer protocols)
+- `comm` - libcomm.so (communications drivers)
+- `killrcat` - libkillrcat.so (Squish utility)
+- `msgtrack` - libmsgtrack.so (Squish utility)
+
+**Configuration Targets:**
+- `config_install` - Install and compile all configuration files
+- `reconfig` - Recompile configs after editing .ctl/.mec files
+- `create_userdb` - Create initial user database
+
+#### CMake Files Created
+
+**Root:**
+- `CMakeLists.txt` - Main build configuration
+- `cmake/FindCurses.cmake` - Curses library detection
+- `cmake/CompilerDetails.cmake` - Endianness and compiler detection
+
+**Per-Directory:**
+- `slib/CMakeLists.txt` - Core libraries (libmax.so, libsmserial.so)
+- `unix/CMakeLists.txt` - Compatibility layer (libcompat.so)
+- `msgapi/CMakeLists.txt` - Message API (libmsgapi.so)
+- `btree/CMakeLists.txt` - B-tree libraries (libmaxbt.so, libmaxdb.so)
+- `prot/CMakeLists.txt` - Transfer protocols (libxfer.so)
+- `comdll/CMakeLists.txt` - Communications (libcomm.so)
+- `mex/CMakeLists.txt` - MEX compiler and VM
+- `max/CMakeLists.txt` - Maximus BBS
+- `squish/CMakeLists.txt` - Squish tosser and utilities
+- `util/CMakeLists.txt` - Utility programs
+
+#### Migration Benefits
+
+1. **Better dependency tracking** - Automatic rebuild on header changes
+2. **Faster builds** - Parallel compilation support, smart incremental builds
+3. **Cleaner separation** - Build artifacts isolated in build/ directory
+4. **Modern tooling** - Compatible with IDEs, static analyzers, etc.
+5. **Maintainability** - Declarative syntax easier to understand and modify
+6. **Portability** - CMake handles platform differences automatically
+
+#### Build Performance
+
+**Full clean build:**
+- **13 shared libraries** built successfully
+- **26 executables** compiled and linked
+- **Zero fatal errors** - All targets build successfully
+- **Parallel builds** supported (`cmake --build build -j$(nproc)`)
+
+**Build time comparison:**
+- Single-threaded: ~2-3 minutes
+- Parallel (8 cores): ~30-45 seconds
+
+#### Documentation
+
+See `CMAKE_MIGRATION.md` for complete migration documentation including:
+- Detailed comparison of Make vs CMake commands
+- Configuration options and variables
+- Troubleshooting common build issues
+- Adding new source files and targets

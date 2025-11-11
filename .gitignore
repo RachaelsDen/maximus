@@ -103,6 +103,7 @@ squish/libmsgtrack.so
 depend.mk
 vars_local.mk
 util/mecca_vb.h
+build/
 
 # MEX compiled bytecode files
 *.vm
