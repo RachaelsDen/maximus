@@ -1,0 +1,103 @@
+# CMake script for recompiling configuration files (equivalent to 'make reconfig')
+# This script is run after installation to compile control files
+
+set(PREFIX "@CMAKE_INSTALL_PREFIX@")
+set(BIN "${PREFIX}/bin")
+set(ETC "${PREFIX}/etc")
+
+message(STATUS "Recompiling Maximus configuration files...")
+message(STATUS "")
+
+# Pass one - Bootstrap compilation
+message(STATUS "Pass one")
+message(STATUS " - Compiling english.mad (bootstrap)")
+execute_process(
+    COMMAND ${BIN}/maid english -p
+    WORKING_DIRECTORY ${ETC}/lang
+    RESULT_VARIABLE RESULT
+)
+if(NOT RESULT EQUAL 0)
+    message(FATAL_ERROR "Failed to compile english.mad (bootstrap)")
+endif()
+
+message(STATUS " - Compiling MECCA help files")
+file(GLOB HELP_MECCA_FILES "${ETC}/help/*.mec")
+if(HELP_MECCA_FILES)
+    execute_process(
+        COMMAND ${BIN}/mecca ${HELP_MECCA_FILES}
+        WORKING_DIRECTORY ${PREFIX}
+        RESULT_VARIABLE RESULT
+    )
+    if(NOT RESULT EQUAL 0)
+        message(WARNING "Failed to compile some MECCA help files")
+    endif()
+else()
+    message(STATUS "   No .mec files found in ${ETC}/help/")
+endif()
+
+message(STATUS " - Compiling misc MECCA files")
+file(GLOB MISC_MECCA_FILES "${ETC}/misc/*.mec")
+if(MISC_MECCA_FILES)
+    execute_process(
+        COMMAND ${BIN}/mecca ${MISC_MECCA_FILES}
+        WORKING_DIRECTORY ${PREFIX}
+        RESULT_VARIABLE RESULT
+    )
+    if(NOT RESULT EQUAL 0)
+        message(WARNING "Failed to compile some misc MECCA files")
+    endif()
+else()
+    message(STATUS "   No .mec files found in ${ETC}/misc/")
+endif()
+
+message(STATUS " - Compiling max.ctl")
+execute_process(
+    COMMAND ${BIN}/silt ${ETC}/max -x
+    WORKING_DIRECTORY ${PREFIX}
+    RESULT_VARIABLE RESULT
+)
+if(NOT RESULT EQUAL 0)
+    message(FATAL_ERROR "Failed to compile max.ctl")
+endif()
+
+message(STATUS " - Compiling MEX files")
+file(GLOB MEX_FILES "${PREFIX}/m/*.mex")
+foreach(MEX_FILE ${MEX_FILES})
+    get_filename_component(MEX_BASE ${MEX_FILE} NAME_WE)
+    execute_process(
+        COMMAND ${BIN}/mex ${MEX_BASE}
+        WORKING_DIRECTORY ${PREFIX}/m
+        RESULT_VARIABLE RESULT
+    )
+    if(NOT RESULT EQUAL 0)
+        message(WARNING "Failed to compile ${MEX_BASE}.mex")
+    endif()
+endforeach()
+
+message(STATUS "")
+message(STATUS "Pass two")
+message(STATUS " - Re-Compiling english.mad")
+execute_process(
+    COMMAND ${BIN}/maid english -d -s -p${ETC}/max
+    WORKING_DIRECTORY ${ETC}/lang
+    RESULT_VARIABLE RESULT
+)
+if(NOT RESULT EQUAL 0)
+    message(FATAL_ERROR "Failed to re-compile english.mad")
+endif()
+
+message(STATUS " - Re-Compiling max.ctl")
+execute_process(
+    COMMAND ${CMAKE_COMMAND} -E sleep 2
+)
+execute_process(
+    COMMAND ${BIN}/silt ${ETC}/max -p
+    WORKING_DIRECTORY ${PREFIX}
+    RESULT_VARIABLE RESULT
+)
+if(NOT RESULT EQUAL 0)
+    message(FATAL_ERROR "Failed to re-compile max.ctl")
+endif()
+
+message(STATUS "")
+message(STATUS "Configuration compilation complete.")
